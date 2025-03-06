@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         // initialRoute 속성을 사용하여 초기 경로를 지정
-        // initialRoute: Routes.home,
-        initialRoute: Routes.signUp,
+        initialRoute: Routes.home,
+        // initialRoute: Routes.signUp,
         // onGenerateRoute 속성을 사용하여 경로를 생성
         onGenerateRoute: Routes.generateRoute);
   }
