@@ -63,6 +63,9 @@ class UserProvider with ChangeNotifier {
           nickName: newNickName,
           myWorks: List<String>.from(data['myWorks'] ?? []),
           likedWorks: List<String>.from(data['likedWorks'] ?? []),
+          biddingWorks: List<String>.from(data['biddingWorks'] ?? []),
+          beDeliveryWorks: List<String>.from(data['beDeliveryWorks'] ?? []),
+          completeWorks: List<String>.from(data['completeWorks'] ?? []),
         );
       } else {
         updatedUser = AppUser(
@@ -72,6 +75,9 @@ class UserProvider with ChangeNotifier {
           nickName: newNickName,
           myWorks: [],
           likedWorks: [],
+          biddingWorks: [],
+          beDeliveryWorks: [],
+          completeWorks: [],
         );
       }
       await userDoc.set(updatedUser.toMap(), SetOptions(merge: true));
@@ -103,6 +109,9 @@ class UserProvider with ChangeNotifier {
         nickName: _user!.nickName,
         myWorks: _user!.myWorks,
         likedWorks: updatedLikedWorks,
+        biddingWorks: _user!.myWorks,
+        beDeliveryWorks: _user!.myWorks,
+        completeWorks: _user!.myWorks,
       );
       notifyListeners();
     }
