@@ -12,15 +12,19 @@ class WorkScreen extends StatefulWidget {
 }
 
 class _WorkScreenState extends State<WorkScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
   @override
-void initState() {
-  super.initState();
-  Future.microtask(() {
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+  @override
+  void initState() {
+    super.initState();
     Provider.of<WorkProvider>(context, listen: false).loadWorks();
     Provider.of<UserProvider>(context, listen: false).loadUser();
-  });
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,60 +32,133 @@ void initState() {
     final userProvider = Provider.of<UserProvider>(context);
     final works = workProvider.works;
 
+    final likedWorks = userProvider.user?.likedWorks ?? [];
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('작품 목록'),
-      ),
-      body: works.isEmpty
-          ? Center(child: Text('작품이 없습니다.', style: TextStyle(fontSize: 18)))
-          : ListView.builder(
-              itemCount: works.length,
-              itemBuilder: (context, index) {
-                final work = works[index];
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ListTile(
-                    leading: work.workPhotoURL.isNotEmpty
-                        ? Image.network(work.workPhotoURL, width: 50, height: 50, fit: BoxFit.cover)
-                        : Icon(Icons.image_not_supported, size: 50),
-                    title: Text(work.title, style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('최소 금액: \$${work.minPrice.toStringAsFixed(2)}'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => workProvider.deleteWork(work.id),
+    backgroundColor: Colors.white,
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 25.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 105, 105, 105)),
+                hintText: "작품 검색",
+                hintStyle: TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Color.fromRGBO(223, 223, 229, 1),
+                contentPadding: EdgeInsets.symmetric(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),  
+          ),
+        ),
+        Expanded(
+          child: works.isEmpty
+              ? Center(
+                  child: Text('작품이 없습니다.', style: TextStyle(fontSize: 18)),
+                )
+              : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: works.length,
+                      itemBuilder: (context, index) {
+                        final work = works[index];
+                        bool isLiked = likedWorks.contains(work.id);
+
+                        return GestureDetector(
+                          onTap: () {
+                            // 작품 상세 페이지 이동 가능
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Stack(
+                              children: [
+                                // 작품 제목 (왼쪽 상단)
+                                Positioned(
+                                  top: 8,
+                                  left: 8,
+                                  child: Text(
+                                    work.title,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 8,
+                                  left: 8,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      isLiked ? Icons.favorite : Icons.favorite_border,
+                                      color: Colors.purple,
+                                    ),
+                                    onPressed: () {
+                                      _toggleLike(workProvider, userProvider, work.id, isLiked);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _addDummyWork(workProvider, userProvider),
-        backgroundColor: Colors.purple,
-        child: Icon(Icons.add, color: Colors.white),
+          ),
+        ],
       ),
     );
   }
-
-  void _addDummyWork(WorkProvider workProvider, UserProvider userProvider) {
-    if (userProvider.user == null) {
+  void _toggleLike(WorkProvider workProvider, UserProvider userProvider, String workId, bool isLiked) {
+    final currentUser = userProvider.user;
+    if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("로그인된 사용자 정보가 없습니다.")),
       );
       return;
     }
-    final dummyWork = Work(
-      artistID: userProvider.user!.id,
-      selling: true,
-      title: '랜덤 작품 #${DateTime.now().millisecondsSinceEpoch % 1000}',
-      description: '이것은 자동 생성된 더미 데이터입니다.',
-      createDate: DateTime.now(),
-      workPhotoURL: 'https://via.placeholder.com/150',
-      minPrice: (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5)
-          .toDouble(),
-      likedUsers: [],
-      doAuction: false,
-    );
+    final userId = currentUser.id;
+    List<String> updatedLikedWorks = List.from(currentUser.likedWorks);
+    if (isLiked) {
+      updatedLikedWorks.remove(workId); // 이미 좋아요한 경우 제거
+    } else {
+      updatedLikedWorks.add(workId); // 좋아요 추가
+    }
 
-    workProvider.addWork(dummyWork);
+    userProvider.updateUserLikedWorks(updatedLikedWorks);
+
+    final work = workProvider.works.firstWhere((w) => w.id == workId);
+    List<String> updatedLikedUsers = List.from(work.likedUsers);
+    if (isLiked) {
+      updatedLikedUsers.remove(userId);
+    } else {
+      updatedLikedUsers.add(userId);
+    }
+
+    // WorkProvider에서 작품 정보 업데이트
+    workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
   }
 }

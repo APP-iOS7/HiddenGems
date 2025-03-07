@@ -53,4 +53,28 @@ class WorkProvider with ChangeNotifier {
     _works.removeWhere((work) => work.id == workId);
     notifyListeners();
   }
+
+  //좋아요 누른 유저 수정
+  Future<void> updateWorkLikedUsers(String workId, List<String> updatedLikedUsers) async {
+    final workDoc = FirebaseFirestore.instance.collection('works').doc(workId);
+      await workDoc.update({'likedUsers': updatedLikedUsers});
+
+      // 로컬 데이터도 업데이트
+      int index = _works.indexWhere((work) => work.id == workId);
+      if (index != -1) {
+        _works[index] = Work(
+          id: _works[index].id,
+          artistID: _works[index].artistID,
+          selling: _works[index].selling,
+          title: _works[index].title,
+          description: _works[index].description,
+          createDate: _works[index].createDate,
+          workPhotoURL: _works[index].workPhotoURL,
+          minPrice: _works[index].minPrice,
+          likedUsers: updatedLikedUsers,
+          doAuction: _works[index].doAuction,
+        );
+        notifyListeners();
+      }
+  }
 }
