@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 import 'screens/login_screen.dart';
+import '../screens/mypage_screen.dart';
+import '../screens/works_screen.dart';
+import '../screens/auctionpage_screen.dart';
+import '../screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,8 +36,29 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  HomeScreenState createState() => HomeScreenState();
+}
+
+class HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 1;
+  final List<Widget> _pages=[
+    MyPageScreen(),
+    MainScreen(),
+    SizedBox(),
+    WorkScreen(),
+    AuctionPageScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    if (index == 2) return; // 가운데 버튼은 동작 X
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +73,42 @@ class HomeScreen extends StatelessWidget {
               icon: Icon(Icons.logout))
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'hidden gems',
-            ),
-          ],
+      body: _pages[_selectedIndex],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // 작품 등록
+        },
+        shape: const CircleBorder(),
+        backgroundColor: Colors.purple,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(Icons.person, 0),
+              _buildNavItem(Icons.home, 1),
+              const SizedBox(width: 48),
+              _buildNavItem(Icons.grid_view, 3),
+              _buildNavItem(Icons.attach_money, 4),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+  Widget _buildNavItem(IconData icon, int index) {
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Icon(
+        icon,
+        color: _selectedIndex == index ? Colors.purple : Colors.grey,
+        size: 28,
       ),
     );
   }
