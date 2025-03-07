@@ -23,7 +23,7 @@ class AuctionWork {
       workId: map['workId'] ?? '',
       workTitle: map['workTitle'] ?? '',
       artistId: map['artistId'] ?? '',
-      auctionUserId: List.from((map['auctionUserId'] ?? [])),
+      auctionUserId: List<String>.from(map['auctionUserId'] ?? []),
       minPrice: map['minPrice']?.toInt() ?? 0,
       endDate: map['endDate'] != null
           ? DateTime.parse(map['endDate'])
