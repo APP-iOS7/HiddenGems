@@ -17,9 +17,12 @@ class UserProvider with ChangeNotifier {
           .doc(currentUser.uid)
           .get();
       if (userDoc.exists) {
-        _user = AppUser.fromMap(userDoc.data()!);
+      final newUser = AppUser.fromMap(userDoc.data()!);
+      if (_user == null || _user!.id != newUser.id) {  //사용자가 변경되지 않으면 실행하지 않음 
+        _user = newUser;
+        notifyListeners();
       }
-      notifyListeners();
+    }
     }
   }
 

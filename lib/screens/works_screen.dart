@@ -13,11 +13,14 @@ class WorkScreen extends StatefulWidget {
 
 class _WorkScreenState extends State<WorkScreen> {
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
+  Future.microtask(() {
     Provider.of<WorkProvider>(context, listen: false).loadWorks();
     Provider.of<UserProvider>(context, listen: false).loadUser();
-  }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
