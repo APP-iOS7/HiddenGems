@@ -12,7 +12,7 @@ class UserProvider with ChangeNotifier {
     _users = newUsers;
     notifyListeners();
   }
-  
+
   AppUser? _user;
   bool _isLoading = true;
 
@@ -44,13 +44,14 @@ class UserProvider with ChangeNotifier {
           .doc(currentUser.uid)
           .get();
       if (userDoc.exists) {
-      final newUser = AppUser.fromMap(userDoc.data()!);
-      if (_user == null || _user!.id != newUser.id) {  //사용자가 변경되지 않으면 실행하지 않음 
-        _user = newUser;
-        notifyListeners();
+        final newUser = AppUser.fromMap(userDoc.data()!);
+        if (_user == null || _user!.id != newUser.id) {
+          //사용자가 변경되지 않으면 실행하지 않음
+          _user = newUser;
+          notifyListeners();
+        }
       }
     }
-  }
   }
 
   // 사용자 프로필 업데이트

@@ -84,7 +84,7 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    print(_selectedIndex);
+    debugPrint('$_selectedIndex');
   }
 
   @override
@@ -176,10 +176,10 @@ class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  _AuthWrapperState createState() => _AuthWrapperState();
+  AuthWrapperState createState() => AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class AuthWrapperState extends State<AuthWrapper> {
   Future<void>? _userFuture;
 
   @override
@@ -194,7 +194,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     // listen: true로 변경하여 Provider의 상태변화를 감지합니다.
     final userProvider = Provider.of<UserProvider>(context);
-    print("AuthWrapper 호출됨");
+    debugPrint("AuthWrapper 호출됨");
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot authSnapshot) {

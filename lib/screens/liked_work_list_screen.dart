@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -11,10 +10,8 @@ class LikedWorkListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final workProvider = Provider.of<WorkProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     final works = workProvider.works;
-    final likedWorks = userProvider.user?.likedWorks ?? [];
 
     return Scaffold(
       appBar: AppBar(

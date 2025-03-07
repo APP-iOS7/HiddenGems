@@ -9,10 +9,10 @@ class WorkScreen extends StatefulWidget {
   const WorkScreen({super.key});
 
   @override
-  _WorkScreenState createState() => _WorkScreenState();
+  WorkScreenState createState() => WorkScreenState();
 }
 
-class _WorkScreenState extends State<WorkScreen> {
+class WorkScreenState extends State<WorkScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
   @override
@@ -20,6 +20,7 @@ class _WorkScreenState extends State<WorkScreen> {
     _searchController.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     super.initState();
@@ -36,45 +37,47 @@ class _WorkScreenState extends State<WorkScreen> {
     final likedWorks = userProvider.user?.likedWorks ?? [];
 
     return Scaffold(
-    backgroundColor: Colors.white,
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 25.0),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value.toLowerCase();
-                });
-              },
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, color: const Color.fromARGB(255, 105, 105, 105)),
-                hintText: "작품 검색",
-                hintStyle: TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Color.fromRGBO(223, 223, 229, 1),
-                contentPadding: EdgeInsets.symmetric(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+      backgroundColor: Colors.white,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 25.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value.toLowerCase();
+                  });
+                },
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.search,
+                      color: const Color.fromARGB(255, 105, 105, 105)),
+                  hintText: "작품 검색",
+                  hintStyle: TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Color.fromRGBO(223, 223, 229, 1),
+                  contentPadding: EdgeInsets.symmetric(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),  
+            ),
           ),
-        ),
-        Expanded(
-          child: works.isEmpty
-              ? Center(
-                  child: Text('작품이 없습니다.', style: TextStyle(fontSize: 18)),
-                )
-              : Padding(
+          Expanded(
+            child: works.isEmpty
+                ? Center(
+                    child: Text('작품이 없습니다.', style: TextStyle(fontSize: 18)),
+                  )
+                : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 1.2,
                         crossAxisSpacing: 12,
@@ -89,11 +92,11 @@ class _WorkScreenState extends State<WorkScreen> {
                           onTap: () {
                             //debugPrint("Navigating to WorkdetailScreen with work: ${work.title}");
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => WorkdetailScreen(work: work),
-                              )
-                            );
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      WorkdetailScreen(work: work),
+                                ));
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -127,11 +130,14 @@ class _WorkScreenState extends State<WorkScreen> {
                                   left: 8,
                                   child: IconButton(
                                     icon: Icon(
-                                      isLiked ? Icons.favorite : Icons.favorite_border,
+                                      isLiked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
                                       color: Colors.purple,
                                     ),
                                     onPressed: () {
-                                      _toggleLike(workProvider, userProvider, work.id, isLiked);
+                                      _toggleLike(workProvider, userProvider,
+                                          work.id, isLiked);
                                     },
                                   ),
                                 ),
@@ -147,7 +153,9 @@ class _WorkScreenState extends State<WorkScreen> {
       ),
     );
   }
-  void _toggleLike(WorkProvider workProvider, UserProvider userProvider, String workId, bool isLiked) {
+
+  void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
+      String workId, bool isLiked) {
     final currentUser = userProvider.user;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
