@@ -13,6 +13,9 @@ import '../screens/works_screen.dart';
 import '../screens/auctionpage_screen.dart';
 import '../screens/home_screen.dart';
 
+import 'package:hidden_gems/models/works.dart';
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -81,7 +84,9 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text(_titles[_selectedIndex]),
         actions: [
           IconButton(
@@ -94,7 +99,9 @@ class HomeScreenState extends State<HomeScreen> {
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // 작품 등록
+          final workProvider = Provider.of<WorkProvider>(context, listen: false);
+          final userProvider = Provider.of<UserProvider>(context, listen: false);
+          _addDummyWork(workProvider, userProvider);
         },
         shape: const CircleBorder(),
         backgroundColor: Colors.purple,
@@ -119,6 +126,7 @@ class HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+    
   }
 
   Widget _buildNavItem(IconData icon, int index) {
@@ -130,6 +138,28 @@ class HomeScreenState extends State<HomeScreen> {
         size: 28,
       ),
     );
+  }
+  void _addDummyWork(WorkProvider workProvider, UserProvider userProvider) {
+    if (userProvider.user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("로그인된 사용자 정보가 없습니다.")),
+      );
+      return;
+    }
+    final dummyWork = Work(
+      artistID: userProvider.user!.id,
+      selling: true,
+      title: '랜덤 작품 #${DateTime.now().millisecondsSinceEpoch % 1000}',
+      description: '이것은 자동 생성된 더미 데이터입니다.',
+      createDate: DateTime.now(),
+      workPhotoURL: 'https://via.placeholder.com/150',
+      minPrice: (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5)
+          .toDouble(),
+      likedUsers: [],
+      doAuction: false,
+    );
+
+    workProvider.addWork(dummyWork);
   }
 }
 
