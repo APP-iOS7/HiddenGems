@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Work {
   final String id;
   final String artistID; //생성자 아이디
-  final String nickName; 
   final bool selling;
   final String title;
   final String description;
@@ -12,28 +13,30 @@ class Work {
   final bool doAuction;
 
   Work({
-    required this.id,
+    String? id,
     required this.artistID,
-    required this.nickName,
     required this.selling,
     required this.title,
     required this.description,
-    required this.createDate,
+    DateTime? createDate,
     required this.workPhotoURL,
     required this.minPrice,
     required this.likedUsers,
     required this.doAuction,
-  });
+  })  : id = id ?? FirebaseFirestore.instance.collection('works').doc().id,
+        createDate = createDate ?? DateTime.now();
 
-  factory Work.fromMap(Map<String, dynamic> map) {
+  factory Work.fromFirestore(DocumentSnapshot doc) {
+    final map = doc.data() as Map<String, dynamic>;
     return Work(
-      id: map['id'] ?? '',
+      id: doc['id'] ?? FirebaseFirestore.instance.collection('works').doc().id,
       artistID: map['artistID'] ?? '',
-      nickName: map['nickName'] ?? '',
       selling: map['selling'] ?? false,
       title: map['title'] ?? '',
       description: map['description'] ?? '',
-      createDate: DateTime.parse(map['createDate']),
+      createDate: map['createDate'] != null
+          ? (map['createDate'] as Timestamp).toDate()
+          : DateTime.now(),      
       workPhotoURL: map['workPhotoURL'] ?? '',
       minPrice: (map['minPrice'] ?? 0).toDouble(),
       likedUsers: List<String>.from(map['likedUsers'] ?? []),
@@ -45,11 +48,10 @@ class Work {
     return {
       'id': id,
       'artistID': artistID,
-      'nickName': nickName,
       'selling': selling,
       'title': title,
       'description': description,
-      'createDate': createDate.toIso8601String(),
+      'createDate': Timestamp.fromDate(createDate),
       'workPhotoURL': workPhotoURL,
       'minPrice': minPrice,
       'likedUsers': likedUsers,
