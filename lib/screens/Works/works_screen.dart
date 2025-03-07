@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
-import 'package:hidden_gems/models/works.dart';
+
+import 'workdetail_screen.dart';
 
 class WorkScreen extends StatefulWidget {
   const WorkScreen({super.key});
@@ -86,19 +87,32 @@ class _WorkScreenState extends State<WorkScreen> {
 
                         return GestureDetector(
                           onTap: () {
-                            // 작품 상세 페이지 이동 가능
+                            debugPrint("Navigating to WorkdetailScreen with work: ${work.title}");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WorkdetailScreen(work: work),
+                              )
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  work.workPhotoURL.isNotEmpty
+                                      ? work.workPhotoURL
+                                      : 'https://picsum.photos/200/300', // 기본 이미지 대체
+                                ),
+                                fit: BoxFit.cover, // 이미지를 꽉 차게 표시
+                              ),
                             ),
                             child: Stack(
                               children: [
-                                // 작품 제목 (왼쪽 상단)
                                 Positioned(
                                   top: 8,
-                                  left: 8,
+                                  right: 8,
                                   child: Text(
                                     work.title,
                                     style: TextStyle(
@@ -158,7 +172,6 @@ class _WorkScreenState extends State<WorkScreen> {
       updatedLikedUsers.add(userId);
     }
 
-    // WorkProvider에서 작품 정보 업데이트
     workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
   }
 }

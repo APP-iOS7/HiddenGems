@@ -153,7 +153,7 @@ class HomeScreenState extends State<HomeScreen> {
       title: '랜덤 작품 #${DateTime.now().millisecondsSinceEpoch % 1000}',
       description: '이것은 자동 생성된 더미 데이터입니다.',
       createDate: DateTime.now(),
-      workPhotoURL: 'https://via.placeholder.com/150',
+      workPhotoURL: 'https://picsum.photos/200/300',
       minPrice: (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5)
           .toDouble(),
       likedUsers: [],
