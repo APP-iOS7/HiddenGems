@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:hidden_gems/screens/sign_up_screen.dart';
+import 'package:hidden_gems/screens/Login/sign_up_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 class Loginscreen extends StatefulWidget {
