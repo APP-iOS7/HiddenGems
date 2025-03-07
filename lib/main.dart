@@ -62,6 +62,14 @@ class HomeScreenState extends State<HomeScreen> {
     AuctionPageScreen(),
   ];
 
+  final List<String> _titles = [
+    "마이페이지",
+    "Hidden Gems",
+    "",
+    "작품",
+    "경매",
+  ];
+
   void _onItemTapped(int index) {
     if (index == 2) return; // 가운데 버튼은 동작 X
     setState(() {
@@ -74,7 +82,7 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hidden Gems'),
+        title: Text(_titles[_selectedIndex]),
         actions: [
           IconButton(
               onPressed: () {
