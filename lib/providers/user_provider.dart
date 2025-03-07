@@ -26,7 +26,7 @@ class UserProvider with ChangeNotifier {
   // Firestore에서 사용자 정보 불러오기
   Future<void> loadUser() async {
     _isLoading = true;
-    notifyListeners();
+    // notifyListeners();
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
@@ -83,5 +83,28 @@ class UserProvider with ChangeNotifier {
   void clearUser() {
     _user = null;
     notifyListeners();
+  }
+
+  // Firestore에 likedWorks 업데이트
+  Future<void> updateUserLikedWorks(List<String> updatedLikedWorks) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+
+    await userDoc.update({'likedWorks': updatedLikedWorks});
+
+    if (_user != null) {
+      _user = AppUser(
+        id: _user!.id,
+        signupDate: _user!.signupDate,
+        profileURL: _user!.profileURL,
+        nickName: _user!.nickName,
+        myWorks: _user!.myWorks,
+        likedWorks: updatedLikedWorks,
+      );
+      notifyListeners();
+    }
   }
 }
