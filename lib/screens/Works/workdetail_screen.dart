@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:provider/provider.dart';
@@ -139,7 +140,13 @@ class _WorkdetailScreenState extends State<WorkdetailScreen> {
         ),
         
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: GestureDetector(
+        onTap: () {
+          if (widget.work.doAuction) {
+            _showAuctionModal(context);
+          }
+        },
+        child: Container(
           width: double.infinity,
           height: 50,
           padding: EdgeInsets.symmetric(vertical: 12),
@@ -154,6 +161,7 @@ class _WorkdetailScreenState extends State<WorkdetailScreen> {
             style: TextStyle(color: widget.work.doAuction ? Colors.white : Colors.black,),
           ),
         ),
+      )
     );
   }
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider, String workId, bool isLiked) {
@@ -183,5 +191,78 @@ class _WorkdetailScreenState extends State<WorkdetailScreen> {
     }
 
     workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
+  }
+  void _showAuctionModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10),
+              Text(
+                "경매 참여 권한을 얻으셨습니다.",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8),
+              Text(
+                "해당 경매 페이지로 이동하시겠습니까?",
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.purple),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: Text("돌아가기", style: TextStyle(color: Colors.purple)),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  SizedBox(
+                    width: 120, // 원하는 너비로 조정
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // 여기에 경매 페이지 이동 로직 추가
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: Text("확인"),
+                    ),
+                  ),
+                  
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

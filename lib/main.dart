@@ -164,7 +164,7 @@ class HomeScreenState extends State<HomeScreen> {
       minPrice:
           (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5).toDouble(),
       likedUsers: [],
-      doAuction: false,
+      doAuction: true,
     );
 
     workProvider.addWork(dummyWork);
@@ -193,7 +193,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     // listen: true로 변경하여 Provider의 상태변화를 감지합니다.
-    final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     print("AuthWrapper 호출됨");
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
