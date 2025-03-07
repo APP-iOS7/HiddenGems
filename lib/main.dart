@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
+import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/screens/profile_update_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +67,7 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+    print(_selectedIndex);
   }
 
   @override
@@ -146,6 +148,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Widget build(BuildContext context) {
     // listen: true로 변경하여 Provider의 상태변화를 감지합니다.
     final userProvider = Provider.of<UserProvider>(context);
+    print("AuthWrapper 호출됨");
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot authSnapshot) {
