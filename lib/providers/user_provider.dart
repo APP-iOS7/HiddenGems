@@ -4,6 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems/models/user.dart';
 
 class UserProvider with ChangeNotifier {
+  List<User> _users = [];
+
+  List<User> get users => _users;
+
+  void setUsers(List<User> newUsers) {
+    _users = newUsers;
+    notifyListeners();
+  }
+  
   AppUser? _user;
   bool _isLoading = true;
 
