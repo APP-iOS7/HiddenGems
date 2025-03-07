@@ -13,7 +13,7 @@ class AuctionWorksScreen extends StatelessWidget {
         Provider.of<AuctionWorksProvider>(context, listen: false);
 
     return FutureBuilder(
-        future: provider.fetchUserAuctionWorks("VQdOIZnSTmUanGWsUK3eYPySId43"),
+        future: provider.fetchUserAuctionWorks(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
