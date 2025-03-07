@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "249692300623",
+    "project_id": "hiddengems-8371c",
+    "storage_bucket": "hiddengems-8371c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249692300623:android:9872f800dc91803607d13a",
+        "android_client_info": {
+          "package_name": "com.example.hidden_gems"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "249692300623-baf4tghd9n0f8cit999988ejefci5frt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hidden_gems",
+            "certificate_hash": "124afa3c1bb6eb41c9de330b65d9f265fa9ee0cd"
+          }
+        },
+        {
+          "client_id": "249692300623-ko4kka6jqu7krnehka73kdhl4mi7ghdr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4O5y41HtB-vAG0jtdLXYUMbxOVbe7K7U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249692300623-ko4kka6jqu7krnehka73kdhl4mi7ghdr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "249692300623-6ssub13ioig8sek4jdoo7csjjp5nb6pe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hiddenGems"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
