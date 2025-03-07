@@ -1,16 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
-
-  @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
+class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  SignUpScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
