@@ -5,11 +5,29 @@ import 'package:hidden_gems/models/user.dart';
 
 class UserProvider with ChangeNotifier {
   AppUser? _user;
+  bool _isLoading = true;
 
   AppUser? get user => _user;
+  bool get isLoading => _isLoading;
+
+  UserProvider() {
+    // FirebaseAuth 상태 변화를 구독하여 로그인/로그아웃 시 자동으로 loadUser() 호출
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) async {
+      if (firebaseUser != null) {
+        await loadUser();
+      } else {
+        _user = null;
+        _isLoading = false;
+        notifyListeners();
+      }
+    });
+  }
 
   // Firestore에서 사용자 정보 불러오기
   Future<void> loadUser() async {
+    _isLoading = true;
+    notifyListeners();
+
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final userDoc = await FirebaseFirestore.instance
@@ -19,11 +37,12 @@ class UserProvider with ChangeNotifier {
       if (userDoc.exists) {
         _user = AppUser.fromMap(userDoc.data()!);
       }
-      notifyListeners();
     }
+    _isLoading = false;
+    notifyListeners();
   }
 
-  // 사용자 프로필 업데이트: 닉네임과 프로필 사진을 포함한 전체 정보를 Firestore에 저장
+  // 사용자 프로필 업데이트
   Future<void> updateUserProfile(
       String newNickName, String newProfileURL) async {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -55,10 +74,14 @@ class UserProvider with ChangeNotifier {
           likedWorks: [],
         );
       }
-      // 기존 데이터 보존을 위해 merge 옵션 사용
       await userDoc.set(updatedUser.toMap(), SetOptions(merge: true));
       _user = updatedUser;
       notifyListeners();
     }
+  }
+
+  void clearUser() {
+    _user = null;
+    notifyListeners();
   }
 }
