@@ -83,7 +83,7 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    print(_selectedIndex);
+    debugPrint('$_selectedIndex');
   }
 
   @override

@@ -5,8 +5,6 @@ import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/work_provider.dart';
-
 class LikedWorkListScreen extends StatelessWidget {
   const LikedWorkListScreen({super.key});
 

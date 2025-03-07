@@ -48,7 +48,7 @@ class AuctionWorksScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                '작품 ID: ${auctionWork.workId}',
+                                auctionWork.workTitle,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
