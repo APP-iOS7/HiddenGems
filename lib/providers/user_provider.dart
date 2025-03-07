@@ -26,7 +26,7 @@ class UserProvider with ChangeNotifier {
   // Firestore에서 사용자 정보 불러오기
   Future<void> loadUser() async {
     _isLoading = true;
-    notifyListeners();
+    // notifyListeners();
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
