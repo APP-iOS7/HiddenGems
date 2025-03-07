@@ -32,7 +32,7 @@ void main() async {
       ),
       ChangeNotifierProvider(
         create: (_) => AuctionWorksProvider(),
-      )
+      ),
     ],
     child: MyApp(),
   ));
