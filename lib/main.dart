@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/screens/profile_update_screen.dart';
@@ -10,11 +11,10 @@ import 'package:provider/provider.dart';
 import 'screens/Login/login_screen.dart';
 import '../screens/mypage_screen.dart';
 import '../screens/Works/works_screen.dart';
-import '../screens/auctionpage_screen.dart';
+import 'screens/auction_works_screen.dart';
 import '../screens/home_screen.dart';
 
 import 'package:hidden_gems/models/works.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +27,12 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
       ChangeNotifierProvider(create: (_) => WorkProvider()),
+      ChangeNotifierProvider(
+        create: (_) => UserProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => AuctionWorksProvider(),
+      )
     ],
     child: MyApp(),
   ));
@@ -62,7 +68,7 @@ class HomeScreenState extends State<HomeScreen> {
     MainScreen(),
     SizedBox(),
     WorkScreen(),
-    AuctionPageScreen(),
+    AuctionWorksScreen(),
   ];
 
   final List<String> _titles = [
@@ -99,8 +105,10 @@ class HomeScreenState extends State<HomeScreen> {
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final workProvider = Provider.of<WorkProvider>(context, listen: false);
-          final userProvider = Provider.of<UserProvider>(context, listen: false);
+          final workProvider =
+              Provider.of<WorkProvider>(context, listen: false);
+          final userProvider =
+              Provider.of<UserProvider>(context, listen: false);
           _addDummyWork(workProvider, userProvider);
         },
         shape: const CircleBorder(),
@@ -126,7 +134,6 @@ class HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-    
   }
 
   Widget _buildNavItem(IconData icon, int index) {
@@ -139,6 +146,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   void _addDummyWork(WorkProvider workProvider, UserProvider userProvider) {
     if (userProvider.user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -153,8 +161,8 @@ class HomeScreenState extends State<HomeScreen> {
       description: '이것은 자동 생성된 더미 데이터입니다.',
       createDate: DateTime.now(),
       workPhotoURL: 'https://picsum.photos/200/300',
-      minPrice: (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5)
-          .toDouble(),
+      minPrice:
+          (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5).toDouble(),
       likedUsers: [],
       doAuction: false,
     );
