@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import '../screens/mypage_screen.dart';
 import '../screens/works_screen.dart';
-import '../screens/auctionpage_screen.dart';
+import 'screens/auction_works_screen.dart';
 import '../screens/home_screen.dart';
 
 void main() async {
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: AuthWrapper(),
+      home: AuctionWorksScreen(),
     );
   }
 }
@@ -52,12 +52,12 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
-  final List<Widget> _pages=[
+  final List<Widget> _pages = [
     MyPageScreen(),
     MainScreen(),
     SizedBox(),
     WorkScreen(),
-    AuctionPageScreen(),
+    AuctionWorksScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -109,6 +109,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildNavItem(IconData icon, int index) {
     return GestureDetector(
       onTap: () => _onItemTapped(index),
