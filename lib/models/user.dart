@@ -5,6 +5,9 @@ class AppUser {
   final String nickName;
   final List<String> myWorks;
   final List<String> likedWorks;
+  final List<String> biddingWorks;
+  final List<String> beDeliveryWorks;
+  final List<String> completeWorks;
 
   AppUser({
     required this.id,
@@ -13,6 +16,9 @@ class AppUser {
     required this.nickName,
     required this.myWorks,
     required this.likedWorks,
+    required this.biddingWorks,
+    required this.beDeliveryWorks,
+    required this.completeWorks,
   });
 
   factory AppUser.fromMap(Map<String, dynamic> map) {
@@ -23,6 +29,9 @@ class AppUser {
       nickName: map['nickName'] ?? '',
       myWorks: List<String>.from(map['myWorks'] ?? []),
       likedWorks: List<String>.from(map['likedWorks'] ?? []),
+      biddingWorks: List<String>.from(map['likedWorks'] ?? []),
+      beDeliveryWorks: List<String>.from(map['likedWorks'] ?? []),
+      completeWorks: List<String>.from(map['likedWorks'] ?? []),
     );
   }
 
@@ -34,6 +43,9 @@ class AppUser {
       'nickName': nickName,
       'myWorks': myWorks,
       'likedWorks': likedWorks,
+      'biddingWorks': biddingWorks,
+      'beDeliveryWorks': beDeliveryWorks,
+      'completeWorks': completeWorks,
     };
   }
 }
