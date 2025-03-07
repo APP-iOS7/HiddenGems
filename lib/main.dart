@@ -2,16 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
+import 'package:hidden_gems/providers/work_provider.dart';
+import 'package:hidden_gems/screens/profile_update_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 
-import 'providers/work_provider.dart';
+import 'screens/Login/login_screen.dart';
 import '../screens/mypage_screen.dart';
-import '../screens/works_screen.dart';
+import '../screens/Works/works_screen.dart';
 import '../screens/auctionpage_screen.dart';
 import '../screens/home_screen.dart';
-import 'screens/Login/login_screen.dart';
-import 'screens/profile_update_screen.dart';
 
 import 'package:hidden_gems/models/works.dart';
 
@@ -92,7 +92,6 @@ class HomeScreenState extends State<HomeScreen> {
           IconButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
-                Provider.of<UserProvider>(context, listen: false).clearUser();
               },
               icon: Icon(Icons.logout))
         ],
@@ -164,33 +163,59 @@ class HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+// 로그인 상태에 따라 화면을 전환하는 위젯
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-    final userProvider = Provider.of<UserProvider>(context);
-
-    // 로그인되지 않은 경우 로그인 화면 표시
-    if (firebaseUser == null) {
-      return Loginscreen();
-    }
-
-    // 데이터 로딩 중이면 로딩 인디케이터 표시
-    if (userProvider.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    // 사용자 데이터가 없으면 프로필 업데이트 화면 표시
-    if (userProvider.user == null) {
-      return const ProfileUpdateScreen();
-    }
-
-    // 사용자 데이터가 있으면 홈 화면 표시
-    return const HomeScreen();
-  }
+  _AuthWrapperState createState() => _AuthWrapperState();
 }
 
+class _AuthWrapperState extends State<AuthWrapper> {
+  Future<void>? _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Provider에서 한 번만 사용자 데이터를 불러오기 위해 future를 초기화합니다.
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    _userFuture = userProvider.loadUser();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // listen: true로 변경하여 Provider의 상태변화를 감지합니다.
+    final userProvider = Provider.of<UserProvider>(context);
+    print("AuthWrapper 호출됨");
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (BuildContext context, AsyncSnapshot authSnapshot) {
+        if (authSnapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (authSnapshot.hasData) {
+          return FutureBuilder(
+            future: _userFuture,
+            builder: (context, AsyncSnapshot loadSnapshot) {
+              if (loadSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              // user 정보가 없거나 닉네임이 비어있으면 ProfileUpdateScreen으로 이동
+              if (userProvider.user == null ||
+                  userProvider.user!.nickName.isEmpty) {
+                return const ProfileUpdateScreen();
+              }
+              // user 정보가 완전하면 HomeScreen으로 이동
+              return const HomeScreen();
+            },
+          );
+        }
+        return Loginscreen();
+      },
+    );
+  }
+}
