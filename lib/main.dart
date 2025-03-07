@@ -1,12 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
+import 'package:hidden_gems/screens/profile_update_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/login_screen.dart';
+import 'screens/Login/login_screen.dart';
 import '../screens/mypage_screen.dart';
 import '../screens/works_screen.dart';
 import '../screens/auctionpage_screen.dart';
@@ -52,7 +52,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
-  final List<Widget> _pages=[
+  final List<Widget> _pages = [
     MyPageScreen(),
     MainScreen(),
     SizedBox(),
@@ -109,6 +109,7 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildNavItem(IconData icon, int index) {
     return GestureDetector(
       onTap: () => _onItemTapped(index),
@@ -122,19 +123,54 @@ class HomeScreenState extends State<HomeScreen> {
 }
 
 // 로그인 상태에 따라 화면을 전환하는 위젯
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
+  _AuthWrapperState createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  Future<void>? _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Provider에서 한 번만 사용자 데이터를 불러오기 위해 future를 초기화합니다.
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    _userFuture = userProvider.loadUser();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // listen: true로 변경하여 Provider의 상태변화를 감지합니다.
+    final userProvider = Provider.of<UserProvider>(context);
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+      builder: (BuildContext context, AsyncSnapshot authSnapshot) {
+        if (authSnapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
-        if (snapshot.hasData) {
-          return const HomeScreen();
+        if (authSnapshot.hasData) {
+          return FutureBuilder(
+            future: _userFuture,
+            builder: (context, AsyncSnapshot loadSnapshot) {
+              if (loadSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              // user 정보가 없거나 닉네임이 비어있으면 ProfileUpdateScreen으로 이동
+              if (userProvider.user == null ||
+                  userProvider.user!.nickName.isEmpty) {
+                return const ProfileUpdateScreen();
+              }
+              // user 정보가 완전하면 HomeScreen으로 이동
+              return const HomeScreen();
+            },
+          );
         }
         return const Loginscreen();
       },
