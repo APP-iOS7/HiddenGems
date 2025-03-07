@@ -59,7 +59,6 @@ class WorkProvider with ChangeNotifier {
     final workDoc = FirebaseFirestore.instance.collection('works').doc(workId);
       await workDoc.update({'likedUsers': updatedLikedUsers});
 
-      // 로컬 데이터도 업데이트
       int index = _works.indexWhere((work) => work.id == workId);
       if (index != -1) {
         _works[index] = Work(

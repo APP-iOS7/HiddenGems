@@ -87,7 +87,7 @@ class _WorkScreenState extends State<WorkScreen> {
 
                         return GestureDetector(
                           onTap: () {
-                            debugPrint("Navigating to WorkdetailScreen with work: ${work.title}");
+                            //debugPrint("Navigating to WorkdetailScreen with work: ${work.title}");
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -118,6 +118,7 @@ class _WorkScreenState extends State<WorkScreen> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 20,
                                     ),
                                   ),
                                 ),
