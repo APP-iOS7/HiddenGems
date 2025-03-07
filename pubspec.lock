@@ -415,7 +415,7 @@ packages:
       sha256: e3641ec5d63ebf0d9b41bd43201a66e3fc79a65db5f61fc181f04cd27aab950c
       url: "https://pub.dev"
     source: hosted
-    version: "1.15.0"
+    version: "1.16.0"
   nested:
     dependency: transitive
     description:
@@ -424,7 +424,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
-
   path:
     dependency: transitive
     description:
