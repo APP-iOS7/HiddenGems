@@ -20,7 +20,8 @@ class WorkProvider with ChangeNotifier {
 
   //특정 작품 가져오기
   Future<Work?> getWorkById(String workId) async {
-    final doc = await FirebaseFirestore.instance.collection('works').doc(workId).get();
+    final doc =
+        await FirebaseFirestore.instance.collection('works').doc(workId).get();
     if (doc.exists) {
       return Work.fromFirestore(doc);
     }
@@ -37,7 +38,8 @@ class WorkProvider with ChangeNotifier {
 
   //작품 수정
   Future<void> updateWork(Work updatedWork) async {
-    final docRef = FirebaseFirestore.instance.collection('works').doc(updatedWork.id);
+    final docRef =
+        FirebaseFirestore.instance.collection('works').doc(updatedWork.id);
     await docRef.set(updatedWork.toMap(), SetOptions(merge: true));
 
     final index = _works.indexWhere((work) => work.id == updatedWork.id);
@@ -55,45 +57,50 @@ class WorkProvider with ChangeNotifier {
   }
 
   //좋아요 누른 유저 수정
-  Future<void> updateWorkLikedUsers(String workId, List<String> updatedLikedUsers) async {
+  Future<void> updateWorkLikedUsers(
+      String workId, List<String> updatedLikedUsers) async {
     final workDoc = FirebaseFirestore.instance.collection('works').doc(workId);
-      await workDoc.update({'likedUsers': updatedLikedUsers});
+    await workDoc.update({'likedUsers': updatedLikedUsers});
 
-      int index = _works.indexWhere((work) => work.id == workId);
-      if (index != -1) {
-        _works[index] = Work(
-          id: _works[index].id,
-          artistID: _works[index].artistID,
-          selling: _works[index].selling,
-          title: _works[index].title,
-          description: _works[index].description,
-          createDate: _works[index].createDate,
-          workPhotoURL: _works[index].workPhotoURL,
-          minPrice: _works[index].minPrice,
-          likedUsers: updatedLikedUsers,
-          doAuction: _works[index].doAuction,
-        );
-        notifyListeners();
-      }
+    int index = _works.indexWhere((work) => work.id == workId);
+    if (index != -1) {
+      _works[index] = Work(
+        id: _works[index].id,
+        artistID: _works[index].artistID,
+        artistNickName: _works[index].artistNickName,
+        selling: _works[index].selling,
+        title: _works[index].title,
+        description: _works[index].description,
+        createDate: _works[index].createDate,
+        workPhotoURL: _works[index].workPhotoURL,
+        minPrice: _works[index].minPrice,
+        likedUsers: updatedLikedUsers,
+        doAuction: _works[index].doAuction,
+      );
+      notifyListeners();
+    }
   }
-  Future<void> updateWorkAuctionStatus(String workId, bool newAuctionStatus) async {
+
+  Future<void> updateWorkAuctionStatus(
+      String workId, bool newAuctionStatus) async {
     final workDoc = FirebaseFirestore.instance.collection('works').doc(workId);
     await workDoc.update({'doAuction': newAuctionStatus});
     final index = _works.indexWhere((w) => w.id == workId);
     if (index != -1) {
       _works[index] = Work(
-          id: _works[index].id,
-          artistID: _works[index].artistID,
-          selling: _works[index].selling,
-          title: _works[index].title,
-          description: _works[index].description,
-          createDate: _works[index].createDate,
-          workPhotoURL: _works[index].workPhotoURL,
-          minPrice: _works[index].minPrice,
-          likedUsers: _works[index].likedUsers,
-          doAuction: newAuctionStatus,
-        );
-        notifyListeners();
+        id: _works[index].id,
+        artistID: _works[index].artistID,
+        artistNickName: _works[index].artistNickName,
+        selling: _works[index].selling,
+        title: _works[index].title,
+        description: _works[index].description,
+        createDate: _works[index].createDate,
+        workPhotoURL: _works[index].workPhotoURL,
+        minPrice: _works[index].minPrice,
+        likedUsers: _works[index].likedUsers,
+        doAuction: newAuctionStatus,
+      );
+      notifyListeners();
     }
   }
 }

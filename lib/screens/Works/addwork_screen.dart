@@ -33,7 +33,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
     }
   }
 
-  void _addWork(WorkProvider workProvider, UserProvider userProvider) {
+  void _addWork(WorkProvider workProvider, UserProvider userProvider) async {
     if (userProvider.user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("로그인된 사용자 정보가 없습니다.")),
@@ -55,6 +55,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
 
     final newWork = Work(
       artistID: userProvider.user!.id,
+      artistNickName: userProvider.user!.nickName,
       selling: false,
       title: title,
       description: description,
@@ -65,7 +66,15 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
       doAuction: false,
     );
 
-    workProvider.addWork(newWork);
+    await workProvider.addWork(newWork);
+
+    // 사용자의 myWorks 리스트에 새 작품 id 추가
+    final updatedMyWorks = List<String>.from(userProvider.user!.myWorks);
+    updatedMyWorks.add(newWork.id);
+    await userProvider.updateUserMyWorks(updatedMyWorks);
+
+    // 비동기 작업 후 widget이 여전히 마운트된 경우에만 context 사용
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("작품이 성공적으로 등록되었습니다!")),
@@ -80,90 +89,91 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("작품 추가"),
         backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "작품 제목",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  "작품 사진",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: _imageUrl != null
-                    ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        _imageUrl!,
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                            child: Text(
-                              "유효하지 않은 URL입니다.",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : _selectedImage != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          _selectedImage!,
-                        width: double.infinity,
-                            height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
-                          SizedBox(height: 8),
-                          Text(
-                            "이미지를 선택하세요",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
+        appBar: AppBar(
+          title: const Text("작품 추가"),
+          backgroundColor: Colors.white,
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "작품 제목",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    "작품 사진",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: _imageUrl != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              _imageUrl!,
+                              width: double.infinity,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Text(
+                                    "유효하지 않은 URL입니다.",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : _selectedImage != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.file(
+                                  _selectedImage!,
+                                  width: double.infinity,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_a_photo,
+                                        size: 50, color: Colors.grey),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "이미지를 선택하세요",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              ),
                   ),
                   SizedBox(height: 10),
 
@@ -208,46 +218,45 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                     },
                   ),
 
-                  
-                SizedBox(height: 12),
-                Text(
-                  "작품 설명",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 12),
+                  Text(
+                    "작품 설명",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
                   ),
-                  maxLines: 3,
-                ),
-                SizedBox(height: 12),
-                Text(
-                  "경매 시작 금액 (₩)",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 12),
+                  Text(
+                    "경매 시작 금액 (₩)",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 8),
-                TextFormField(
-                  controller: _minPriceController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: _minPriceController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
                   ),
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(height: 20),
-              ],
+                  SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: GestureDetector(
+        bottomNavigationBar: GestureDetector(
           onTap: () {
             _addWork(workProvider, userProvider);
           },
@@ -268,7 +277,6 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
               ),
             ),
           ),
-        )
-    );
+        ));
   }
 }

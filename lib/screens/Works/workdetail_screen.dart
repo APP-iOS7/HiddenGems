@@ -99,7 +99,8 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      /*artist != null ? artist.nickName : */ "알 수 없는 작가",
+                      updatedWork.artistNickName,
+                      // /*artist != null ? artist.nickName : */ "알 수 없는 작가",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
@@ -158,7 +159,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
             decoration: BoxDecoration(
               color: updatedWork.artistID == userProvider.user?.id
-                  ? updatedWork.doAuction 
+                  ? updatedWork.doAuction
                       ? Colors.grey[300]
                       : Colors.purple
                   : updatedWork.doAuction
@@ -169,7 +170,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             alignment: Alignment.center,
             child: Text(
               updatedWork.artistID == userProvider.user?.id
-                  ? updatedWork.doAuction 
+                  ? updatedWork.doAuction
                       ? "경매가 이미 시작되었습니다"
                       : "경매 시작하기"
                   : updatedWork.doAuction
@@ -177,18 +178,18 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       : "경매가 아직 시작되지 않았습니다",
               style: TextStyle(
                 color: updatedWork.artistID == userProvider.user?.id
-                  ? updatedWork.doAuction 
-                      ? Colors.black
-                      : Colors.white
-                  : updatedWork.doAuction
-                      ? Colors.white
-                      : Colors.black,
+                    ? updatedWork.doAuction
+                        ? Colors.black
+                        : Colors.white
+                    : updatedWork.doAuction
+                        ? Colors.white
+                        : Colors.black,
               ),
             ),
           ),
-        )
-      );
+        ));
   }
+
   void _startAuction(BuildContext context) {
     showDialog(
       context: context,

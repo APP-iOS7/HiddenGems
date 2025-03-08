@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Work {
   final String id;
   final String artistID; //생성자 아이디
+  final String artistNickName;
   final bool selling;
   final String title;
   final String description;
@@ -15,6 +16,7 @@ class Work {
   Work({
     String? id,
     required this.artistID,
+    required this.artistNickName,
     required this.selling,
     required this.title,
     required this.description,
@@ -31,12 +33,13 @@ class Work {
     return Work(
       id: doc['id'] ?? FirebaseFirestore.instance.collection('works').doc().id,
       artistID: map['artistID'] ?? '',
+      artistNickName: map['artistNickName'] ?? '',
       selling: map['selling'] ?? false,
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       createDate: map['createDate'] != null
           ? (map['createDate'] as Timestamp).toDate()
-          : DateTime.now(),      
+          : DateTime.now(),
       workPhotoURL: map['workPhotoURL'] ?? '',
       minPrice: (map['minPrice'] ?? 0).toDouble(),
       likedUsers: List<String>.from(map['likedUsers'] ?? []),
@@ -48,6 +51,7 @@ class Work {
     return {
       'id': id,
       'artistID': artistID,
+      'artistNickName': artistNickName,
       'selling': selling,
       'title': title,
       'description': description,
