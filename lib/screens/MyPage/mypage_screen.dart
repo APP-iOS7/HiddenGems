@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
+import 'package:hidden_gems/screens/MyPage/be_delivery_work_screen.dart';
+import 'package:hidden_gems/screens/MyPage/complete_works_screen.dart';
+import 'package:hidden_gems/screens/MyPage/my_bidding_screen.dart';
+import 'package:hidden_gems/screens/MyPage/my_works_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'liked_work_list_screen.dart';
@@ -70,7 +74,7 @@ class MyPageScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => LikedWorkListScreen()));
+                              builder: (context) => MyWorksScreen()));
                     },
                     child: Text('등록한 작품 보기',
                         style: TextStyle(fontSize: 18, color: Colors.black))),
@@ -88,7 +92,7 @@ class MyPageScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => LikedWorkListScreen()));
+                              builder: (context) => MyBiddingScreen()));
                     },
                     child: Text('참여중인 경매 보기',
                         style: TextStyle(fontSize: 18, color: Colors.black))),
@@ -106,7 +110,7 @@ class MyPageScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => LikedWorkListScreen()));
+                              builder: (context) => BeDeliveryWorkScreen()));
                     },
                     child: Text('낙찰된 작품 배송지 입력 / 결제하기',
                         style: TextStyle(fontSize: 18, color: Colors.black))),
@@ -124,7 +128,7 @@ class MyPageScreen extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => LikedWorkListScreen()));
+                              builder: (context) => CompleteWorksScreen()));
                     },
                     child: Text('낙찰내역 보기',
                         style: TextStyle(fontSize: 18, color: Colors.black))),
