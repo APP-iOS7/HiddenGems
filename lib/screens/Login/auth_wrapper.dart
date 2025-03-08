@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hidden_gems/main.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/Login/login_screen.dart';
-import 'package:hidden_gems/screens/profile_update_screen.dart';
+import 'package:hidden_gems/screens/Login/profile_update_screen.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatelessWidget {

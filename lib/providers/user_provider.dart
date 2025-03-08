@@ -14,10 +14,7 @@ class UserProvider with ChangeNotifier {
   }
 
   AppUser? _user;
-  bool _isLoading = true;
-
   AppUser? get user => _user;
-  bool get isLoading => _isLoading;
 
   UserProvider() {
     // FirebaseAuth 상태 변화를 구독하여 로그인/로그아웃 시 자동으로 loadUser() 호출
@@ -26,7 +23,6 @@ class UserProvider with ChangeNotifier {
         await loadUser();
       } else {
         _user = null;
-        _isLoading = false;
         notifyListeners();
       }
     });
@@ -34,9 +30,6 @@ class UserProvider with ChangeNotifier {
 
   // Firestore에서 사용자 정보 불러오기
   Future<void> loadUser() async {
-    _isLoading = true;
-    // notifyListeners();
-
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       final userDoc = await FirebaseFirestore.instance

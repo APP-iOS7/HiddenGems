@@ -8,7 +8,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/mypage_screen.dart';
+import 'screens/MyPage/mypage_screen.dart';
 import '../screens/Works/works_screen.dart';
 import 'screens/auction_works_screen.dart';
 import '../screens/home_screen.dart';
@@ -27,12 +27,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
       ChangeNotifierProvider(create: (_) => WorkProvider()),
-      ChangeNotifierProvider(
-        create: (_) => UserProvider(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => AuctionWorksProvider(),
-      ),
+      ChangeNotifierProvider(create: (_) => AuctionWorksProvider()),
     ],
     child: MyApp(),
   ));
@@ -47,6 +42,10 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+        ),
         useMaterial3: true,
       ),
       home: AuthWrapper(),
@@ -95,11 +94,12 @@ class HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         title: Text(_titles[_selectedIndex]),
         actions: [
-          IconButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-              },
-              icon: Icon(Icons.logout))
+          if (_selectedIndex == 0)
+            IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                icon: Icon(Icons.logout)),
         ],
       ),
       body: _pages[_selectedIndex],
