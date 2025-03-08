@@ -28,15 +28,16 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     final userProvider = Provider.of<UserProvider>(context);
     final likedWorks = userProvider.user?.likedWorks ?? [];
     bool isLiked = likedWorks.contains(widget.work.id);
-    // final artist = Provider.of<UserProvider>(context, listen: false)
-    //   .users
-    //   .firstWhere((user) => user.id == widget.work.artistID, orElse: () => null);
+    final updatedWork = workProvider.works.firstWhere(
+      (w) => w.id == widget.work.id,
+      orElse: () => widget.work,
+    );
 
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(
-            widget.work.title,
+            updatedWork.title,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -59,15 +60,15 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10),
-                    image: widget.work.workPhotoURL.isNotEmpty
+                    image: updatedWork.workPhotoURL.isNotEmpty
                         ? DecorationImage(
-                            image: NetworkImage(widget.work.workPhotoURL),
+                            image: NetworkImage(updatedWork.workPhotoURL),
                             fit: BoxFit.cover,
                           )
                         : null,
                   ),
                   alignment: Alignment.center,
-                  child: widget.work.workPhotoURL.isEmpty
+                  child: updatedWork.workPhotoURL.isEmpty
                       ? Text("작품 사진", style: TextStyle(color: Colors.black54))
                       : null,
                 ),
@@ -82,13 +83,13 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                         color: Colors.purple,
                       ),
                       onPressed: () {
-                        _toggleLike(workProvider, userProvider, widget.work.id,
+                        _toggleLike(workProvider, userProvider, updatedWork.id,
                             isLiked);
                       },
                     ),
                     SizedBox(width: 5),
                     Text(
-                      widget.work.likedUsers.length.toString(),
+                      updatedWork.likedUsers.length.toString(),
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
@@ -108,7 +109,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    widget.work.description,
+                    updatedWork.description,
                     style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                 ),
@@ -125,7 +126,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        "₩${widget.work.minPrice.toString()}",
+                        "₩${updatedWork.minPrice.toString()}",
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
@@ -139,8 +140,15 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         ),
         bottomNavigationBar: GestureDetector(
           onTap: () {
-            if (widget.work.doAuction) {
-              _showAuctionModal(context);
+            if (updatedWork.artistID == userProvider.user?.id) {
+              // 현재 사용자가 작품을 등록한 작가라면 경매 시작 로직 실행
+              if (!updatedWork.doAuction) {
+                _startAuction(context);
+              }
+            } else {
+              if (updatedWork.doAuction) {
+                _showAuctionModal(context);
+              }
             }
           },
           child: Container(
@@ -149,18 +157,67 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             padding: EdgeInsets.symmetric(vertical: 12),
             margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
             decoration: BoxDecoration(
-              color: widget.work.doAuction ? Colors.purple : Colors.grey[300],
+              color: updatedWork.artistID == userProvider.user?.id
+                  ? updatedWork.doAuction 
+                      ? Colors.grey[300]
+                      : Colors.purple
+                  : updatedWork.doAuction
+                      ? Colors.purple
+                      : Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
             ),
             alignment: Alignment.center,
             child: Text(
-              widget.work.doAuction ? "해당 경매 참여하기" : "경매가 아직 시작되지 않았습니다",
+              updatedWork.artistID == userProvider.user?.id
+                  ? updatedWork.doAuction 
+                      ? "경매가 이미 시작되었습니다"
+                      : "경매 시작하기"
+                  : updatedWork.doAuction
+                      ? "해당 경매 참여하기"
+                      : "경매가 아직 시작되지 않았습니다",
               style: TextStyle(
-                color: widget.work.doAuction ? Colors.white : Colors.black,
+                color: updatedWork.artistID == userProvider.user?.id
+                  ? updatedWork.doAuction 
+                      ? Colors.black
+                      : Colors.white
+                  : updatedWork.doAuction
+                      ? Colors.white
+                      : Colors.black,
               ),
             ),
           ),
-        ));
+        )
+      );
+  }
+  void _startAuction(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("경매 시작"),
+        content: Text("이 작품의 경매를 시작하시겠습니까?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("취소"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Provider.of<WorkProvider>(context, listen: false)
+                  .updateWorkAuctionStatus(widget.work.id, true);
+
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("경매가 시작되었습니다!")),
+              );
+
+              setState(() {});
+            },
+            child: Text("시작하기"),
+          ),
+        ],
+      ),
+    );
   }
 
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,

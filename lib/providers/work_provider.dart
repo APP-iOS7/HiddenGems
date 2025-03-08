@@ -76,4 +76,24 @@ class WorkProvider with ChangeNotifier {
         notifyListeners();
       }
   }
+  Future<void> updateWorkAuctionStatus(String workId, bool newAuctionStatus) async {
+    final workDoc = FirebaseFirestore.instance.collection('works').doc(workId);
+    await workDoc.update({'doAuction': newAuctionStatus});
+    final index = _works.indexWhere((w) => w.id == workId);
+    if (index != -1) {
+      _works[index] = Work(
+          id: _works[index].id,
+          artistID: _works[index].artistID,
+          selling: _works[index].selling,
+          title: _works[index].title,
+          description: _works[index].description,
+          createDate: _works[index].createDate,
+          workPhotoURL: _works[index].workPhotoURL,
+          minPrice: _works[index].minPrice,
+          likedUsers: _works[index].likedUsers,
+          doAuction: newAuctionStatus,
+        );
+        notifyListeners();
+    }
+  }
 }
