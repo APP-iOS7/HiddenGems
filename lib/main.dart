@@ -26,12 +26,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
       ChangeNotifierProvider(create: (_) => WorkProvider()),
-      ChangeNotifierProvider(
-        create: (_) => UserProvider(),
-      ),
-      ChangeNotifierProvider(
-        create: (_) => AuctionWorksProvider(),
-      ),
+      ChangeNotifierProvider(create: (_) => AuctionWorksProvider()),
     ],
     child: MyApp(),
   ));
