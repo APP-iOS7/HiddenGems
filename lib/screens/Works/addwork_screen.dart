@@ -55,14 +55,14 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
 
     final newWork = Work(
       artistID: userProvider.user!.id,
-      selling: true,
+      selling: false,
       title: title,
       description: description,
       createDate: DateTime.now(),
-      workPhotoURL: finalImageUrl, // 임시 이미지 URL
+      workPhotoURL: finalImageUrl,
       minPrice: minPrice,
       likedUsers: [],
-      doAuction: true,
+      doAuction: false,
     );
 
     workProvider.addWork(newWork);
