@@ -35,6 +35,11 @@ class WorkScreenState extends State<WorkScreen> {
     final works = workProvider.works;
 
     final likedWorks = userProvider.user?.likedWorks ?? [];
+    
+    final filteredWorks = works
+      .where((work) =>
+          work.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+      .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -49,7 +54,7 @@ class WorkScreenState extends State<WorkScreen> {
                 controller: _searchController,
                 onChanged: (value) {
                   setState(() {
-                    _searchQuery = value.toLowerCase();
+                    _searchQuery = value;
                   });
                 },
                 decoration: InputDecoration(
@@ -69,7 +74,7 @@ class WorkScreenState extends State<WorkScreen> {
             ),
           ),
           Expanded(
-            child: works.isEmpty
+            child: filteredWorks.isEmpty
                 ? Center(
                     child: Text('작품이 없습니다.', style: TextStyle(fontSize: 18)),
                   )
@@ -83,9 +88,9 @@ class WorkScreenState extends State<WorkScreen> {
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
-                      itemCount: works.length,
+                      itemCount: filteredWorks.length,
                       itemBuilder: (context, index) {
-                        final work = works[index];
+                        final work = filteredWorks[index];
                         bool isLiked = likedWorks.contains(work.id);
 
                         return GestureDetector(
