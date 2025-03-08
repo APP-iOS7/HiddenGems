@@ -37,102 +37,141 @@ class MyPageScreen extends StatelessWidget {
                 ),
                 Text(
                   '${nickName!} 님 반갑습니다!',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               ],
             ),
             SizedBox(height: 20),
             Divider(),
             SizedBox(height: 20),
-            Row(
-              children: [
-                Icon(
-                  Icons.favorite_outline,
-                  color: Color(0xFF9800CB),
-                ),
-                SizedBox(width: 18),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LikedWorkListScreen()));
-                    },
-                    child: Text('좋아요한 작품 보기',
-                        style: TextStyle(fontSize: 18, color: Colors.black))),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.edit_outlined,
-                  color: Color(0xFF9800CB),
-                ),
-                SizedBox(width: 18),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyWorksScreen()));
-                    },
-                    child: Text('등록한 작품 보기',
-                        style: TextStyle(fontSize: 18, color: Colors.black))),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.attach_money,
-                  color: Color(0xFF9800CB),
-                ),
-                SizedBox(width: 18),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyBiddingScreen()));
-                    },
-                    child: Text('참여중인 경매 보기',
-                        style: TextStyle(fontSize: 18, color: Colors.black))),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.local_shipping_outlined,
-                  color: Color(0xFF9800CB),
-                ),
-                SizedBox(width: 18),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BeDeliveryWorkScreen()));
-                    },
-                    child: Text('낙찰된 작품 배송지 입력 / 결제하기',
-                        style: TextStyle(fontSize: 18, color: Colors.black))),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.receipt_long_outlined,
-                  color: Color(0xFF9800CB),
-                ),
-                SizedBox(width: 18),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CompleteWorksScreen()));
-                    },
-                    child: Text('낙찰내역 보기',
-                        style: TextStyle(fontSize: 18, color: Colors.black))),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.favorite_outline,
+                        color: Color(0xFF9800CB),
+                        size: 22,
+                      ),
+                      SizedBox(width: 18),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        LikedWorkListScreen()));
+                          },
+                          child: Text('좋아요한 작품 보기',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.edit_outlined,
+                        color: Color(0xFF9800CB),
+                        size: 22,
+                      ),
+                      SizedBox(width: 18),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MyWorksScreen()));
+                          },
+                          child: Text('등록한 작품 보기',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.attach_money,
+                        color: Color(0xFF9800CB),
+                        size: 22,
+                      ),
+                      SizedBox(width: 18),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MyBiddingScreen()));
+                          },
+                          child: Text('참여중인 경매 보기',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.local_shipping_outlined,
+                        color: Color(0xFF9800CB),
+                        size: 22,
+                      ),
+                      SizedBox(width: 18),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        BeDeliveryWorkScreen()));
+                          },
+                          child: Text('낙찰된 작품 배송지 입력 / 결제하기',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.receipt_long_outlined,
+                        color: Color(0xFF9800CB),
+                        size: 22,
+                      ),
+                      SizedBox(width: 18),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        CompleteWorksScreen()));
+                          },
+                          child: Text('낙찰내역 보기',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

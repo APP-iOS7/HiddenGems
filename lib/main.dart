@@ -93,11 +93,12 @@ class HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.white,
         title: Text(_titles[_selectedIndex]),
         actions: [
-          IconButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-              },
-              icon: Icon(Icons.logout))
+          if (_selectedIndex == 0)
+            IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                icon: Icon(Icons.logout)),
         ],
       ),
       body: _pages[_selectedIndex],
