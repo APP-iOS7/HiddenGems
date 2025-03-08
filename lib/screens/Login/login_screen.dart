@@ -21,38 +21,97 @@ class Loginscreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Spacer(),
-              Text('Hidden Gems'),
-              Spacer(),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-              ),
-              TextField(
-                obscureText: true,
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+              Text(
+                'Hidden Gems',
+                style: TextStyle(fontWeight: FontWeight.w700),
               ),
               Spacer(),
-              ElevatedButton(onPressed: signIn, child: Text('이메일/비밀번호로 로그인')),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: '이메일'),
+                    ),
+                    SizedBox(height: 20),
+                    TextField(
+                      obscureText: true,
+                      controller: _passwordController,
+                      decoration: const InputDecoration(labelText: '비밀번호'),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 60),
+              InkWell(
+                  onTap: signIn,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 330,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9800CB).withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_circle,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        // 오른쪽 텍스트
+                        SizedBox(
+                          width: 280,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "이메일/비밀번호로 로그인",
+                              style: TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: loginWithKakao,
-                    child: Text('카카오 로그인'),
+                  InkWell(
+                    onTap: loginWithKakao,
+                    child: Image.asset(
+                      'lib/assets/kakaoLogin.png',
+                      width: 160,
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: loginWithGoogle,
-                    child: Text('구글 로그인'),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: loginWithGoogle,
+                    child: Image.asset(
+                      'lib/assets/googleLogin.png',
+                      width: 160,
+                    ),
                   ),
                 ],
               ),
-              ElevatedButton(
+              TextButton(
                 onPressed: () async {
                   Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => SignUpScreen()));
                 },
-                child: Text('Sign Up'),
+                child: Text(
+                  'Sign Up',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey.shade700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.grey),
+                ),
               ),
               Spacer(),
             ],
