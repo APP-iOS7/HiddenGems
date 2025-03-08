@@ -67,6 +67,7 @@ class WorkProvider with ChangeNotifier {
       _works[index] = Work(
         id: _works[index].id,
         artistID: _works[index].artistID,
+        artistNickName: _works[index].artistNickName,
         selling: _works[index].selling,
         title: _works[index].title,
         description: _works[index].description,
@@ -89,6 +90,7 @@ class WorkProvider with ChangeNotifier {
       _works[index] = Work(
         id: _works[index].id,
         artistID: _works[index].artistID,
+        artistNickName: _works[index].artistNickName,
         selling: _works[index].selling,
         title: _works[index].title,
         description: _works[index].description,

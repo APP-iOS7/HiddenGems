@@ -55,6 +55,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
 
     final newWork = Work(
       artistID: userProvider.user!.id,
+      artistNickName: userProvider.user!.nickName,
       selling: false,
       title: title,
       description: description,
