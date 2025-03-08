@@ -12,6 +12,7 @@ import '../screens/mypage_screen.dart';
 import '../screens/Works/works_screen.dart';
 import 'screens/auction_works_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/Works/addwork_screen.dart';
 
 import 'package:hidden_gems/models/works.dart';
 
@@ -108,7 +109,9 @@ class HomeScreenState extends State<HomeScreen> {
               Provider.of<WorkProvider>(context, listen: false);
           final userProvider =
               Provider.of<UserProvider>(context, listen: false);
-          _addDummyWork(workProvider, userProvider);
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => AddWorkScreen()),
+          );
         },
         shape: const CircleBorder(),
         backgroundColor: Colors.purple,
@@ -146,26 +149,5 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _addDummyWork(WorkProvider workProvider, UserProvider userProvider) {
-    if (userProvider.user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("로그인된 사용자 정보가 없습니다.")),
-      );
-      return;
-    }
-    final dummyWork = Work(
-      artistID: userProvider.user!.id,
-      selling: true,
-      title: '랜덤 작품 #${DateTime.now().millisecondsSinceEpoch % 1000}',
-      description: '이것은 자동 생성된 더미 데이터입니다.',
-      createDate: DateTime.now(),
-      workPhotoURL: 'https://picsum.photos/200/300',
-      minPrice:
-          (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5).toDouble(),
-      likedUsers: [],
-      doAuction: true,
-    );
-
-    workProvider.addWork(dummyWork);
-  }
+  
 }
