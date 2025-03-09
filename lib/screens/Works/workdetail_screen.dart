@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
+import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -372,8 +373,43 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () {
+                        final auctionProvider = Provider.of<AuctionWorksProvider>(
+                          context, 
+                          listen: false
+                        );
+
+                        // 해당 작품 ID를 경매의 workId로 가지고 있는 auctionWork 찾기
+                        final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
+                          (auction) => auction.workId == widget.work.id,
+                          orElse: () => AuctionWork(
+                            workId: '',
+                            workTitle: '알 수 없는 경매',
+                            artistId: '',
+                            auctionUserId: [],
+                            minPrice: 0,
+                            nowPrice: 0,
+                            endDate: DateTime.now(),
+                            auctionComplete: true,
+                          ),
+                        );
+
                         Navigator.pop(context);
-                        // 여기에 경매 페이지 이동 로직 추가
+
+                        // AuctionWork가 유효한 경우에만 이동
+                        if (auctionWork.workId.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AuctionScreen(
+                                auctionWork: auctionWork,
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("해당 작품의 경매 정보를 찾을 수 없습니다.")),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple,
