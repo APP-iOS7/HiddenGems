@@ -4,11 +4,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hidden_gems/screens/Login/sign_up_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-class Loginscreen extends StatelessWidget {
+class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Loginscreen({super.key});
+  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
