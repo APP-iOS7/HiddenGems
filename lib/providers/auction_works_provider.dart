@@ -13,19 +13,6 @@ class AuctionWorksProvider with ChangeNotifier {
   List _userAuctionWorks = [];
   List get userAuctionWorks => _userAuctionWorks;
 
-  AuctionWorksProvider() {
-    _listenToAuctionUpdates(); // ✅ 실시간 감지
-  }
-
-  void _listenToAuctionUpdates() {
-    _firestore.collection('auctionWorks').snapshots().listen((snapshot) {
-      _allAuctionWorks = snapshot.docs
-          .map((doc) => AuctionWork.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-      notifyListeners(); // ✅ 변경 감지 즉시 UI 업데이트
-    });
-  }
-
   Future<void> fetchAllAuctionWorks() async {
     try {
       final QuerySnapshot snapshot =
@@ -106,6 +93,32 @@ class AuctionWorksProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint("입찰자 업데이트 오류: $e");
+    }
+  }
+  Future<void> endAuction(String workId) async {
+    try {
+      await _firestore.collection('auctionWorks').doc(workId).update({
+        'auctionComplete': true,
+      });
+
+      int index = _allAuctionWorks.indexWhere((work) => work.workId == workId);
+      if (index != -1) {
+        _allAuctionWorks[index] = AuctionWork(
+          workId: _allAuctionWorks[index].workId,
+          workTitle: _allAuctionWorks[index].workTitle,
+          artistId: _allAuctionWorks[index].artistId,
+          auctionUserId: _allAuctionWorks[index].auctionUserId,
+          minPrice: _allAuctionWorks[index].minPrice,
+          nowPrice: _allAuctionWorks[index].nowPrice,
+          endDate: _allAuctionWorks[index].endDate,
+          auctionComplete: true,
+        );
+      }
+
+      notifyListeners();
+      debugPrint("경매 종료 완료: $workId");
+    } catch (e) {
+      debugPrint("경매 종료 오류: $e");
     }
   }
 }

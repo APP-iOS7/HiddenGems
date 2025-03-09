@@ -337,7 +337,18 @@ class AuctionScreenState extends State<AuctionScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () async {
-                        
+                        final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+                        await auctionProvider.endAuction(widget.auctionWork.workId);
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkAuctionStatus(widget.auctionWork.workId, false);
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkSellingStatus(widget.auctionWork.workId, true);
+
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("경매가 종료되었습니다.")),
+                        );
 
                         setState(() {});
                       },
