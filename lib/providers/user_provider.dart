@@ -200,4 +200,32 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> updateUserSubscribeUsers(
+      List<String> updatedSubscribeUserIds) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+
+    await userDoc.update({'subscribeUsers': updatedSubscribeUserIds});
+
+    if (_user != null) {
+      _user = AppUser(
+        id: _user!.id,
+        signupDate: _user!.signupDate,
+        profileURL: _user!.profileURL,
+        nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore,
+        myWorks: _user!.myWorks,
+        likedWorks: _user!.likedWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: updatedSubscribeUserIds,
+      );
+      notifyListeners();
+    }
+  }
 }
