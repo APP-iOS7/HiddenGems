@@ -62,7 +62,7 @@ class ArtistScreenState extends State<ArtistScreen> {
         ),
       ),
       body: FutureBuilder<List<AppUser>>(
-        future: _futureUsers, // Firestore에서 직접 데이터 가져오기
+        future: _futureUsers,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -124,7 +124,7 @@ class ArtistScreenState extends State<ArtistScreen> {
                     itemCount: filteredUsers.length,
                     itemBuilder: (BuildContext context, int index) {
                       final user = filteredUsers[index];
-                      final worksCount = user.myWorks.length;
+                      final worksCount = user.myWorksCount;
                       final likesCount = user.myLikeScore;
 
                       return GestureDetector(

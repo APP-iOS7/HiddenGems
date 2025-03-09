@@ -63,6 +63,7 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
       workPhotoURL: finalImageUrl,
       minPrice: minPrice,
       likedUsers: [],
+      likedCount: 0,
       doAuction: false,
     );
 

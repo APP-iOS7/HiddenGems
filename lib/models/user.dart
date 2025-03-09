@@ -5,6 +5,7 @@ class AppUser {
   final String nickName;
   final int myLikeScore;
   final List<String> myWorks;
+  final int myWorksCount;
   final List<String> likedWorks;
   final List<String> biddingWorks;
   final List<String> beDeliveryWorks;
@@ -18,6 +19,7 @@ class AppUser {
     required this.nickName,
     required this.myLikeScore,
     required this.myWorks,
+    required this.myWorksCount,
     required this.likedWorks,
     required this.biddingWorks,
     required this.beDeliveryWorks,
@@ -34,6 +36,7 @@ class AppUser {
       myLikeScore:
           (map['myLikeScore'] is num) ? (map['myLikeScore'] as num).toInt() : 0,
       myWorks: List<String>.from(map['myWorks'] ?? []),
+      myWorksCount: map['myWorksCount']?.toInt() ?? 0,
       likedWorks: List<String>.from(map['likedWorks'] ?? []),
       biddingWorks: List<String>.from(map['likedWorks'] ?? []),
       beDeliveryWorks: List<String>.from(map['likedWorks'] ?? []),
@@ -50,6 +53,7 @@ class AppUser {
       'nickName': nickName,
       'myLikeScore': myLikeScore,
       'myWorks': myWorks,
+      'myWorksCount': myWorksCount,
       'likedWorks': likedWorks,
       'biddingWorks': biddingWorks,
       'beDeliveryWorks': beDeliveryWorks,
