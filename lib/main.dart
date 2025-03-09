@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 import 'screens/MyPage/mypage_screen.dart';
 import '../screens/Works/works_screen.dart';
-import 'screens/auction_works_screen.dart';
+import 'screens/Auctions/auction_works_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/Works/addwork_screen.dart';
 
