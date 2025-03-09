@@ -9,7 +9,8 @@ import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 
 import 'package:hidden_gems/models/user.dart';
-import 'package:hidden_gems/providers/user_provider.dart';
+
+import 'auction_screen.dart';
 
 class AuctionWorksScreen extends StatefulWidget {
   const AuctionWorksScreen({super.key});
@@ -88,7 +89,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search,
                           color: const Color.fromARGB(255, 105, 105, 105)),
-                      hintText: "작품 검색",
+                      hintText: "경매 검색",
                       hintStyle: TextStyle(color: Colors.grey),
                       filled: true,
                       fillColor: Color.fromRGBO(223, 223, 229, 1),
@@ -186,6 +187,41 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                           auctionWork.auctionComplete
                                               ? '경매 종료'
                                               : '진행중'),
+                                      const SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: auctionWork.auctionComplete
+                                            ? null
+                                            : () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => AuctionScreen(auctionWork: auctionWork),
+                                                  ),
+                                                );
+                                                debugPrint(
+                                                    "경매 페이지 이동: ${auctionWork.workId}");
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: auctionWork.auctionComplete
+                                              ? Colors.grey[50]
+                                              : Colors.grey[50],
+                                          foregroundColor: auctionWork.auctionComplete
+                                              ? Colors.black
+                                              : Colors.black,
+                                          minimumSize: const Size(double.infinity, 48),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            side: BorderSide(
+                                              color: auctionWork.auctionComplete
+                                                ? Colors.black
+                                                : Colors.purple,
+                                              width: 1),
+                                          ),
+                                        ),
+                                        child: Text(auctionWork.auctionComplete
+                                            ? "경매가 이미 종료되었습니다"
+                                            : "경매 페이지로 이동"),
+                                      ),
                                       if (auctionWork.auctionUserId.isNotEmpty) ...[
                                         const Divider(height: 20),
                                         const Text(
