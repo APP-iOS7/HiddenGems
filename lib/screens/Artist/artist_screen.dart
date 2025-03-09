@@ -5,14 +5,14 @@ import 'package:intl/intl.dart';
 import '../../models/user.dart';
 import 'artist_detail_screen.dart';
 
-class AuthorsScreen extends StatefulWidget {
-  const AuthorsScreen({super.key});
+class ArtistScreen extends StatefulWidget {
+  const ArtistScreen({super.key});
 
   @override
-  AuthorsScreenState createState() => AuthorsScreenState();
+  ArtistScreenState createState() => ArtistScreenState();
 }
 
-class AuthorsScreenState extends State<AuthorsScreen> {
+class ArtistScreenState extends State<ArtistScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
   late Future<List<AppUser>> _futureUsers;
