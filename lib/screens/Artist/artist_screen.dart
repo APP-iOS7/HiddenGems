@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../models/user.dart';
+import '../../models/user.dart';
+import 'artist_detail_screen.dart';
 
 class AuthorsScreen extends StatefulWidget {
   const AuthorsScreen({super.key});
@@ -12,7 +13,6 @@ class AuthorsScreen extends StatefulWidget {
 }
 
 class AuthorsScreenState extends State<AuthorsScreen> {
-
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
   late Future<List<AppUser>> _futureUsers;
@@ -60,7 +60,6 @@ class AuthorsScreenState extends State<AuthorsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        
       ),
       body: FutureBuilder<List<AppUser>>(
         future: _futureUsers, // Firestore에서 직접 데이터 가져오기
@@ -76,9 +75,10 @@ class AuthorsScreenState extends State<AuthorsScreen> {
             return const Center(child: Text('활성화된 작가가 없습니다.'));
           }
           final filteredUsers = activeUsers
-            .where((user) =>
-                user.nickName.toLowerCase().contains(_searchQuery.toLowerCase()))
-            .toList();
+              .where((user) => user.nickName
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()))
+              .toList();
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +114,8 @@ class AuthorsScreenState extends State<AuthorsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.85,
                       mainAxisSpacing: 12,
@@ -165,9 +166,11 @@ class AuthorsScreenState extends State<AuthorsScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _buildStatItem(Icons.palette, '$worksCount 작품'),
+                                  _buildStatItem(
+                                      Icons.palette, '$worksCount 작품'),
                                   const SizedBox(width: 12),
-                                  _buildStatItem(Icons.favorite, '$likesCount 좋아요'),
+                                  _buildStatItem(
+                                      Icons.favorite, '$likesCount 좋아요'),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -186,7 +189,6 @@ class AuthorsScreenState extends State<AuthorsScreen> {
                   ),
                 ),
               ),
-              
             ],
           );
         },
