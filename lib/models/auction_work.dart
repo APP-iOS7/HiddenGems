@@ -15,6 +15,7 @@ class AuctionWork {
     required this.auctionUserId,
     required this.minPrice,
     required this.endDate,
+    this.nowPrice = 0,
     this.auctionComplete = false,
   });
 
@@ -28,6 +29,7 @@ class AuctionWork {
       endDate: map['endDate'] != null
           ? DateTime.parse(map['endDate'])
           : DateTime.now(),
+      nowPrice: map['nowPrice']?.toInt() ?? 0,
       auctionComplete: map['auctionComplete'] ?? false,
     )..nowPrice = map['nowPrice']?.toInt() ?? 0;
   }
