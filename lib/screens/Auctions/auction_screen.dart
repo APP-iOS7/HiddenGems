@@ -112,7 +112,6 @@ class AuctionScreenState extends State<AuctionScreen> {
                               : null,
                         ),
                         alignment: Alignment.center,
-<<<<<<< HEAD
                     ),
                     SizedBox(height: 20),
                     Padding(
@@ -200,85 +199,6 @@ class AuctionScreenState extends State<AuctionScreen> {
                             ),
                           ),
 SizedBox(height: 8),
-=======
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            artistNickname,
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          )),
-                      SizedBox(height: 5),
-
-                      //작품 설명
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          work?.description ?? "설명 없음",
-                          style: TextStyle(fontSize: 16, color: Colors.black54),
-                        ),
-                      ),
-                      SizedBox(height: 15),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Text(
-                              "최저가",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black54),
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "₩${updatedAuction.minPrice.toString()}",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Text(
-                              "현재가",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black54),
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "₩${updatedAuction.nowPrice.toString()}",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Row(
-                          children: [
-                            Text(
-                              "마감일",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black54),
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              DateFormat('yyyy-MM-dd HH:mm')
-                                  .format(updatedAuction.endDate),
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-
-                            SizedBox(height: 8),
->>>>>>> 3aa3f6fe26bb8cb591199e9995f9e8584e7a4eaf
                             ...updatedAuction.auctionUserId.map((bidderId) {
                               final bidder = _allUsers.firstWhere(
                                 (user) => user.id == bidderId,
@@ -348,7 +268,7 @@ SizedBox(height: 8),
                                     id: '',
                                     signupDate: DateTime(2000, 1, 1),
                                     profileURL: '',
-                                    nickName: '사용자',
+                                    nickName: '알 수 없는 사용자',
                                     myLikeScore: 0,
                                     myWorks: [],
                                     myWorksCount: 0,
@@ -523,102 +443,6 @@ SizedBox(height: 8),
   }
 
   void _joinAuction(BuildContext context) {
-<<<<<<< HEAD
-=======
-    showModalBottomSheet(
-      backgroundColor: Colors.white,
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 10),
-              Text(
-                "경매 참여",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 8),
-              Text(
-                "이 경매에 참여하시겠습니까?",
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 120,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.purple),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      child: Text("취소", style: TextStyle(color: Colors.purple)),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  SizedBox(
-                    width: 120,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final userProvider =
-                            Provider.of<UserProvider>(context, listen: false);
-                        final auctionProvider =
-                            Provider.of<AuctionWorksProvider>(context,
-                                listen: false);
-
-                        // 입찰자 목록에 추가
-                        List<String> updatedBidders =
-                            List.from(widget.auctionWork.auctionUserId);
-                        updatedBidders.add(userProvider.user!.id);
-
-                        await auctionProvider.updateAuctionBidders(
-                            widget.auctionWork.workId, updatedBidders);
-
-                        Navigator.pop(context);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("경매에 참여하였습니다!")),
-                        );
-
-                        setState(() {});
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      child: Text("참여하기"),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showAuctionModal(BuildContext context) {
->>>>>>> 3aa3f6fe26bb8cb591199e9995f9e8584e7a4eaf
     showModalBottomSheet(
       backgroundColor: Colors.white,
       context: context,
