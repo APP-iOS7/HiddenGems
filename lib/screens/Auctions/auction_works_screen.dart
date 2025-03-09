@@ -137,6 +137,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                           likedUsers: [],
                           selling: false,
                           doAuction: false,
+                          likedCount: 0,
                         ),
                       );
                       return Card(
@@ -262,6 +263,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                           nickName: '알 수 없는 사용자',
                                           myLikeScore: 0,
                                           myWorks: [],
+                                          myWorksCount: 0,
                                           likedWorks: [],
                                           biddingWorks: [],
                                           beDeliveryWorks: [],
