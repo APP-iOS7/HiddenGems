@@ -15,6 +15,8 @@ class WorkScreen extends StatefulWidget {
 class WorkScreenState extends State<WorkScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+  bool _showSelling = false;
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -37,9 +39,9 @@ class WorkScreenState extends State<WorkScreen> {
     final likedWorks = userProvider.user?.likedWorks ?? [];
 
     final filteredWorks = works
-        .where((work) =>
-            work.title.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+      .where((work) =>
+          work.title.toLowerCase().contains(_searchQuery.toLowerCase()) && (!_showSelling || work.selling == false))
+      .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -59,7 +61,7 @@ class WorkScreenState extends State<WorkScreen> {
                 },
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search,
-                      color: const Color.fromARGB(255, 105, 105, 105)),
+                  color: const Color.fromARGB(255, 105, 105, 105)),
                   hintText: "작품 검색",
                   hintStyle: TextStyle(color: Colors.grey),
                   filled: true,
@@ -71,8 +73,27 @@ class WorkScreenState extends State<WorkScreen> {
                   ),
                 ),
               ),
+              
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("판매 중인 작품만 보기", style: TextStyle(fontSize: 16)),
+                Switch(
+                  value: _showSelling,
+                  onChanged: (value) {
+                    setState(() {
+                      _showSelling = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          
           Expanded(
             child: filteredWorks.isEmpty
                 ? Center(

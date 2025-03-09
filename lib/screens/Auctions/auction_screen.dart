@@ -204,6 +204,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                                   nickName: '알 수 없는 사용자',
                                   myLikeScore: 0,
                                   myWorks: [],
+                                  myWorksCount: 0,
                                   likedWorks: [],
                                   biddingWorks: [],
                                   beDeliveryWorks: [],
@@ -224,7 +225,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                                   ),
                                 ),
                               );
-                            }).toList(), // 🔹 `map`을 사용한 후 `.toList()` 추가 필수
+                            }).toList(),
                           ],
                         ),
                       )
@@ -337,7 +338,18 @@ class AuctionScreenState extends State<AuctionScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () async {
-                        
+                        final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+                        await auctionProvider.endAuction(widget.auctionWork.workId);
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkAuctionStatus(widget.auctionWork.workId, false);
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkSellingStatus(widget.auctionWork.workId, true);
+
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("경매가 종료되었습니다.")),
+                        );
 
                         setState(() {});
                       },
