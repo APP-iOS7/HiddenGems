@@ -15,8 +15,6 @@ class WorkScreen extends StatefulWidget {
 class WorkScreenState extends State<WorkScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
-  bool _showSelling = false;
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -40,7 +38,7 @@ class WorkScreenState extends State<WorkScreen> {
     
     final filteredWorks = works
       .where((work) =>
-          work.title.toLowerCase().contains(_searchQuery.toLowerCase()) && (!_showSelling || work.selling == false))
+          work.title.toLowerCase().contains(_searchQuery.toLowerCase()))
       .toList();
 
     return Scaffold(
@@ -52,9 +50,7 @@ class WorkScreenState extends State<WorkScreen> {
             padding: const EdgeInsets.only(bottom: 25.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  TextField(
+              child: TextField(
                 controller: _searchController,
                 onChanged: (value) {
                   setState(() {
@@ -74,23 +70,6 @@ class WorkScreenState extends State<WorkScreen> {
                     borderSide: BorderSide.none,
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("판매 중인 작품만 보기", style: TextStyle(fontSize: 16)),
-                      Switch(
-                        value: _showSelling,
-                        onChanged: (value) {
-                          setState(() {
-                            _showSelling = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ),
           ),
