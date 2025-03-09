@@ -53,6 +53,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
           .toList();
     });
   }
+  
   Future<void> _fetchUsers() async {
   try {
     final QuerySnapshot snapshot =
@@ -75,6 +76,8 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final auctionProvider = Provider.of<AuctionWorksProvider>(context);
+
   return Scaffold(
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,10 +113,14 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                         itemBuilder: (context, index) {
                           final workProvider = Provider.of<WorkProvider>(context, listen: false);
                           final AuctionWork auctionWork = _filteredWorks[index];
+                          final updatedAuction = auctionProvider.allAuctionWorks.firstWhere(
+                            (w) => w.workId == auctionWork.workId,
+                            orElse: () => auctionWork,
+                          );
                           final matchingWork = workProvider.works.firstWhere(
                             (work) =>
-                                work.id == auctionWork.workId &&
-                                work.artistID == auctionWork.artistId,
+                                work.id == updatedAuction.workId &&
+                                work.artistID == updatedAuction.artistId,
                             orElse: () => Work(
                               id: '',
                               artistID: '',
@@ -135,16 +142,16 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                               title: Row(
                                 children: [
                                   Icon(
-                                    auctionWork.auctionComplete
+                                    updatedAuction.auctionComplete
                                         ? Icons.check_circle
                                         : Icons.access_time,
-                                    color: auctionWork.auctionComplete
+                                    color: updatedAuction.auctionComplete
                                         ? Colors.green
                                         : Colors.orange,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    auctionWork.workTitle,
+                                    updatedAuction.workTitle,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold),
                                   ),
@@ -175,61 +182,61 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                     children: [
                                       _buildInfoRow('작가 ID', matchingWork.artistNickName),
                                       _buildInfoRow('시작가',
-                                          '${NumberFormat('#,###').format(auctionWork.minPrice)}원'),
+                                          '${NumberFormat('#,###').format(updatedAuction.minPrice)}원'),
                                       _buildInfoRow(
                                           '마감일',
                                           DateFormat('yyyy-MM-dd HH:mm')
-                                              .format(auctionWork.endDate)),
+                                              .format(updatedAuction.endDate)),
                                       _buildInfoRow('입찰자 수',
-                                          '${auctionWork.auctionUserId.length}명'),
+                                          '${updatedAuction.auctionUserId.length}명'),
                                       _buildInfoRow(
                                           '상태',
-                                          auctionWork.auctionComplete
+                                          updatedAuction.auctionComplete
                                               ? '경매 종료'
                                               : '진행중'),
                                       const SizedBox(height: 10),
                                       ElevatedButton(
-                                        onPressed: auctionWork.auctionComplete
+                                        onPressed: updatedAuction.auctionComplete
                                             ? null
                                             : () {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (context) => AuctionScreen(auctionWork: auctionWork),
+                                                    builder: (context) => AuctionScreen(auctionWork: updatedAuction),
                                                   ),
                                                 );
                                                 debugPrint(
-                                                    "경매 페이지 이동: ${auctionWork.workId}");
+                                                    "경매 페이지 이동: ${updatedAuction.workId}");
                                               },
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: auctionWork.auctionComplete
+                                          backgroundColor: updatedAuction.auctionComplete
                                               ? Colors.grey[50]
                                               : Colors.grey[50],
-                                          foregroundColor: auctionWork.auctionComplete
+                                          foregroundColor: updatedAuction.auctionComplete
                                               ? Colors.black
                                               : Colors.black,
                                           minimumSize: const Size(double.infinity, 48),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(8),
                                             side: BorderSide(
-                                              color: auctionWork.auctionComplete
+                                              color: updatedAuction.auctionComplete
                                                 ? Colors.black
                                                 : Colors.purple,
                                               width: 1),
                                           ),
                                         ),
-                                        child: Text(auctionWork.auctionComplete
+                                        child: Text(updatedAuction.auctionComplete
                                             ? "경매가 이미 종료되었습니다"
                                             : "경매 페이지로 이동"),
                                       ),
-                                      if (auctionWork.auctionUserId.isNotEmpty) ...[
+                                      if (updatedAuction.auctionUserId.isNotEmpty) ...[
                                         const Divider(height: 20),
                                         const Text(
                                           '입찰자 목록',
                                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                         ),
                                         const SizedBox(height: 8),
-                                        ...auctionWork.auctionUserId.map((bidderId) {
+                                        ...updatedAuction.auctionUserId.map((bidderId) {
                                           final bidder = _allUsers.firstWhere(
                                             (user) => user.id == bidderId,
                                             orElse: () => AppUser(
@@ -258,8 +265,9 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                               ],
                                             ),
                                           );
-                                        }),
-                                      ],
+                                        }
+                                      ),
+                                    ],
 
                                   ],
                                 ),
