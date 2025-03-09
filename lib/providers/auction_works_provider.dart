@@ -88,6 +88,7 @@ class AuctionWorksProvider with ChangeNotifier {
           nowPrice: _allAuctionWorks[index].nowPrice,
           endDate: _allAuctionWorks[index].endDate,
           auctionComplete: _allAuctionWorks[index].auctionComplete,
+          lastBidderId: _allAuctionWorks[index].lastBidderId,
         );
       }
 
@@ -113,6 +114,7 @@ class AuctionWorksProvider with ChangeNotifier {
           nowPrice: _allAuctionWorks[index].nowPrice,
           endDate: _allAuctionWorks[index].endDate,
           auctionComplete: true,
+          lastBidderId: _allAuctionWorks[index].lastBidderId,
         );
       }
 
@@ -120,6 +122,59 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("경매 종료 완료: $workId");
     } catch (e) {
       debugPrint("경매 종료 오류: $e");
+    }
+  }
+  Future<void> updateNowprice(String workId, int newPrice) async {
+    try {
+      await _firestore.collection('auctionWorks').doc(workId).update({
+        'nowPrice': newPrice,
+      });
+
+      int index = _allAuctionWorks.indexWhere((work) => work.workId == workId);
+      if (index != -1) {
+        _allAuctionWorks[index] = AuctionWork(
+          workId: _allAuctionWorks[index].workId,
+          workTitle: _allAuctionWorks[index].workTitle,
+          artistId: _allAuctionWorks[index].artistId,
+          auctionUserId: _allAuctionWorks[index].auctionUserId,
+          minPrice: _allAuctionWorks[index].minPrice,
+          nowPrice: newPrice,
+          endDate: _allAuctionWorks[index].endDate,
+          auctionComplete: _allAuctionWorks[index].auctionComplete,
+          lastBidderId: _allAuctionWorks[index].lastBidderId,
+        );
+      }
+
+      notifyListeners();
+      debugPrint("현재가 업로드 완료: $workId");
+    } catch (e) {
+      debugPrint("현재가 업로드 오류: $e");
+    }
+  }
+  Future<void> updateLastBidder(String workId, String newBidder) async {
+    try {
+      await _firestore.collection('auctionWorks').doc(workId).update({
+        'lastBidderId': newBidder,
+      });
+
+      int index = _allAuctionWorks.indexWhere((work) => work.workId == workId);
+      if (index != -1) {
+        _allAuctionWorks[index] = AuctionWork(
+          workId: _allAuctionWorks[index].workId,
+          workTitle: _allAuctionWorks[index].workTitle,
+          artistId: _allAuctionWorks[index].artistId,
+          auctionUserId: _allAuctionWorks[index].auctionUserId,
+          minPrice: _allAuctionWorks[index].minPrice,
+          nowPrice: _allAuctionWorks[index].nowPrice,
+          endDate: _allAuctionWorks[index].endDate,
+          auctionComplete: _allAuctionWorks[index].auctionComplete,
+          lastBidderId: newBidder,
+        );
+      }
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint("오류: $e");
     }
   }
 }

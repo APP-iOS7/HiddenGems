@@ -10,7 +10,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 
 import 'package:hidden_gems/models/user.dart';
 
-import '../Auctions/auction_screen.dart';
+import 'auction_screen.dart';
 
 class AuctionWorksScreen extends StatefulWidget {
   const AuctionWorksScreen({super.key});
@@ -25,6 +25,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
   List<AuctionWork> _allAuctionWorks = [];
   List<AuctionWork> _filteredWorks = [];
   List<AppUser> _allUsers = [];
+  bool _showDone = false;
 
   @override
   void initState() {
@@ -49,9 +50,9 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
     setState(() {
       _searchQuery = query.toLowerCase();
       _filteredWorks = _allAuctionWorks
-          .where((auctionWork) =>
-              auctionWork.workTitle.toLowerCase().contains(_searchQuery))
-          .toList();
+        .where((auctionWork) =>
+          auctionWork.workTitle.toLowerCase().contains(_searchQuery) && (!_showDone || !auctionWork.auctionComplete))
+        .toList();
     });
   }
 
@@ -93,7 +94,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                 onChanged: _filterAuctionWorks,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search,
-                  color: const Color.fromARGB(255, 105, 105, 105)),
+                      color: const Color.fromARGB(255, 105, 105, 105)),
                   hintText: "경매 검색",
                   hintStyle: TextStyle(color: Colors.grey),
                   filled: true,
@@ -105,6 +106,24 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("진행 중인 경매만 보기", style: TextStyle(fontSize: 16)),
+                Switch(
+                  value: _showDone,
+                  onChanged: (value) {
+                    setState(() {
+                      _showDone = value;
+                      _filterAuctionWorks(_searchQuery);
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -159,19 +178,6 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                 updatedAuction.workTitle,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              Text(
-                                '현재가: ${NumberFormat('#,###').format(auctionWork.nowPrice)}원',
-                                style: const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.w500,
-                                ),
                               ),
                             ],
                           ),
@@ -285,15 +291,30 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                         ),
                                       );
 
+                                      bool isLastBidder =
+                                          bidder.id == updatedAuction.lastBidderId;
+
                                       return Padding(
                                         padding: const EdgeInsets.only(
                                             left: 16, top: 4),
                                         child: Row(
                                           children: [
-                                            const Icon(Icons.person_outline,
-                                                size: 16),
+                                            Icon(
+                                              Icons.person_outline,
+                                              size: 16,
+                                              color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                            ),
                                             const SizedBox(width: 8),
-                                            Text(bidder.nickName),
+                                            Text(
+                                              bidder.nickName,
+                                              style: TextStyle(
+                                                color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                              )
+                                            ),
                                           ],
                                         ),
                                       );
@@ -332,4 +353,3 @@ Widget _buildInfoRow(String label, String value) {
     ),
   );
 }
-
