@@ -75,6 +75,7 @@ class WorkProvider with ChangeNotifier {
         workPhotoURL: _works[index].workPhotoURL,
         minPrice: _works[index].minPrice,
         likedUsers: updatedLikedUsers,
+        likedCount: updatedLikedUsers.length,
         doAuction: _works[index].doAuction,
       );
       notifyListeners();
@@ -98,9 +99,20 @@ class WorkProvider with ChangeNotifier {
         workPhotoURL: _works[index].workPhotoURL,
         minPrice: _works[index].minPrice,
         likedUsers: _works[index].likedUsers,
+        likedCount: _works[index].likedCount,
         doAuction: newAuctionStatus,
       );
       notifyListeners();
     }
+  }
+
+  Future<List<Work>> loadPopularWorks({int limit = 10}) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('works')
+        .orderBy('likedCount', descending: true)
+        .limit(limit)
+        .get();
+
+    return querySnapshot.docs.map((doc) => Work.fromFirestore(doc)).toList();
   }
 }

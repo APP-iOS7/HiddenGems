@@ -1,63 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/models/works.dart';
+import 'package:hidden_gems/providers/work_provider.dart';
 
 class PopularWorks extends StatelessWidget {
   const PopularWorks({super.key});
 
+  Future<List<Work>> fetchPopularWorks() async {
+    final workProvider = WorkProvider();
+    return await workProvider.loadPopularWorks();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 100,
-          child: CustomScrollView(
+    return FutureBuilder<List<Work>>(
+      future: fetchPopularWorks(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('데이터를 불러오는 중 오류 발생'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('인기 작품이 없습니다.'));
+        }
+
+        final works = snapshot.data!;
+
+        return SizedBox(
+          height: 160,
+          child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            slivers: [
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        SizedBox(
-                          width: 150,
-                          child: Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Center(child: Text('Item $index')),
-                                ],
-                              ),
-                            ),
+            itemCount: works.length,
+            itemBuilder: (context, index) {
+              final work = works[index];
+
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: 12.0,
+                  left: index == 0 ? 0.0 : 0.0,
+                ),
+                child: SizedBox(
+                  width: 150,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 90,
+                        child: Card(
+                          child: Image.network(
+                            work.workPhotoURL,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        Row(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '작품 제목',
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Column(
-                                children: [
-                                  Text('작가'),
-                                  Text('현재가'),
-                                ],
+                            SizedBox(
+                              width: 70,
+                              child: Text(
+                                work.title,
+                                style: TextStyle(fontSize: 18),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            )
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  work.artistNickName,
+                                  style: TextStyle(fontSize: 9),
+                                ),
+                                Text(
+                                  '${work.minPrice}원',
+                                  style: TextStyle(fontSize: 9),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    );
-                  },
-                  childCount: 20,
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            ],
+              );
+            },
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
