@@ -93,7 +93,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                 onChanged: _filterAuctionWorks,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search,
-                  color: const Color.fromARGB(255, 105, 105, 105)),
+                      color: const Color.fromARGB(255, 105, 105, 105)),
                   hintText: "경매 검색",
                   hintStyle: TextStyle(color: Colors.grey),
                   filled: true,
@@ -159,19 +159,6 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                 updatedAuction.workTitle,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              Text(
-                                '현재가: ${NumberFormat('#,###').format(auctionWork.nowPrice)}원',
-                                style: const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.w500,
-                                ),
                               ),
                             ],
                           ),
@@ -332,4 +319,3 @@ Widget _buildInfoRow(String label, String value) {
     ),
   );
 }
-

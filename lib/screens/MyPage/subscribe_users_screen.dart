@@ -53,6 +53,8 @@ class SubscribeUsersScreen extends StatelessWidget {
                         }
                         Map<String, dynamic> data =
                             snapshot.data!.data() as Map<String, dynamic>;
+                        print({data['nickName']});
+                        print({data['myWorks']});
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -93,7 +95,7 @@ class SubscribeUsersScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     _buildStatItem(Icons.palette,
-                                        '${data['myWokrsCount']} 작품'),
+                                        '${data['myWorksCount']} 작품'),
                                     const SizedBox(width: 12),
                                     _buildStatItem(Icons.favorite,
                                         '${data['myLikeScore'].toInt()} 좋아요'),
