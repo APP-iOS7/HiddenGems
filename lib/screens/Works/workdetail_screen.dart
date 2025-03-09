@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
+import 'package:hidden_gems/models/auction_work.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
+import 'package:hidden_gems/providers/auction_works_provider.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -20,6 +22,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     super.initState();
     Provider.of<WorkProvider>(context, listen: false).loadWorks();
     Provider.of<UserProvider>(context, listen: false).loadUser();
+    Provider.of<AuctionWorksProvider>(context, listen: false).fetchAllAuctionWorks();
   }
 
   @override
@@ -142,9 +145,8 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         bottomNavigationBar: GestureDetector(
           onTap: () {
             if (updatedWork.artistID == userProvider.user?.id) {
-              // 현재 사용자가 작품을 등록한 작가라면 경매 시작 로직 실행
               if (!updatedWork.doAuction) {
-                _startAuction(context);
+                _startAuctionModal(context);
               }
             } else {
               if (updatedWork.doAuction) {
@@ -190,36 +192,102 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         ));
   }
 
-  void _startAuction(BuildContext context) {
-    showDialog(
+  void _startAuctionModal(BuildContext context) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("경매 시작"),
-        content: Text("이 작품의 경매를 시작하시겠습니까?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("취소"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Provider.of<WorkProvider>(context, listen: false)
-                  .updateWorkAuctionStatus(widget.work.id, true);
-
-              Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("경매가 시작되었습니다!")),
-              );
-
-              setState(() {});
-            },
-            child: Text("시작하기"),
-          ),
-        ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10),
+              Text(
+                "경매 시작",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8),
+              Text(
+                "이 작품의 경매를 시작하시겠습니까?",
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.purple),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: Text("취소", style: TextStyle(color: Colors.purple)),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final auctionProvider =
+                            Provider.of<AuctionWorksProvider>(context, listen: false);
+
+                        final auctionWork = AuctionWork(
+                          workId: widget.work.id,
+                          workTitle: widget.work.title,
+                          artistId: widget.work.artistID,
+                          auctionUserId: [],
+                          minPrice: widget.work.minPrice.toInt(),
+                          endDate: DateTime.now().add(Duration(days: 7)),
+                          auctionComplete: false,
+                        );
+
+                        await auctionProvider.addAuctionWork(auctionWork);
+
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkAuctionStatus(widget.work.id, true);
+
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("경매가 시작되었습니다!")),
+                        );
+
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: Text("시작하기"),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
     );
   }
+
 
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
       String workId, bool isLiked) {
@@ -298,7 +366,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                   ),
                   SizedBox(width: 16),
                   SizedBox(
-                    width: 120, // 원하는 너비로 조정
+                    width: 120,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context);
