@@ -108,15 +108,30 @@ class AuctionScreenState extends State<AuctionScreen> {
                       ),
                       alignment: Alignment.center,
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        artistNickname,
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      )),
-                    SizedBox(height: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            artistNickname,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          if (!updatedAuction.auctionComplete)
+                            Text(
+                              "경매진행중",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
 
                     //작품 설명
                     Padding(
@@ -126,7 +141,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.black54),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
@@ -137,14 +152,14 @@ class AuctionScreenState extends State<AuctionScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "₩${updatedAuction.minPrice.toString()}",
+                            '${NumberFormat('#,###').format(updatedAuction.minPrice)}원',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 5),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
@@ -155,7 +170,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "₩${updatedAuction.nowPrice.toString()}",
+                            '${NumberFormat('#,###').format(updatedAuction.nowPrice)}원',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
@@ -213,14 +228,29 @@ class AuctionScreenState extends State<AuctionScreen> {
                                 ),
                               );
 
+                              bool isLastBidder = bidder.id == updatedAuction.lastBidderId;
+
                               return SingleChildScrollView(
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 16, top: 4),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.person_outline, size: 16),
+                                      Icon(
+                                        Icons.person_outline,
+                                        size: 16,
+                                        color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                        ),
                                       const SizedBox(width: 8),
-                                      Text(bidder.nickName),
+                                      Text(
+                                        bidder.nickName,
+                                        style: TextStyle(
+                                          color: isLastBidder
+                                            ? Colors.blue
+                                            : Colors.black,
+                                        )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -463,6 +493,7 @@ class AuctionScreenState extends State<AuctionScreen> {
 
 
   void _showAuctionModal(BuildContext context) {
+    TextEditingController _priceController = TextEditingController();
     showModalBottomSheet(
       backgroundColor: Colors.white,
       context: context,
@@ -477,15 +508,21 @@ class AuctionScreenState extends State<AuctionScreen> {
             children: [
               SizedBox(height: 10),
               Text(
-                "현재가 ₩12345678",
+                '현재가: ${NumberFormat('#,###').format(widget.auctionWork.nowPrice)}원',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 8),
-              Text(
-                "가격을 제시해주세요",
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
+              SizedBox(height: 20),
+              TextField(
+                controller: _priceController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: "가격을 제시해주세요",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                ),
               ),
               SizedBox(height: 20),
               Row(
@@ -512,9 +549,25 @@ class AuctionScreenState extends State<AuctionScreen> {
                   SizedBox(
                     width: 120,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // 여기에 경매 페이지 이동 로직 추가
+                      onPressed: () async {
+                        String enteredPrice = _priceController.text;
+                        if (enteredPrice.isNotEmpty) {
+                          int newPrice = int.tryParse(enteredPrice) ?? 0;
+                          if (newPrice > widget.auctionWork.nowPrice) {
+                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            String currentUserId = userProvider.user!.id;
+                            final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+                            await auctionProvider.updateNowprice(widget.auctionWork.workId, newPrice);
+                            await auctionProvider.updateLastBidder(widget.auctionWork.workId, currentUserId);
+
+                            setState(() {
+                              widget.auctionWork.nowPrice = newPrice;
+                              widget.auctionWork.lastBidderId = currentUserId;
+                            });
+                             Navigator.pop(context);
+
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple,

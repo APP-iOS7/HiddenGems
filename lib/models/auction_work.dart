@@ -7,6 +7,7 @@ class AuctionWork {
   final DateTime endDate;
   late int nowPrice;
   bool auctionComplete;
+  String? lastBidderId;
 
   AuctionWork({
     required this.workId,
@@ -17,6 +18,7 @@ class AuctionWork {
     required this.endDate,
     this.nowPrice = 0,
     this.auctionComplete = false,
+    this.lastBidderId,
   });
 
   factory AuctionWork.fromMap(Map<String, dynamic> map) {
@@ -31,6 +33,7 @@ class AuctionWork {
           : DateTime.now(),
       nowPrice: map['nowPrice']?.toInt() ?? 0,
       auctionComplete: map['auctionComplete'] ?? false,
+      lastBidderId: map['lastBidderId'],
     )..nowPrice = map['nowPrice']?.toInt() ?? 0;
   }
 
@@ -44,6 +47,7 @@ class AuctionWork {
       'endDate': endDate.toIso8601String(),
       'nowPrice': nowPrice,
       'auctionComplete': auctionComplete,
+      'lastBidderId': lastBidderId,
     };
   }
 }

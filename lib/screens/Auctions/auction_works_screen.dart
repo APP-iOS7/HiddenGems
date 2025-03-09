@@ -25,6 +25,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
   List<AuctionWork> _allAuctionWorks = [];
   List<AuctionWork> _filteredWorks = [];
   List<AppUser> _allUsers = [];
+  bool _showDone = false;
 
   @override
   void initState() {
@@ -49,9 +50,9 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
     setState(() {
       _searchQuery = query.toLowerCase();
       _filteredWorks = _allAuctionWorks
-          .where((auctionWork) =>
-              auctionWork.workTitle.toLowerCase().contains(_searchQuery))
-          .toList();
+        .where((auctionWork) =>
+          auctionWork.workTitle.toLowerCase().contains(_searchQuery) && (!_showDone || !auctionWork.auctionComplete))
+        .toList();
     });
   }
 
@@ -105,6 +106,24 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("진행 중인 경매만 보기", style: TextStyle(fontSize: 16)),
+                Switch(
+                  value: _showDone,
+                  onChanged: (value) {
+                    setState(() {
+                      _showDone = value;
+                      _filterAuctionWorks(_searchQuery);
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -272,15 +291,30 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                         ),
                                       );
 
+                                      bool isLastBidder =
+                                          bidder.id == updatedAuction.lastBidderId;
+
                                       return Padding(
                                         padding: const EdgeInsets.only(
                                             left: 16, top: 4),
                                         child: Row(
                                           children: [
-                                            const Icon(Icons.person_outline,
-                                                size: 16),
+                                            Icon(
+                                              Icons.person_outline,
+                                              size: 16,
+                                              color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                            ),
                                             const SizedBox(width: 8),
-                                            Text(bidder.nickName),
+                                            Text(
+                                              bidder.nickName,
+                                              style: TextStyle(
+                                                color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                              )
+                                            ),
                                           ],
                                         ),
                                       );
