@@ -53,8 +53,6 @@ class SubscribeUsersScreen extends StatelessWidget {
                         }
                         Map<String, dynamic> data =
                             snapshot.data!.data() as Map<String, dynamic>;
-                        print({data['nickName']});
-                        print({data['myWorks']});
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
