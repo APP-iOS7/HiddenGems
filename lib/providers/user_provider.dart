@@ -66,11 +66,13 @@ class UserProvider with ChangeNotifier {
               : DateTime.now(),
           profileURL: newProfileURL,
           nickName: newNickName,
+          myLikeScore: data['myLikeScore'] ?? 0,
           myWorks: List<String>.from(data['myWorks'] ?? []),
           likedWorks: List<String>.from(data['likedWorks'] ?? []),
           biddingWorks: List<String>.from(data['biddingWorks'] ?? []),
           beDeliveryWorks: List<String>.from(data['beDeliveryWorks'] ?? []),
           completeWorks: List<String>.from(data['completeWorks'] ?? []),
+          subscribeUsers: List<String>.from(data['completeWorks'] ?? []),
         );
       } else {
         updatedUser = AppUser(
@@ -78,11 +80,13 @@ class UserProvider with ChangeNotifier {
           signupDate: DateTime.now(),
           profileURL: newProfileURL,
           nickName: newNickName,
+          myLikeScore: 0,
           myWorks: [],
           likedWorks: [],
           biddingWorks: [],
           beDeliveryWorks: [],
           completeWorks: [],
+          subscribeUsers: [],
         );
       }
       await userDoc.set(updatedUser.toMap(), SetOptions(merge: true));
@@ -112,11 +116,13 @@ class UserProvider with ChangeNotifier {
         signupDate: _user!.signupDate,
         profileURL: _user!.profileURL,
         nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore,
         myWorks: _user!.myWorks,
         likedWorks: updatedLikedWorks,
-        biddingWorks: _user!.myWorks,
-        beDeliveryWorks: _user!.myWorks,
-        completeWorks: _user!.myWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: _user!.subscribeUsers,
       );
       notifyListeners();
     }
@@ -137,11 +143,13 @@ class UserProvider with ChangeNotifier {
         signupDate: _user!.signupDate,
         profileURL: _user!.profileURL,
         nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore,
         myWorks: updatedMyWorksId,
         likedWorks: _user!.likedWorks,
-        biddingWorks: _user!.myWorks,
-        beDeliveryWorks: _user!.myWorks,
-        completeWorks: _user!.myWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: _user!.subscribeUsers,
       );
       notifyListeners();
     }
