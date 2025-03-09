@@ -194,6 +194,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
 
   void _startAuctionModal(BuildContext context) {
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -251,6 +252,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                           auctionUserId: [],
                           minPrice: widget.work.minPrice.toInt(),
                           endDate: DateTime.now().add(Duration(days: 7)),
+                          nowPrice: widget.work.minPrice.toInt(),
                           auctionComplete: false,
                         );
 
@@ -321,6 +323,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
 
   void _showAuctionModal(BuildContext context) {
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
