@@ -36,6 +36,20 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
       (w) => w.id == widget.work.id,
       orElse: () => widget.work,
     );
+    final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+                final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
+                  (auction) => auction.workId == widget.work.id,
+                  orElse: () => AuctionWork(
+                    workId: '',
+                    workTitle: '알 수 없는 경매',
+                    artistId: '',
+                    auctionUserId: [],
+                    minPrice: 0,
+                    nowPrice: 0,
+                    endDate: DateTime.now(),
+                    auctionComplete: true,
+                  ),
+                );
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -151,7 +165,17 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
               }
             } else {
               if (updatedWork.doAuction) {
-                _showAuctionModal(context);
+                
+                if (auctionWork.auctionUserId.contains(userProvider.user?.id)) {
+                  _showAuctionModal(context);
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AuctionScreen(auctionWork: auctionWork),
+                    ),
+                  );
+                }
               }
             }
           },
@@ -177,7 +201,9 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ? "경매가 이미 시작되었습니다"
                       : "경매 시작하기"
                   : updatedWork.doAuction
-                      ? "해당 경매 참여하기"
+                      ? auctionWork.auctionUserId.contains(userProvider.user?.id)
+                          ? "해당 경매 참여하기"
+                          : "경매 페이지로 이동하기"
                       : "경매가 아직 시작되지 않았습니다",
               style: TextStyle(
                 color: updatedWork.artistID == userProvider.user?.id
