@@ -97,7 +97,7 @@ class ArtistScreenState extends State<ArtistScreen> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search,
                           color: const Color.fromARGB(255, 105, 105, 105)),
-                      hintText: "작품 검색",
+                      hintText: "작가 검색",
                       hintStyle: TextStyle(color: Colors.grey),
                       filled: true,
                       fillColor: Color.fromRGBO(223, 223, 229, 1),

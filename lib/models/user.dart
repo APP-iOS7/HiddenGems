@@ -31,7 +31,7 @@ class AppUser {
       signupDate: DateTime.parse(map['signupDate']),
       profileURL: map['profileURL'] ?? '',
       nickName: map['nickName'] ?? '',
-      myLikeScore: map['myLikeScore'] ?? 0,
+      myLikeScore: (map['myLikeScore'] as num?)?.toInt() ?? 0,
       myWorks: List<String>.from(map['myWorks'] ?? []),
       likedWorks: List<String>.from(map['likedWorks'] ?? []),
       biddingWorks: List<String>.from(map['likedWorks'] ?? []),
