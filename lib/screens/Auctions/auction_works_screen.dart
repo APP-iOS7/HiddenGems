@@ -10,7 +10,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 
 import 'package:hidden_gems/models/user.dart';
 
-import 'auction_screen.dart';
+import '../Auctions/auction_screen.dart';
 
 class AuctionWorksScreen extends StatefulWidget {
   const AuctionWorksScreen({super.key});
