@@ -23,9 +23,13 @@ class AuctionScreenState extends State<AuctionScreen> {
     final workProvider = Provider.of<WorkProvider>(context, listen: false);
     return await workProvider.getWorkById(widget.auctionWork.workId);
   }
+
   Future<String> _fetchArtistNickname(String artistId) async {
     try {
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(artistId).get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(artistId)
+          .get();
       if (userDoc.exists) {
         return userDoc['nickName'] ?? '알 수 없는 작가';
       }
@@ -67,46 +71,47 @@ class AuctionScreenState extends State<AuctionScreen> {
       orElse: () => widget.auctionWork,
     );
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text(updatedAuction.workTitle)
-        ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: FutureBuilder<Work?>(
-          future: _fetchWork(),
-          builder: (context, workSnapshot) {
-            if (workSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            final work = workSnapshot.data;
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: Text(updatedAuction.workTitle)),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: FutureBuilder<Work?>(
+            future: _fetchWork(),
+            builder: (context, workSnapshot) {
+              if (workSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final work = workSnapshot.data;
 
-            return FutureBuilder<String>(
-              future: _fetchArtistNickname(updatedAuction.artistId),
-              builder: (context, artistSnapshot) {
-                if (artistSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final artistNickname = artistSnapshot.data ?? '알 수 없는 작가';
+              return FutureBuilder<String>(
+                future: _fetchArtistNickname(updatedAuction.artistId),
+                builder: (context, artistSnapshot) {
+                  if (artistSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final artistNickname = artistSnapshot.data ?? '알 수 없는 작가';
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                        image: work?.workPhotoURL != null && work!.workPhotoURL!.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(work.workPhotoURL),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      alignment: Alignment.center,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                          image: work?.workPhotoURL != null &&
+                                  work!.workPhotoURL!.isNotEmpty
+                              ? DecorationImage(
+                                  image: NetworkImage(work.workPhotoURL),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        alignment: Alignment.center,
                     ),
                     SizedBox(height: 20),
                     Padding(
@@ -193,22 +198,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                               fontSize: 16,
                             ),
                           ),
-
-                        ],
-                      ),
-                    ),
-                    if (updatedAuction.auctionUserId.isNotEmpty) ...[
-                      const Divider(height: 30),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '입찰자 목록',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            SizedBox(height: 8),
+SizedBox(height: 8),
                             ...updatedAuction.auctionUserId.map((bidderId) {
                               final bidder = _allUsers.firstWhere(
                                 (user) => user.id == bidderId,
@@ -258,25 +248,73 @@ class AuctionScreenState extends State<AuctionScreen> {
                             }).toList(),
                           ],
                         ),
-                      )
-                    ]
+                      ),
+                      if (updatedAuction.auctionUserId.isNotEmpty) ...[
+                        const Divider(height: 30),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '입찰자 목록',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 8),
+                              ...updatedAuction.auctionUserId.map((bidderId) {
+                                final bidder = _allUsers.firstWhere(
+                                  (user) => user.id == bidderId,
+                                  orElse: () => AppUser(
+                                    id: '',
+                                    signupDate: DateTime(2000, 1, 1),
+                                    profileURL: '',
+                                    nickName: '알 수 없는 사용자',
+                                    myLikeScore: 0,
+                                    myWorks: [],
+                                    myWorksCount: 0,
+                                    likedWorks: [],
+                                    biddingWorks: [],
+                                    beDeliveryWorks: [],
+                                    completeWorks: [],
+                                    subscribeUsers: [],
+                                  ),
+                                );
 
-                    
-                  ],
-                );
-              },
-            );
-          },
+                                return SingleChildScrollView(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(left: 16, top: 4),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.person_outline,
+                                            size: 16),
+                                        const SizedBox(width: 8),
+                                        Text(bidder.nickName),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(), // 🔹 `map`을 사용한 후 `.toList()` 추가 필수
+                            ],
+                          ),
+                        )
+                      ]
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ),
-      ),
-      bottomNavigationBar: GestureDetector(
+        bottomNavigationBar: GestureDetector(
           onTap: () {
             if (updatedAuction.artistId == userProvider.user?.id) {
               if (!updatedAuction.auctionComplete) {
                 _endAuctionModal(context); //경매 종료하기
               }
             } else {
-              bool isBidder = updatedAuction.auctionUserId.contains(userProvider.user?.id);
+              bool isBidder =
+                  updatedAuction.auctionUserId.contains(userProvider.user?.id);
               if (!isBidder) {
                 _joinAuction(context); // 경매 참여하기
               } else {
@@ -307,17 +345,16 @@ class AuctionScreenState extends State<AuctionScreen> {
                       ? "가격 제시하기"
                       : "경매 참여하기",
               style: TextStyle(
-                color: updatedAuction.artistId == userProvider.user?.id
-                    ? updatedAuction.auctionComplete
-                        ? Colors.black
-                        : Colors.white
-                    : Colors.white
-              ),
+                  color: updatedAuction.artistId == userProvider.user?.id
+                      ? updatedAuction.auctionComplete
+                          ? Colors.black
+                          : Colors.white
+                      : Colors.white),
             ),
           ),
-        )
-    );
+        ));
   }
+
   void _endAuctionModal(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Colors.white,
@@ -368,6 +405,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () async {
+
                         final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
                         await auctionProvider.endAuction(widget.auctionWork.workId);
                         Provider.of<WorkProvider>(context, listen: false)
@@ -403,94 +441,99 @@ class AuctionScreenState extends State<AuctionScreen> {
       },
     );
   }
+
   void _joinAuction(BuildContext context) {
-  showModalBottomSheet(
-    backgroundColor: Colors.white,
-    context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (context) {
-      return Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(height: 10),
-            Text(
-              "경매 참여",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 8),
-            Text(
-              "이 경매에 참여하시겠습니까?",
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 120,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.purple),
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+    showModalBottomSheet(
+      backgroundColor: Colors.white,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10),
+              Text(
+                "경매 참여",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8),
+              Text(
+                "이 경매에 참여하시겠습니까?",
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.purple),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                       ),
+                      child: Text("취소", style: TextStyle(color: Colors.purple)),
                     ),
-                    child: Text("취소", style: TextStyle(color: Colors.purple)),
                   ),
-                ),
-                SizedBox(width: 16),
-                SizedBox(
-                  width: 120,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final userProvider = Provider.of<UserProvider>(context, listen: false);
-                      final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+                  SizedBox(width: 16),
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final userProvider =
+                            Provider.of<UserProvider>(context, listen: false);
+                        final auctionProvider =
+                            Provider.of<AuctionWorksProvider>(context,
+                                listen: false);
 
-                      // 입찰자 목록에 추가
-                      List<String> updatedBidders = List.from(widget.auctionWork.auctionUserId);
-                      updatedBidders.add(userProvider.user!.id);
+                        // 입찰자 목록에 추가
+                        List<String> updatedBidders =
+                            List.from(widget.auctionWork.auctionUserId);
+                        updatedBidders.add(userProvider.user!.id);
 
-                      await auctionProvider.updateAuctionBidders(widget.auctionWork.workId, updatedBidders);
+                        await auctionProvider.updateAuctionBidders(
+                            widget.auctionWork.workId, updatedBidders);
 
-                      Navigator.pop(context);
+                        Navigator.pop(context);
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("경매에 참여하였습니다!")),
-                      );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("경매에 참여하였습니다!")),
+                        );
 
-                      setState(() {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                       ),
+                      child: Text("참여하기"),
                     ),
-                    child: Text("참여하기"),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-          ],
-        ),
-      );
-    },
-  );
-}
-
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   void _showAuctionModal(BuildContext context) {
     TextEditingController _priceController = TextEditingController();
@@ -541,8 +584,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                      child:
-                          Text("취소", style: TextStyle(color: Colors.purple)),
+                      child: Text("취소", style: TextStyle(color: Colors.purple)),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -564,7 +606,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                               widget.auctionWork.nowPrice = newPrice;
                               widget.auctionWork.lastBidderId = currentUserId;
                             });
-                             Navigator.pop(context);
+                            Navigator.pop(context);
 
                           }
                         }
@@ -590,3 +632,4 @@ class AuctionScreenState extends State<AuctionScreen> {
     );
   }
 }
+
