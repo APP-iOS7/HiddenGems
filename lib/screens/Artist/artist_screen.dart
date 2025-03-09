@@ -62,7 +62,7 @@ class ArtistScreenState extends State<ArtistScreen> {
         ),
       ),
       body: FutureBuilder<List<AppUser>>(
-        future: _futureUsers, // Firestore에서 직접 데이터 가져오기
+        future: _futureUsers,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -124,17 +124,22 @@ class ArtistScreenState extends State<ArtistScreen> {
                     itemCount: filteredUsers.length,
                     itemBuilder: (BuildContext context, int index) {
                       final user = filteredUsers[index];
-                      final worksCount = user.myWorks.length;
-                      final likesCount = user.likedWorks.length;
+                      final worksCount = user.myWorksCount;
+                      final likesCount = user.myLikeScore;
 
                       return GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${user.nickName}의 프로필'),
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ArtistDetailScreen(user: user)));
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(
+                          //     content: Text('${user.nickName}의 프로필'),
+                          //     duration: const Duration(seconds: 1),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           decoration: BoxDecoration(

@@ -35,11 +35,11 @@ class WorkScreenState extends State<WorkScreen> {
     final works = workProvider.works;
 
     final likedWorks = userProvider.user?.likedWorks ?? [];
-    
+
     final filteredWorks = works
-      .where((work) =>
-          work.title.toLowerCase().contains(_searchQuery.toLowerCase()))
-      .toList();
+        .where((work) =>
+            work.title.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -142,7 +142,7 @@ class WorkScreenState extends State<WorkScreen> {
                                     ),
                                     onPressed: () {
                                       _toggleLike(workProvider, userProvider,
-                                          work.id, isLiked);
+                                          work.id, work.artistID, isLiked);
                                     },
                                   ),
                                 ),
@@ -160,7 +160,7 @@ class WorkScreenState extends State<WorkScreen> {
   }
 
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
-      String workId, bool isLiked) {
+      String workId, String artistId, bool isLiked) {
     final currentUser = userProvider.user;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,8 +172,10 @@ class WorkScreenState extends State<WorkScreen> {
     List<String> updatedLikedWorks = List.from(currentUser.likedWorks);
     if (isLiked) {
       updatedLikedWorks.remove(workId); // 이미 좋아요한 경우 제거
+      userProvider.subMyLikeScore(artistId);
     } else {
       updatedLikedWorks.add(workId); // 좋아요 추가
+      userProvider.addMyLikeScore(artistId);
     }
 
     userProvider.updateUserLikedWorks(updatedLikedWorks);

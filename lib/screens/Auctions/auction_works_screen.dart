@@ -10,6 +10,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 
 import 'package:hidden_gems/models/user.dart';
 
+
 import 'auction_screen.dart';
 
 class AuctionWorksScreen extends StatefulWidget {
@@ -44,6 +45,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
       _filteredWorks = _allAuctionWorks;
     });
   }
+
   void _filterAuctionWorks(String query) {
     setState(() {
       _searchQuery = query.toLowerCase();
@@ -53,21 +55,21 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
           .toList();
     });
   }
-  
   Future<void> _fetchUsers() async {
-  try {
-    final QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('users').get();
+    try {
+      final QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('users').get();
 
-    setState(() {
-      _allUsers = snapshot.docs
-          .map((doc) => AppUser.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-    });
-  } catch (e) {
-    debugPrint('Error fetching users: $e');
+      setState(() {
+        _allUsers = snapshot.docs
+            .map((doc) => AppUser.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+      });
+    } catch (e) {
+      debugPrint('Error fetching users: $e');
+    }
   }
-}
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -157,15 +159,31 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                   ),
                                 ],
                               ),
-                              subtitle: Column(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '현재가: ${NumberFormat('#,###').format(auctionWork.nowPrice)}원',
-                                    style: const TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w500,
+                                  _buildInfoRow(
+                                      '작가 ID', matchingWork.artistNickName),
+                                  _buildInfoRow('시작가',
+                                      '${NumberFormat('#,###').format(auctionWork.minPrice)}원'),
+                                  _buildInfoRow(
+                                      '마감일',
+                                      DateFormat('yyyy-MM-dd HH:mm')
+                                          .format(auctionWork.endDate)),
+                                  _buildInfoRow('입찰자 수',
+                                      '${auctionWork.auctionUserId.length}명'),
+                                  _buildInfoRow(
+                                      '상태',
+                                      auctionWork.auctionComplete
+                                          ? '경매 종료'
+                                          : '진행중'),
+                                  if (auctionWork.auctionUserId.isNotEmpty) ...[
+                                    const Divider(height: 20),
+                                    const Text(
+                                      '입찰자 목록',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
                                     ),
                                   ),
                                 ],
@@ -268,38 +286,50 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                         }
                                       ),
                                     ],
-
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16, top: 4),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.person_outline,
+                                                size: 16),
+                                            const SizedBox(width: 8),
+                                            Text(bidder.nickName),
+                                          ],
+                                        ),
+                                      );
+                                    }),
                                   ],
-                                ),
+                                ],
                               ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                ),
-              ],
-            ),
-          );
-        }
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Text(
-            '$label: ',
-            style:
-                TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[700]),
-          ),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
     );
   }
+}
 
+Widget _buildInfoRow(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      children: [
+        Text(
+          '$label: ',
+          style:
+              TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[700]),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.w400),
+        ),
+      ],
+    ),
+  );
+}
