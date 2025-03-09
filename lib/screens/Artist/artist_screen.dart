@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../models/user.dart';
+import '../../models/user.dart';
+import 'artist_detail_screen.dart';
 
-class AuthorsScreen extends StatelessWidget {
-  const AuthorsScreen({super.key});
+class ArtistScreen extends StatelessWidget {
+  const ArtistScreen({super.key});
 
   Future<List<AppUser>> getActiveUsers() async {
     List<AppUser> activeUsers = [];
@@ -86,6 +87,12 @@ class AuthorsScreen extends StatelessWidget {
                         duration: const Duration(seconds: 1),
                       ),
                     );
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ArtistDetailScreen(
+                                  user: user,
+                                )));
                   },
                   child: Container(
                     decoration: BoxDecoration(
