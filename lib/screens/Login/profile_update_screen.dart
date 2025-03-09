@@ -62,46 +62,83 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('프로필 업데이트')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Spacer(),
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: _profileImageUrl != null
-                  ? NetworkImage(_profileImageUrl!)
-                  : AssetImage("lib/assets/person.png"),
-            ),
-            SizedBox(height: 20),
-            MaterialButton(
-              color: Theme.of(context).colorScheme.primary,
-              textColor: Colors.white,
-              minWidth: 160,
-              onPressed: _updateProfileImage,
-              child: const Text('프로필 사진 변경'),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _nicknameController,
-              decoration: const InputDecoration(labelText: '닉네임'),
-            ),
-            Spacer(),
-            ElevatedButton(
-              onPressed: () async {
-                await userProvider.updateUserProfile(
-                  _nicknameController.text,
-                  _profileImageUrl ??
-                      'https://firebasestorage.googleapis.com/v0/b/hiddengems-8371c.firebasestorage.app/o/profile_images%2Fdefaultprofile.png?alt=media&token=0452972f-e06b-46e3-9f92-1c1d05a5caf6',
-                );
-                // 업데이트 후 다른 화면으로 이동하거나 메시지 출력 등 처리
-              },
-              child: const Text('프로필 업데이트'),
-            ),
-            Spacer()
-          ],
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('프로필 업데이트')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Spacer(),
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: _profileImageUrl != null
+                    ? NetworkImage(_profileImageUrl!)
+                    : AssetImage("lib/assets/person.png"),
+              ),
+              SizedBox(height: 20),
+              InkWell(
+                  onTap: _updateProfileImage,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 160,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9800CB).withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SizedBox(
+                      width: 160,
+                      child: Center(
+                        child: Text(
+                          "프로필 사진 변경",
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  )),
+              Spacer(),
+              TextField(
+                controller: _nicknameController,
+                decoration: const InputDecoration(labelText: '닉네임'),
+              ),
+              Spacer(),
+              Spacer(),
+              InkWell(
+                  onTap: () async {
+                    await userProvider.updateUserProfile(
+                      _nicknameController.text,
+                      _profileImageUrl ??
+                          'https://firebasestorage.googleapis.com/v0/b/hiddengems-8371c.firebasestorage.app/o/profile_images%2Fdefaultprofile.png?alt=media&token=0452972f-e06b-46e3-9f92-1c1d05a5caf6',
+                    );
+                    // 업데이트 후 다른 화면으로 이동하거나 메시지 출력 등 처리
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 330,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9800CB).withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: SizedBox(
+                      width: 280,
+                      child: Center(
+                        child: Text(
+                          "프로필 업데이트",
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  )),
+              Spacer()
+            ],
+          ),
         ),
       ),
     );
