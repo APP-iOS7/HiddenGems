@@ -187,6 +187,40 @@ class AuctionScreenState extends State<AuctionScreen> {
                                 fontSize: 16,
                               ),
                             ),
+
+                            SizedBox(height: 8),
+                            ...updatedAuction.auctionUserId.map((bidderId) {
+                              final bidder = _allUsers.firstWhere(
+                                (user) => user.id == bidderId,
+                                orElse: () => AppUser(
+                                  id: '',
+                                  signupDate: DateTime(2000, 1, 1),
+                                  profileURL: '',
+                                  nickName: '알 수 없는 사용자',
+                                  myLikeScore: 0,
+                                  myWorks: [],
+                                  myWorksCount: 0,
+                                  likedWorks: [],
+                                  biddingWorks: [],
+                                  beDeliveryWorks: [],
+                                  completeWorks: [],
+                                  subscribeUsers: [],
+                                ),
+                              );
+
+                              return SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 16, top: 4),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.person_outline, size: 16),
+                                      const SizedBox(width: 8),
+                                      Text(bidder.nickName),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ],
                         ),
                       ),
@@ -346,6 +380,20 @@ class AuctionScreenState extends State<AuctionScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () async {
+
+                        final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+                        await auctionProvider.endAuction(widget.auctionWork.workId);
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkAuctionStatus(widget.auctionWork.workId, false);
+                        Provider.of<WorkProvider>(context, listen: false)
+                            .updateWorkSellingStatus(widget.auctionWork.workId, true);
+
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("경매가 종료되었습니다.")),
+                        );
+
                         setState(() {});
                       },
                       style: ElevatedButton.styleFrom(
