@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/MyPage/be_delivery_work_screen.dart';
 import 'package:hidden_gems/screens/MyPage/complete_works_screen.dart';
-import 'package:hidden_gems/screens/MyPage/my_bidding_screen.dart';
 import 'package:hidden_gems/screens/MyPage/my_works_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'liked_work_list_screen.dart';
+import 'my_bidding_screen.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
