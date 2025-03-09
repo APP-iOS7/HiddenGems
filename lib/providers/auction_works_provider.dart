@@ -7,8 +7,29 @@ class AuctionWorksProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  List _allAuctionWorks=[];
+  List get allAuctionWorks => _allAuctionWorks;
+
   List _userAuctionWorks = [];
   List get userAuctionWorks => _userAuctionWorks;
+
+  Future<void> fetchAllAuctionWorks() async {
+    try {
+      final QuerySnapshot snapshot =
+          await _firestore.collection('auctionWorks').get();
+
+      _allAuctionWorks = snapshot.docs
+          .map((doc) => AuctionWork.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      debugPrint("모든 경매 : ${_allAuctionWorks.length}개");
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all auction works: $e');
+      _allAuctionWorks = [];
+      notifyListeners();
+    }
+  }
 
   Future<void> fetchUserAuctionWorks(BuildContext context) async {
     try {
@@ -31,6 +52,21 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint('Error fetching auction works; $e');
       _userAuctionWorks = [];
       notifyListeners();
+    }
+  }
+  Future<void> addAuctionWork(AuctionWork auctionWork) async {
+    try {
+      await _firestore
+          .collection('auctionWorks')
+          .doc(auctionWork.workId)
+          .set(auctionWork.toMap());
+
+      debugPrint("경매추가 ${auctionWork.workTitle}");
+
+      _userAuctionWorks.add(auctionWork);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error: $e");
     }
   }
 }
