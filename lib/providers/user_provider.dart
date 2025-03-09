@@ -232,6 +232,7 @@ class UserProvider with ChangeNotifier {
         beDeliveryWorks: _user!.beDeliveryWorks,
         completeWorks: _user!.completeWorks,
         subscribeUsers: updatedSubscribeUserIds,
+        myWorksCount: _user!.myWorksCount, //
       );
       notifyListeners();
     }
