@@ -120,14 +120,14 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addMyLikeScore(List<String> updatedLikedWorks) async {
+  Future<void> addMyLikeScore(String artistId) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
 
     final userDoc =
-        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+        FirebaseFirestore.instance.collection('users').doc(artistId);
 
-    await userDoc.update({'likedWorks': updatedLikedWorks});
+    await userDoc.update({'myLikeScore': FieldValue.increment(1)});
 
     if (_user != null) {
       _user = AppUser(
@@ -147,14 +147,14 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> subMyLikeScore(List<String> updatedLikedWorks) async {
+  Future<void> subMyLikeScore(String artistId) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
 
     final userDoc =
-        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+        FirebaseFirestore.instance.collection('users').doc(artistId);
 
-    await userDoc.update({'likedWorks': updatedLikedWorks});
+    await userDoc.update({'myLikeScore': FieldValue.increment(-1)});
 
     if (_user != null) {
       _user = AppUser(

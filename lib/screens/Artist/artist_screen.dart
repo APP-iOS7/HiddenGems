@@ -125,16 +125,21 @@ class ArtistScreenState extends State<ArtistScreen> {
                     itemBuilder: (BuildContext context, int index) {
                       final user = filteredUsers[index];
                       final worksCount = user.myWorks.length;
-                      final likesCount = user.likedWorks.length;
+                      final likesCount = user.myLikeScore;
 
                       return GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${user.nickName}의 프로필'),
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ArtistDetailScreen(user: user)));
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(
+                          //     content: Text('${user.nickName}의 프로필'),
+                          //     duration: const Duration(seconds: 1),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           decoration: BoxDecoration(
