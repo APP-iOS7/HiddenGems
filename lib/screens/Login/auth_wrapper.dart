@@ -55,7 +55,7 @@ class AuthWrapperState extends State<AuthWrapper> {
             },
           );
         }
-        return Loginscreen();
+        return LoginScreen();
       },
     );
   }
