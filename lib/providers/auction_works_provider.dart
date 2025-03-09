@@ -7,7 +7,7 @@ class AuctionWorksProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List _allAuctionWorks=[];
+  List _allAuctionWorks = [];
   List get allAuctionWorks => _allAuctionWorks;
 
   List _userAuctionWorks = [];
@@ -54,6 +54,7 @@ class AuctionWorksProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
   Future<void> addAuctionWork(AuctionWork auctionWork) async {
     try {
       await _firestore

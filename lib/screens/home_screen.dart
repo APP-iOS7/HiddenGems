@@ -20,7 +20,6 @@ class MainScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             ProgressAuctions(),
-            SizedBox(),
             Text(
               '인기 작품들',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),

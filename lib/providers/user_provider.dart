@@ -50,6 +50,8 @@ class UserProvider with ChangeNotifier {
       AppUser updatedUser;
       if (snapshot.exists) {
         final data = snapshot.data()!;
+        List<String> myWorksList = List<String>.from(data['myWorks'] ?? []);
+
         updatedUser = AppUser(
           id: data['id'] ?? currentUser.uid,
           signupDate: data['signupDate'] != null
@@ -58,7 +60,8 @@ class UserProvider with ChangeNotifier {
           profileURL: newProfileURL,
           nickName: newNickName,
           myLikeScore: data['myLikeScore'] ?? 0,
-          myWorks: List<String>.from(data['myWorks'] ?? []),
+          myWorks: myWorksList,
+          myWorksCount: myWorksList.length,
           likedWorks: List<String>.from(data['likedWorks'] ?? []),
           biddingWorks: List<String>.from(data['biddingWorks'] ?? []),
           beDeliveryWorks: List<String>.from(data['beDeliveryWorks'] ?? []),
@@ -73,6 +76,7 @@ class UserProvider with ChangeNotifier {
           nickName: newNickName,
           myLikeScore: 0,
           myWorks: [],
+          myWorksCount: 0,
           likedWorks: [],
           biddingWorks: [],
           beDeliveryWorks: [],
@@ -110,6 +114,7 @@ class UserProvider with ChangeNotifier {
         nickName: _user!.nickName,
         myLikeScore: _user!.myLikeScore,
         myWorks: _user!.myWorks,
+        myWorksCount: _user!.myWorks.length,
         likedWorks: updatedLikedWorks,
         biddingWorks: _user!.biddingWorks,
         beDeliveryWorks: _user!.beDeliveryWorks,
@@ -137,6 +142,7 @@ class UserProvider with ChangeNotifier {
         nickName: _user!.nickName,
         myLikeScore: _user!.myLikeScore + 1,
         myWorks: _user!.myWorks,
+        myWorksCount: _user!.myWorks.length,
         likedWorks: _user!.likedWorks,
         biddingWorks: _user!.biddingWorks,
         beDeliveryWorks: _user!.beDeliveryWorks,
@@ -164,6 +170,7 @@ class UserProvider with ChangeNotifier {
         nickName: _user!.nickName,
         myLikeScore: _user!.myLikeScore - 1,
         myWorks: _user!.myWorks,
+        myWorksCount: _user!.myWorks.length,
         likedWorks: _user!.likedWorks,
         biddingWorks: _user!.biddingWorks,
         beDeliveryWorks: _user!.beDeliveryWorks,
@@ -191,6 +198,7 @@ class UserProvider with ChangeNotifier {
         nickName: _user!.nickName,
         myLikeScore: _user!.myLikeScore,
         myWorks: updatedMyWorksId,
+        myWorksCount: updatedMyWorksId.length,
         likedWorks: _user!.likedWorks,
         biddingWorks: _user!.biddingWorks,
         beDeliveryWorks: _user!.beDeliveryWorks,
