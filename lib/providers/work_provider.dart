@@ -115,6 +115,7 @@ class WorkProvider with ChangeNotifier {
 
     return querySnapshot.docs.map((doc) => Work.fromFirestore(doc)).toList();
   }
+
   Future<void> updateWorkSellingStatus(
       String workId, bool newAuctionStatus) async {
     final workDoc = FirebaseFirestore.instance.collection('works').doc(workId);

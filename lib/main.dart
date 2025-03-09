@@ -14,8 +14,6 @@ import 'screens/Auctions/auction_works_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/Works/addwork_screen.dart';
 
-import 'package:hidden_gems/models/works.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -148,6 +146,4 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  
 }
