@@ -7,7 +7,26 @@ import 'package:hidden_gems/screens/Login/login_screen.dart';
 import 'package:hidden_gems/screens/Login/profile_update_screen.dart';
 import 'package:provider/provider.dart';
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  AuthWrapperState createState() => AuthWrapperState();
+}
+
+class AuthWrapperState extends State<AuthWrapper> {
+  Future<void>? _userFuture;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null && _userFuture == null) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      _userFuture = userProvider.loadUser();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -21,13 +40,15 @@ class AuthWrapper extends StatelessWidget {
         if (authSnapshot.hasData) {
           return Consumer<UserProvider>(
             builder: (context, userProvider, child) {
-              if (userProvider.user == null) {
-                userProvider.loadUser();
+              // 로딩 중이면 로딩 인디케이터 표시
+              if (!userProvider.isLoaded) {
                 return const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 );
               }
-              if (userProvider.user!.nickName.isEmpty) {
+              // 로딩 완료 후, user 데이터가 없거나 닉네임이 비어있으면 ProfileUpdateScreen으로 이동
+              if (userProvider.user == null ||
+                  userProvider.user!.nickName.isEmpty) {
                 return const ProfileUpdateScreen();
               }
               return const HomeScreen();

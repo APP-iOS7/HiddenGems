@@ -4,17 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems/models/user.dart';
 
 class UserProvider with ChangeNotifier {
-  List<User> _users = [];
-
-  List<User> get users => _users;
-
-  void setUsers(List<User> newUsers) {
-    _users = newUsers;
-    notifyListeners();
-  }
-
   AppUser? _user;
+  bool _isLoaded = false;
+
   AppUser? get user => _user;
+  bool get isLoaded => _isLoaded;
 
   UserProvider() {
     // FirebaseAuth 상태 변화를 구독하여 로그인/로그아웃 시 자동으로 loadUser() 호출
@@ -37,14 +31,11 @@ class UserProvider with ChangeNotifier {
           .doc(currentUser.uid)
           .get();
       if (userDoc.exists) {
-        final newUser = AppUser.fromMap(userDoc.data()!);
-        if (_user == null || _user!.id != newUser.id) {
-          //사용자가 변경되지 않으면 실행하지 않음
-          _user = newUser;
-          notifyListeners();
-        }
+        _user = AppUser.fromMap(userDoc.data()!);
       }
     }
+    _isLoaded = true;
+    notifyListeners();
   }
 
   // 사용자 프로필 업데이트
@@ -66,11 +57,13 @@ class UserProvider with ChangeNotifier {
               : DateTime.now(),
           profileURL: newProfileURL,
           nickName: newNickName,
+          myLikeScore: data['myLikeScore'] ?? 0,
           myWorks: List<String>.from(data['myWorks'] ?? []),
           likedWorks: List<String>.from(data['likedWorks'] ?? []),
           biddingWorks: List<String>.from(data['biddingWorks'] ?? []),
           beDeliveryWorks: List<String>.from(data['beDeliveryWorks'] ?? []),
           completeWorks: List<String>.from(data['completeWorks'] ?? []),
+          subscribeUsers: List<String>.from(data['completeWorks'] ?? []),
         );
       } else {
         updatedUser = AppUser(
@@ -78,11 +71,13 @@ class UserProvider with ChangeNotifier {
           signupDate: DateTime.now(),
           profileURL: newProfileURL,
           nickName: newNickName,
+          myLikeScore: 0,
           myWorks: [],
           likedWorks: [],
           biddingWorks: [],
           beDeliveryWorks: [],
           completeWorks: [],
+          subscribeUsers: [],
         );
       }
       await userDoc.set(updatedUser.toMap(), SetOptions(merge: true));
@@ -93,6 +88,7 @@ class UserProvider with ChangeNotifier {
 
   void clearUser() {
     _user = null;
+    _isLoaded = false;
     notifyListeners();
   }
 
@@ -112,11 +108,67 @@ class UserProvider with ChangeNotifier {
         signupDate: _user!.signupDate,
         profileURL: _user!.profileURL,
         nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore,
         myWorks: _user!.myWorks,
         likedWorks: updatedLikedWorks,
-        biddingWorks: _user!.myWorks,
-        beDeliveryWorks: _user!.myWorks,
-        completeWorks: _user!.myWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: _user!.subscribeUsers,
+      );
+      notifyListeners();
+    }
+  }
+
+  Future<void> addMyLikeScore(List<String> updatedLikedWorks) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+
+    await userDoc.update({'likedWorks': updatedLikedWorks});
+
+    if (_user != null) {
+      _user = AppUser(
+        id: _user!.id,
+        signupDate: _user!.signupDate,
+        profileURL: _user!.profileURL,
+        nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore + 1,
+        myWorks: _user!.myWorks,
+        likedWorks: _user!.likedWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: _user!.subscribeUsers,
+      );
+      notifyListeners();
+    }
+  }
+
+  Future<void> subMyLikeScore(List<String> updatedLikedWorks) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+
+    final userDoc =
+        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
+
+    await userDoc.update({'likedWorks': updatedLikedWorks});
+
+    if (_user != null) {
+      _user = AppUser(
+        id: _user!.id,
+        signupDate: _user!.signupDate,
+        profileURL: _user!.profileURL,
+        nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore - 1,
+        myWorks: _user!.myWorks,
+        likedWorks: _user!.likedWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: _user!.subscribeUsers,
       );
       notifyListeners();
     }
@@ -137,11 +189,13 @@ class UserProvider with ChangeNotifier {
         signupDate: _user!.signupDate,
         profileURL: _user!.profileURL,
         nickName: _user!.nickName,
+        myLikeScore: _user!.myLikeScore,
         myWorks: updatedMyWorksId,
         likedWorks: _user!.likedWorks,
-        biddingWorks: _user!.myWorks,
-        beDeliveryWorks: _user!.myWorks,
-        completeWorks: _user!.myWorks,
+        biddingWorks: _user!.biddingWorks,
+        beDeliveryWorks: _user!.beDeliveryWorks,
+        completeWorks: _user!.completeWorks,
+        subscribeUsers: _user!.subscribeUsers,
       );
       notifyListeners();
     }
