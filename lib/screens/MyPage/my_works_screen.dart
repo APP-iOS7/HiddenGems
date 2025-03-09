@@ -98,6 +98,22 @@ class MyWorksScreen extends StatelessWidget {
                               fit: BoxFit.cover,
                             ),
                           ),
+                          child: Stack(
+                            children: [
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Text(
+                                  work.title,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
