@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
+import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
 import 'package:intl/intl.dart';
 
 class PopularWorks extends StatelessWidget {
@@ -36,68 +37,77 @@ class PopularWorks extends StatelessWidget {
             itemBuilder: (context, index) {
               final work = works[index];
 
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: 12.0,
-                  left: index == 0 ? 0.0 : 0.0,
-                ),
-                child: SizedBox(
-                  width: 150,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 90,
-                        child: Card(
-                          child: Container(
-                            decoration: BoxDecoration(boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withValues(alpha: 0.7),
-                                spreadRadius: 8,
-                                blurRadius: 10,
-                                offset:
-                                    Offset(0, 5), // changes position of shadow
-                              )
-                            ]),
-                            child: Image.network(
-                              work.workPhotoURL,
-                              fit: BoxFit.cover,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WorkdetailScreen(work: work)));
+                },
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: 12.0,
+                    left: index == 0 ? 0.0 : 0.0,
+                  ),
+                  child: SizedBox(
+                    width: 150,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 90,
+                          child: Card(
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withValues(alpha: 0.7),
+                                  spreadRadius: 8,
+                                  blurRadius: 10,
+                                  offset: Offset(
+                                      0, 5), // changes position of shadow
+                                )
+                              ]),
+                              child: Image.network(
+                                work.workPhotoURL,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 70,
-                              child: Text(
-                                work.title,
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w700),
-                                overflow: TextOverflow.fade,
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 70,
+                                child: Text(
+                                  work.title,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700),
+                                  overflow: TextOverflow.fade,
+                                ),
                               ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  work.artistNickName,
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                Text(
-                                  '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ],
-                            ),
-                          ],
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    work.artistNickName,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
