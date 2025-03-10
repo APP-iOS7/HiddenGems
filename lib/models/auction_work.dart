@@ -2,6 +2,7 @@ class AuctionWork {
   final String workId;
   final String workTitle;
   final String artistId;
+  final String artistNickname;
   final List<String> auctionUserId;
   final int minPrice;
   final DateTime endDate;
@@ -13,6 +14,7 @@ class AuctionWork {
     required this.workId,
     required this.workTitle,
     required this.artistId,
+    required this.artistNickname,
     required this.auctionUserId,
     required this.minPrice,
     required this.endDate,
@@ -26,6 +28,7 @@ class AuctionWork {
       workId: map['workId'] ?? '',
       workTitle: map['workTitle'] ?? '',
       artistId: map['artistId'] ?? '',
+      artistNickname: map['artistNickname'] ?? '',
       auctionUserId: List<String>.from(map['auctionUserId'] ?? []),
       minPrice: map['minPrice']?.toInt() ?? 0,
       endDate: map['endDate'] != null
@@ -42,6 +45,7 @@ class AuctionWork {
       'workId': workId,
       'workTitle': workTitle,
       'artistId': artistId,
+      'artistNickname': artistNickname,
       'auctionUserId': auctionUserId,
       'minPrice': minPrice,
       'endDate': endDate.toIso8601String(),

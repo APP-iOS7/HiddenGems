@@ -1,9 +1,9 @@
 class AuctionedWork {
   final String id;
   final String workId;
+  final String workTitle;
   final String artistId;
   final String artistNickname;
-  final String workTitle;
   final String completeUserId;
   final int completePrice;
   final String? address;
@@ -20,9 +20,9 @@ class AuctionedWork {
     required this.artistNickname,
     required this.completeUserId,
     required this.completePrice,
-    required this.address,
-    required this.name,
-    required this.phone,
+    this.address,
+    this.name,
+    this.phone,
     required this.deliverComplete,
     required this.deliverRequest,
   });
@@ -35,7 +35,7 @@ class AuctionedWork {
         artistId: map['artistId'] ?? '',
         artistNickname: map['artistNickname'] ?? '',
         completeUserId: map['completeUserId'] ?? '',
-        completePrice: (map['completeUserId'] ?? 0).toInt(),
+        completePrice: (map['completePrice'] ?? 0).toInt(),
         address: map['address'] ?? '',
         name: map['name'] ?? '',
         phone: map['phone'] ?? '',
