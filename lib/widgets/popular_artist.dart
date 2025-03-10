@@ -2,26 +2,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/user.dart';
 
-class PopularAuction extends StatefulWidget {
-  const PopularAuction({super.key});
+class PopularArtist extends StatefulWidget {
+  const PopularArtist({super.key});
 
   @override
-  State<PopularAuction> createState() => _PopularAuctionState();
+  State<PopularArtist> createState() => _PopularArtistState();
 }
 
-class _PopularAuctionState extends State<PopularAuction> {
+class _PopularArtistState extends State<PopularArtist> {
   Future<List<AppUser>> getFamousSortedUser() async {
+    List<AppUser> activeUsers = [];
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('myWorksCount', isGreaterThan: 0)
-          .orderBy('myWorksCount', descending: true) // where 절과 일치하는 orderBy 추가
-          .orderBy('myLikeScore', descending: true)
-          .get();
+      // final QuerySnapshot snapshot = await FirebaseFirestore.instance
+      //     .collection('users')
+      // .where('myWorksCount', isGreaterThan: 0)
+      // .orderBy('myWorksCount', descending: true) // where 절과 일치하는 orderBy 추가
+      // .orderBy('myLikeScore', descending: true)
+      // .get();
+      final QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('users').get();
 
-      return snapshot.docs
+      activeUsers = snapshot.docs
           .map((doc) => AppUser.fromMap(doc.data() as Map<String, dynamic>))
+          .where((user) => user.myWorks.isNotEmpty)
           .toList();
+
+      return activeUsers;
     } catch (e) {
       debugPrint('Error fetching famous users: $e');
       return [];
@@ -40,7 +46,6 @@ class _PopularAuctionState extends State<PopularAuction> {
             return Center(child: Text('Error loading users'));
           }
           final users = snapshot.data ?? [];
-
           return Column(
             children: [
               SizedBox(
@@ -53,7 +58,6 @@ class _PopularAuctionState extends State<PopularAuction> {
                         (BuildContext context, int index) {
                           if (index >= users.length) return SizedBox.shrink();
                           final user = users[index];
-
                           return Padding(
                             padding: EdgeInsets.only(
                               right: 16.0,
