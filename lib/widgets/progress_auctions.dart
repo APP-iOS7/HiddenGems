@@ -39,7 +39,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                height: 160,
+                height: 170,
                 child: CustomScrollView(
                   scrollDirection: Axis.horizontal,
                   slivers: [
@@ -78,7 +78,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                   );
                                 },
                                 child: Padding(
-                                  padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
+                                  padding: EdgeInsets.fromLTRB(25, 0, 0, 10),
                                   child: Container(
                                       width: 150,
                                       decoration: BoxDecoration(
@@ -88,20 +88,23 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                           BoxShadow(
                                             color: const Color.fromARGB(
                                                 255, 225, 225, 225),
-                                            spreadRadius: 2,
-                                            blurRadius: 8,
-                                            offset: Offset(0, 4),
+                                            spreadRadius: 5,
+                                            blurRadius: 10,
+                                            offset: Offset(0, 2),
                                           )
                                         ],
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4),
-                                        child: Column(
+                                      child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             SizedBox(
-                                              height: 90,
+                                              height: 110,
+                                              width: double.infinity,
                                               child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                clipBehavior: Clip.antiAlias,
                                                 child: Container(
                                                   child: Image.network(
                                                     work.workPhotoURL,
@@ -170,7 +173,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                             ),
                                           ],
                                         ),
-                                      )),
+                                    ),
                                 ),
                               );
                             },
@@ -183,6 +186,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                 ),
               ),
             ],
+            
           );
         });
   }
