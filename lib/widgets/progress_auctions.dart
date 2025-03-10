@@ -39,7 +39,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                height: 170,
+                height: 200,
                 child: CustomScrollView(
                   scrollDirection: Axis.horizontal,
                   slivers: [
@@ -80,100 +80,72 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(25, 0, 0, 10),
                                   child: Container(
-                                      width: 150,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: const Color.fromARGB(
-                                                255, 225, 225, 225),
-                                            spreadRadius: 5,
-                                            blurRadius: 10,
-                                            offset: Offset(0, 2),
-                                          )
-                                        ],
-                                      ),
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color.fromARGB(
+                                              255, 225, 225, 225),
+                                          spreadRadius: 2,
+                                          blurRadius: 10,
+                                          offset: Offset(0, 2),
+                                        )
+                                      ],
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(
+                                          height: 110,
+                                          width: double.infinity,
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            clipBehavior: Clip.antiAlias,
+                                            child: Container(
+                                              child: Image.network(
+                                                work.workPhotoURL,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 15),
+                                        Column(
                                           children: [
                                             SizedBox(
-                                              height: 110,
-                                              width: double.infinity,
-                                              child: Card(
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                clipBehavior: Clip.antiAlias,
-                                                child: Container(
-                                                  child: Image.network(
-                                                    work.workPhotoURL,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
+                                              // width: 100,
+                                              height: 30,
+                                              child: Text(
+                                                '₩ ${NumberFormat('###,###,###,###').format(auction.nowPrice)}',
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
                                               ),
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 4.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 70,
-                                                    child: Text(
-                                                      work.title,
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w700),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 2,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 50,
-                                                        child: Text(
-                                                          work.artistNickName,
-                                                          style: TextStyle(
-                                                              fontSize: 14),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 50,
-                                                        child: Text(
-                                                          '${NumberFormat('###,###,###,###').format(auction.nowPrice)} 원',
-                                                          style: TextStyle(
-                                                              fontSize: 10),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          maxLines: 1,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
+                                            SizedBox(width: 8),
+                                            SizedBox(
+                                              // width: 100,
+                                              child: Text(
+                                                work.title,
+                                                style: TextStyle(fontSize: 12),
+                                                // overflow:
+                                                // TextOverflow.ellipsis,
+                                                maxLines: 1,
                                               ),
-                                            ),
+                                            )
                                           ],
                                         ),
+                                      ],
                                     ),
+                                  ),
                                 ),
                               );
                             },
@@ -186,7 +158,6 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                 ),
               ),
             ],
-            
           );
         });
   }
