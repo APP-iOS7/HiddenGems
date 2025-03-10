@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
 import 'package:intl/intl.dart';
@@ -68,12 +69,22 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
           ),
           actions: [
             IconButton(
-                onPressed: () async {
-                  await workProvider.deleteWork(updatedWork.id);
-                  await workProvider.loadWorks();
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.delete))
+              onPressed: () async {
+                AddModal(
+                  context: context,
+                  title: '작품 삭제',
+                  description: '해당 작품을 삭제하시겠습니까?',
+                  whiteButtonText: '취소',
+                  purpleButtonText: '확인',
+                  function: () async {
+                    await workProvider.deleteWork(updatedWork.id);
+                    await workProvider.loadWorks();
+                    Navigator.pop(context);
+                  },
+                );
+              },
+              icon: Icon(Icons.delete),
+            )
           ],
           elevation: 0,
         ),

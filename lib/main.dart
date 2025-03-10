@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/screens/Login/auth_wrapper.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
@@ -94,9 +95,21 @@ class HomeScreenState extends State<HomeScreen> {
         actions: [
           if (_selectedIndex == 0)
             IconButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
+                onPressed: () async {
+                  AddModal(
+                    context: context,
+                    title: '로그아웃',
+                    description: '로그아웃 하시겠습니까?',
+                    whiteButtonText: '취소',
+                    purpleButtonText: '확인',
+                    function: () async {
+                      FirebaseAuth.instance.signOut();
+                    },
+                  );
                 },
+                // onPressed: () {
+                //   FirebaseAuth.instance.signOut();
+                // },
                 icon: Icon(Icons.logout)),
         ],
       ),

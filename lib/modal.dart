@@ -61,7 +61,6 @@ void _startAuctionModal(
                   width: 120,
                   child: OutlinedButton(
                     onPressed: () {
-                      function();
                       Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
@@ -79,8 +78,8 @@ void _startAuctionModal(
                 SizedBox(
                   width: 120,
                   child: ElevatedButton(
-                    onPressed: () {
-                      function();
+                    onPressed: () async {
+                      await function();
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(

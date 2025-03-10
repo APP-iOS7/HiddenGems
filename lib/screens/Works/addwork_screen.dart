@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/models/works.dart';
@@ -260,8 +261,17 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
           ),
         ),
         bottomNavigationBar: GestureDetector(
-          onTap: () {
-            _addWork(workProvider, userProvider);
+          onTap: () async {
+            AddModal(
+              context: context,
+              title: '작품 등록',
+              description: '작품을 등록하시겠습니까?',
+              whiteButtonText: '취소',
+              purpleButtonText: '확인',
+              function: () async {
+                _addWork(workProvider, userProvider);
+              },
+            );
           },
           child: Container(
             width: double.infinity,
