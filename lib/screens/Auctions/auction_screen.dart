@@ -269,7 +269,8 @@ class AuctionScreenState extends State<AuctionScreen> {
                             children: [
                               Text(
                                 '입찰자 목록',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700),
                               ),
                               SizedBox(height: 8),
                               ...updatedAuction.auctionUserId.map((bidderId) {
@@ -318,6 +319,60 @@ class AuctionScreenState extends State<AuctionScreen> {
                                   ),
                                 );
                               }).toList(),
+                              FutureBuilder<DocumentSnapshot>(
+                                future: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(updatedAuction.lastBidderId)
+                                    .get(),
+                                builder: (context, snapshot) {
+                                  if (!updatedAuction.auctionComplete) {
+                                    return const SizedBox();
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+                                  if (!snapshot.hasData ||
+                                      snapshot.data!.data() == null) {
+                                    return const Text('No data found');
+                                  }
+
+                                  final userData = snapshot.data!.data()
+                                      as Map<String, dynamic>;
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(height: 20),
+                                        Text('낙찰자',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700)),
+                                        SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Icon(Icons.person_outline,
+                                                size: 16, color: Colors.blue),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              userData['nickName'],
+                                              style:
+                                                  TextStyle(color: Colors.blue),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
                             ],
                           ),
                         )

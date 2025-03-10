@@ -23,7 +23,7 @@ class AuctionedWorksListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('나의 경매 완료 작품'),
+        title: const Text('낙찰내역'),
         elevation: 0,
       ),
       body: StreamBuilder(
