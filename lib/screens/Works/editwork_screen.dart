@@ -1,10 +1,8 @@
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/models/works.dart';
-import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 
 class EditWorkScreen extends StatefulWidget {
@@ -35,8 +33,7 @@ class _EditWorkScreenState extends State<EditWorkScreen> {
         TextEditingController(text: widget.work.description);
     _minPriceController =
         TextEditingController(text: widget.work.minPrice.toString());
-    _imageUrlController =
-        TextEditingController(text: widget.work.workPhotoURL);
+    _imageUrlController = TextEditingController(text: widget.work.workPhotoURL);
     _imageUrl = widget.work.workPhotoURL;
   }
 

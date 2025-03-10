@@ -18,8 +18,8 @@ class AuctionWork {
     required this.auctionUserId,
     required this.minPrice,
     required this.endDate,
-    this.nowPrice = 0,
-    this.auctionComplete = false,
+    required this.nowPrice,
+    required this.auctionComplete,
     this.lastBidderId,
   });
 

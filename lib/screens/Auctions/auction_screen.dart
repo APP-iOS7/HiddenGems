@@ -439,7 +439,6 @@ class AuctionScreenState extends State<AuctionScreen> {
                       ),
                       onPressed: () async {
                         try {
-                          // 입찰자가 없는 경우 경매 종료 불가
                           if (updatedAuction.lastBidderId == null ||
                               updatedAuction.lastBidderId!.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -461,16 +460,14 @@ class AuctionScreenState extends State<AuctionScreen> {
                             workTitle: updatedAuction.workTitle,
                             artistId: updatedAuction.artistId,
                             artistNickname: updatedAuction.artistNickname,
-                            completeUserId:
-                                updatedAuction.lastBidderId!, // null 검사 통과 확인됨
-                            completePrice: updatedAuction.nowPrice, // int 변환 확인
-                            address: '', // null 허용 필드는 빈 값으로 초기화
+                            completeUserId: updatedAuction.lastBidderId!,
+                            completePrice: updatedAuction.nowPrice,
+                            address: '',
                             name: '',
                             phone: '',
                             deliverComplete: '배송지입력대기',
                             deliverRequest: '직접 입력',
                           );
-                          // Firestore에 저장
                           await FirebaseFirestore.instance
                               .collection('auctionedWorks')
                               .doc(newId)
@@ -478,17 +475,40 @@ class AuctionScreenState extends State<AuctionScreen> {
                                   SetOptions(merge: true));
 
                           await FirebaseFirestore.instance
-                              .collection('works')
-                              .doc(updatedAuction.workId)
-                              .update({
-                            'auctionComplete': true,
-                            'completedAt': DateTime.now(), // Firestore에서 자동 변환됨
-                          });
-                          Navigator.pop(context);
+                              .collection('auctionedWorks')
+                              .doc(newId)
+                              .set(auctionedWork.toMap(),
+                                  SetOptions(merge: true));
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("경매가 성공적으로 종료되었습니다.")),
-                          );
+                          DocumentReference auctionDocRef = FirebaseFirestore
+                              .instance
+                              .collection('auctionWorks')
+                              .doc(updatedAuction.workId);
+
+                          DocumentSnapshot auctionDoc =
+                              await auctionDocRef.get();
+                          if (auctionDoc.exists) {
+                            await auctionDocRef.update({
+                              'auctionComplete': true,
+                              'completedAt': DateTime.now(),
+                            });
+
+                            Provider.of<AuctionWorksProvider>(context,
+                                    listen: false)
+                                .updateAuctionStatus(updatedAuction.workId);
+
+                            Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("경매가 성공적으로 종료되었습니다.")),
+                            );
+                          } else {
+                            debugPrint(
+                                "경매 종료 오류: 해당 workId (${updatedAuction.workId})를 찾을 수 없음");
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("해당 경매를 찾을 수 없습니다.")),
+                            );
+                          }
                         } catch (e) {
                           debugPrint("경매 종료 오류: $e");
                         }

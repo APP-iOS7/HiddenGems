@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/MyPage/auctioned_works_list_screen.dart';
 import 'package:hidden_gems/screens/MyPage/my_works_screen.dart';

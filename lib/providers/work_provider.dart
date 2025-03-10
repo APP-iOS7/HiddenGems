@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hidden_gems/models/works.dart';
-import 'package:hidden_gems/models/auction_work.dart';
 
 class WorkProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -47,7 +46,6 @@ class WorkProvider with ChangeNotifier {
     final index = _works.indexWhere((work) => work.id == updatedWork.id);
     if (index != -1) {
       _works[index] = updatedWork;
-      
     }
     final auctionQuery = await _firestore
         .collection('auctionWorks')

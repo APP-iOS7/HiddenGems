@@ -132,7 +132,10 @@ class AuctionWorksProvider with ChangeNotifier {
 
   Future<void> checkAndEndExpiredAuctions() async {
     final now = DateTime.now();
-    final expiredAuctions = allAuctionWorks.where((auction) => auction.endDate.isBefore(now) && !auction.auctionComplete).toList();
+    final expiredAuctions = allAuctionWorks
+        .where((auction) =>
+            auction.endDate.isBefore(now) && !auction.auctionComplete)
+        .toList();
 
     for (final auction in expiredAuctions) {
       await endAuction(auction.workId);
@@ -140,7 +143,7 @@ class AuctionWorksProvider with ChangeNotifier {
 
     notifyListeners();
   }
-  
+
   Future<void> updateNowprice(String workId, int newPrice) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({
@@ -197,6 +200,7 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("오류: $e");
     }
   }
+
   Future<void> deleteAuctionWork(String workId) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('auctions')
@@ -209,5 +213,13 @@ class AuctionWorksProvider with ChangeNotifier {
 
     _allAuctionWorks.removeWhere((auction) => auction.workId == workId);
     notifyListeners();
+  }
+
+  void updateAuctionStatus(String workId) {
+    final index = allAuctionWorks.indexWhere((work) => work.workId == workId);
+    if (index != -1) {
+      allAuctionWorks[index].auctionComplete = true;
+      notifyListeners(); // 화면 자동 업데이트
+    }
   }
 }

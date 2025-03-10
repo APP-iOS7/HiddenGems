@@ -284,45 +284,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         ));
   }
 
-  void _showDeleteConfirmationDialog(
-      BuildContext context2,
-      UserProvider userProvider,
-      WorkProvider workProvider,
-      AuctionWorksProvider auctionProvider,
-      String workId) {
-    showDialog(
-      context: context2,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("작품 삭제"),
-          content: Text("해당 작품의 경매 내역까지 삭제됩니다. 삭제하시겠습니까?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("취소", style: TextStyle(color: Colors.black)),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-
-                await userProvider.deleteMyWorks(workId);
-                await workProvider.deleteWork(workId);
-                await auctionProvider.deleteAuctionWork(workId);
-                await workProvider.loadWorks();
-
-                Navigator.pop(context2);
-              },
-              child: Text("삭제", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _startAuctionModal(BuildContext context) {
     DateTime selectedDate = DateTime.now().add(Duration(days: 7));
     showModalBottomSheet(
