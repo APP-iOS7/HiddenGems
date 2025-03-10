@@ -46,11 +46,20 @@ class PopularWorks extends StatelessWidget {
                           builder: (context) => WorkdetailScreen(work: work)));
                 },
                 child: Padding(
-                  padding: EdgeInsets.only(
-                    right: 12.0,
-                    left: index == 0 ? 0.0 : 0.0,
-                  ),
-                  child: SizedBox(
+                  padding: EdgeInsets.all(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 225, 225, 225),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        )
+                      ],
+                    ),
                     width: 200,
                     child: Column(
                       children: [
@@ -91,16 +100,27 @@ class PopularWorks extends StatelessWidget {
                                   overflow: TextOverflow.fade,
                                 ),
                               ),
+                              SizedBox(width: 8),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    work.artistNickName,
-                                    style: TextStyle(fontSize: 13),
+                                  SizedBox(
+                                    width: 50,
+                                    child: Text(
+                                      work.artistNickName,
+                                      style: TextStyle(fontSize: 14),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
                                   ),
-                                  Text(
-                                    '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
-                                    style: TextStyle(fontSize: 13),
+                                  SizedBox(
+                                    width: 50,
+                                    child: Text(
+                                      '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
+                                      style: TextStyle(fontSize: 10),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
                                   ),
                                 ],
                               ),
