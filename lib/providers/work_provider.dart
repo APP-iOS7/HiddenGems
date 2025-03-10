@@ -184,7 +184,7 @@ class WorkProvider with ChangeNotifier {
     }
   }
 
-  Future<List<Work>> loadPopularWorks({int limit = 10}) async {
+  Future<List<Work>> loadPopularWorks({int limit = 5}) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('works')
         .orderBy('likedCount', descending: true)
