@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/auctioned_work.dart';
+import 'package:hidden_gems/screens/MyPage/payment_screen.dart';
+import 'package:intl/intl.dart';
 import 'package:kpostal/kpostal.dart';
 import 'package:flutter/services.dart'; // 전화번호 입력 제한을 위해 추가
 
@@ -78,25 +80,34 @@ class AddressFormScreenState extends State<AddressFormScreen> {
               // 배송 요청사항
               _buildDeliveryRequestSection(),
               const SizedBox(height: 20),
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: double.infinity, // 버튼이 화면 전체 너비를 차지하도록 설정
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      if (_validateInputs()) {
-                        _saveAddress();
-                      }
-                    },
-                    icon: const Icon(Icons.save),
-                    label: const Text('저장하기'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+              SizedBox(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () {
+                    if (_validateInputs()) {
+                      final String fullAddress =
+                          '$address ${detailAddressController.text}';
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PaymentScreen(
+                                    auctionedWork: widget.auctionedWork,
+                                    fullAddress: fullAddress,
+                                    name: nameController.text,
+                                    phone: phoneController.text,
+                                    requestText: requestController.text,
+                                  )));
+
+                      // _saveAddress();
+                    }
+                  },
+                  child: Text(
+                    '${NumberFormat('###,###,###,###').format(widget.auctionedWork.completePrice)}원 결제하기',
+                    style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -150,43 +161,52 @@ class AddressFormScreenState extends State<AddressFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '배송지 정보',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          children: [
+            const Text(
+              '배송지 정보',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spacer(),
+            ElevatedButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => KpostalView(
+                      callback: (Kpostal result) {
+                        setState(() {
+                          postCode = result.postCode;
+                          address = result.address;
+                        });
+                      },
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                '주소 검색하기',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         _buildInfoRow('우편번호', postCode.isEmpty ? '검색해주세요' : postCode),
         const SizedBox(height: 8),
         _buildInfoRow('주소', address.isEmpty ? '검색해주세요' : address),
         const SizedBox(height: 12),
-        ElevatedButton.icon(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => KpostalView(
-                  callback: (Kpostal result) {
-                    setState(() {
-                      postCode = result.postCode;
-                      address = result.address;
-                    });
-                  },
-                ),
-              ),
-            );
-          },
-          icon: const Icon(Icons.search),
-          label: const Text('주소 검색하기'),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
         const SizedBox(height: 12),
         TextField(
           controller: detailAddressController,
@@ -295,8 +315,8 @@ class AddressFormScreenState extends State<AddressFormScreen> {
   }
 
   void _saveAddress() async {
-    final fullAddress = '$address ${detailAddressController.text}';
-    final requestText =
+    final String fullAddress = '$address ${detailAddressController.text}';
+    final String requestText =
         selectedRequest == '직접 입력' ? requestController.text : selectedRequest;
 
     try {
