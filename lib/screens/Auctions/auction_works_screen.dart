@@ -50,9 +50,10 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
     setState(() {
       _searchQuery = query.toLowerCase();
       _filteredWorks = _allAuctionWorks
-        .where((auctionWork) =>
-          auctionWork.workTitle.toLowerCase().contains(_searchQuery) && (!_showDone || !auctionWork.auctionComplete))
-        .toList();
+          .where((auctionWork) =>
+              auctionWork.workTitle.toLowerCase().contains(_searchQuery) &&
+              (!_showDone || !auctionWork.auctionComplete))
+          .toList();
     });
   }
 
@@ -291,8 +292,8 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                         ),
                                       );
 
-                                      bool isLastBidder =
-                                          bidder.id == updatedAuction.lastBidderId;
+                                      bool isLastBidder = bidder.id ==
+                                          updatedAuction.lastBidderId;
 
                                       return Padding(
                                         padding: const EdgeInsets.only(
@@ -307,14 +308,12 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
                                                   : Colors.black,
                                             ),
                                             const SizedBox(width: 8),
-                                            Text(
-                                              bidder.nickName,
-                                              style: TextStyle(
-                                                color: isLastBidder
-                                                  ? Colors.blue
-                                                  : Colors.black,
-                                              )
-                                            ),
+                                            Text(bidder.nickName,
+                                                style: TextStyle(
+                                                  color: isLastBidder
+                                                      ? Colors.blue
+                                                      : Colors.black,
+                                                )),
                                           ],
                                         ),
                                       );

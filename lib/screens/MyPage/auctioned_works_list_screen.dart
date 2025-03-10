@@ -10,6 +10,7 @@ class AuctionedWorksListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 현재 로그인한 사용자 ID 가져오기
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
     if (userId == null) {
@@ -28,12 +29,10 @@ class AuctionedWorksListScreen extends StatelessWidget {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('auctionedWorks')
-            .where(
-              Filter.or(
-                Filter('completeUserId', isEqualTo: userId),
-                Filter('artistId', isEqualTo: userId),
-              ),
-            )
+            .where(Filter.or(
+              Filter('completeUserId', isEqualTo: userId),
+              Filter('artistId', isEqualTo: userId),
+            ))
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -43,16 +42,20 @@ class AuctionedWorksListScreen extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('경매 완료된 작품이 없습니다.'));
+            return const Center(
+              child: Text('경매 완료된 작품이 없습니다.'),
+            );
           }
 
           final works = snapshot.data!.docs.map((doc) {
             final data = doc.data();
-            return AuctionedWork.fromMap(data).copyWith(id: doc.id);
+            return AuctionedWork.fromMap(data);
           }).toList();
 
           return ListView.builder(
@@ -60,7 +63,6 @@ class AuctionedWorksListScreen extends StatelessWidget {
             itemCount: works.length,
             itemBuilder: (context, index) {
               final work = works[index];
-
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 elevation: 2,
@@ -92,7 +94,8 @@ class AuctionedWorksListScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          _buildStatusButton(work, context, work.artistId == userId ? true : false);
+                          _buildStatusButton(
+                              work, context, work.artistId == userId),
                           const SizedBox(width: 8),
                           Text(
                             '낙찰가: ${_formatPrice(work.completePrice)}원',
@@ -108,13 +111,15 @@ class AuctionedWorksListScreen extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
+                    // 배송지 입력이 필요한 경우 배송지 입력 페이지로 이동
                     if (work.completeUserId == userId &&
                         work.deliverComplete == '배송지입력대기') {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              AddressFormScreen(auctionedWork: work),
+                          builder: (context) => AddressFormScreen(
+                            auctionedWork: work,
+                          ),
                         ),
                       );
                     }
@@ -137,9 +142,9 @@ class AuctionedWorksListScreen extends StatelessWidget {
     switch (work.deliverComplete) {
       case '배송지입력대기':
         backgroundColor = Colors.orange; // 오렌지색
-        statusText = '배송지입력대기';
+        statusText = '배송지 입력 대기';
         break;
-      case '배송 준비중':
+      case '배송준비중':
         backgroundColor = Colors.blue; // 파란색
         statusText = '배송 준비중';
         break;
@@ -147,7 +152,7 @@ class AuctionedWorksListScreen extends StatelessWidget {
         backgroundColor = Colors.purple; // 보라색
         statusText = '배송중';
         break;
-      case '배송 완료':
+      case '배송완료':
         backgroundColor = Colors.green; // 초록색
         statusText = '배송 완료';
         break;
@@ -158,7 +163,7 @@ class AuctionedWorksListScreen extends StatelessWidget {
 
     return ElevatedButton(
       onPressed: () async {
-        if (work.deliverComplete == '배송 완료') {
+        if (work.deliverComplete == '배송완료') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('이미 배송이 완료되었습니다.')),
           );
@@ -170,7 +175,7 @@ class AuctionedWorksListScreen extends StatelessWidget {
 
           // 판매자인 경우
           if (isSeller) {
-            if (work.deliverComplete == '배송 준비중') {
+            if (work.deliverComplete == '배송준비중') {
               newStatus = '배송중';
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -189,9 +194,9 @@ class AuctionedWorksListScreen extends StatelessWidget {
                 );
                 return;
               }
-              newStatus = '배송 준비중';
+              newStatus = '배송준비중';
             } else if (work.deliverComplete == '배송중') {
-              newStatus = '배송 완료';
+              newStatus = '배송완료';
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('현재 상태에서는 변경할 수 없습니다.')),
@@ -252,33 +257,6 @@ class AuctionedWorksListScreen extends StatelessWidget {
         ),
       );
     }
-  }
-
-  Widget _buildActionButton(
-      BuildContext context, AuctionedWork work, String userId) {
-    if (work.artistId == userId && work.deliverComplete == '배송준비중') {
-      return ElevatedButton(
-        onPressed: () => _updateDeliveryStatus(work.id, '배송중'),
-        child: const Text('배송 중으로 변경'),
-      );
-    } else if (work.completeUserId == userId && work.deliverComplete == '배송중') {
-      return ElevatedButton(
-        onPressed: () => _updateDeliveryStatus(work.id, '배송완료'),
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-        child: const Text('배송 완료'),
-      );
-    }
-    return const SizedBox.shrink(); // 아무 버튼도 필요 없으면 빈 공간 반환
-  }
-
-  void _updateDeliveryStatus(String workId, String newStatus) {
-    FirebaseFirestore.instance.collection('auctionedWorks').doc(workId).update({
-      'deliverComplete': newStatus,
-    }).then((_) {
-      debugPrint('배송 상태가 "$newStatus"로 변경되었습니다.');
-    }).catchError((error) {
-      debugPrint('배송 상태 업데이트 오류: $error');
-    });
   }
 
   String _formatPrice(int price) {

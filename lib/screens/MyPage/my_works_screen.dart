@@ -13,7 +13,6 @@ class MyWorksScreen extends StatefulWidget {
 }
 
 class _MyWorksScreenState extends State<MyWorksScreen> {
-
   late Future<List<String>> _myWorksFuture;
 
   @override
@@ -101,13 +100,13 @@ class _MyWorksScreenState extends State<MyWorksScreen> {
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => WorkdetailScreen(work: work),
+                              builder: (context) =>
+                                  WorkdetailScreen(work: work),
                             ),
                           );
 
                           _fetchMyWorks();
                         },
-
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
