@@ -193,4 +193,17 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("오류: $e");
     }
   }
+  Future<void> deleteAuctionWork(String workId) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('auctions')
+        .where('workId', isEqualTo: workId)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    _allAuctionWorks.removeWhere((auction) => auction.workId == workId);
+    notifyListeners();
+  }
 }
