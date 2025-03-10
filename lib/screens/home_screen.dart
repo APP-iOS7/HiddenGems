@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/screens/Artist/artist_screen.dart';
 import 'package:hidden_gems/widgets/popular_artist.dart';
 import 'package:hidden_gems/widgets/popular_works.dart';
 import 'package:hidden_gems/widgets/progress_auctions.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../providers/notification_provider.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -17,6 +23,11 @@ class MainScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ElevatedButton(
+                    onPressed: () {
+                      // context.read<NotificationProvider>().sendNotification();
+                    },
+                    child: Text('notificationTest')),
                 _buildSectionHeader(
                     context, 'Live Auctions', Icons.gavel_rounded, null, null),
                 const SizedBox(height: 15),
@@ -31,7 +42,6 @@ class MainScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
                   child: const PopularWorks(),
                 ),
-                
 
                 // 섹션 구분선
                 _buildDivider(),

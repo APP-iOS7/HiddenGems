@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class SignUpScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -94,7 +95,7 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Future<bool> signUp(BuildContext context) async {
+  Future signUp(BuildContext context) async {
     // 비밀번호 확인 로직 추가
     if (_passwordController.text != _password2Controller.text) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,17 +105,50 @@ class SignUpScreen extends StatelessWidget {
     }
 
     try {
+      // Firebase 회원가입
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      debugPrint('회원가입 성공 : ${userCredential.user}');
-      return true;
+
+      if (userCredential.user != null) {
+        // OneSignal External ID 설정
+        try {
+          await OneSignal.login(userCredential.user!.uid);
+          debugPrint(
+              'OneSignal External ID 설정 성공: ${userCredential.user!.uid}');
+        } catch (oneSignalError) {
+          debugPrint('OneSignal 설정 실패: $oneSignalError');
+          // OneSignal 설정 실패는 회원가입 실패로 처리하지 않음
+        }
+
+        debugPrint('회원가입 성공: ${userCredential.user}');
+        return true;
+      }
+      return false;
     } catch (e) {
-      debugPrint('회원가입 실패 : ${e.toString()}');
+      String errorMessage = '회원가입 실패';
+
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'email-already-in-use':
+            errorMessage = '이미 사용 중인 이메일입니다.';
+            break;
+          case 'weak-password':
+            errorMessage = '비밀번호가 너무 약합니다.';
+            break;
+          case 'invalid-email':
+            errorMessage = '유효하지 않은 이메일 형식입니다.';
+            break;
+          default:
+            errorMessage = '회원가입 중 오류가 발생했습니다.';
+        }
+      }
+
+      debugPrint('회원가입 실패: ${e.toString()}');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('회원가입 실패: ${e.toString()}')),
+        SnackBar(content: Text(errorMessage)),
       );
       return false;
     }

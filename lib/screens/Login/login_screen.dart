@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hidden_gems/screens/Login/sign_up_screen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
@@ -126,16 +128,34 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Future<void> signIn() async {
+  Future signIn() async {
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      if (userCredential.user?.uid != null) {
+        await OneSignal.login(userCredential.user!.uid);
+        debugPrint('OneSignal login 성공: ${userCredential.user!.uid}');
+      }
+
       debugPrint('로그인 성공 : ${userCredential.user}');
     } catch (e) {
       debugPrint('로그인 실패 : ${e.toString()}');
+      rethrow;
+    }
+  }
+
+  Future signOut() async {
+    try {
+      await OneSignal.logout();
+      await FirebaseAuth.instance.signOut();
+      debugPrint('로그아웃 성공');
+    } catch (e) {
+      debugPrint('로그아웃 실패: ${e.toString()}');
+      rethrow;
     }
   }
 
@@ -148,18 +168,41 @@ class LoginScreen extends StatelessWidget {
         debugPrint('Google 로그인 취소됨');
         return;
       }
+
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
+
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // OneSignal login with Firebase UID
+      if (userCredential.user?.uid != null) {
+        await OneSignal.login(userCredential.user!.uid);
+        debugPrint('OneSignal login 성공: ${userCredential.user!.uid}');
+      } else {
+        debugPrint('OneSignal login 실패: User ID is null');
+      }
 
       debugPrint("구글 로그인 성공: ${userCredential.user?.uid}");
     } catch (error) {
       debugPrint("구글 로그인 실패: $error");
+    }
+  }
+
+  Future logoutWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await OneSignal.logout();
+      await googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
+      debugPrint('구글 로그아웃 성공');
+    } catch (e) {
+      debugPrint('구글 로그아웃 실패: ${e.toString()}');
+      rethrow;
     }
   }
 
@@ -174,7 +217,14 @@ class LoginScreen extends StatelessWidget {
           idToken: token.idToken,
           accessToken: token.accessToken,
         );
-        await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (userCredential.user?.uid != null) {
+          await OneSignal.login(userCredential.user!.uid);
+          debugPrint('OneSignal login 성공: ${userCredential.user!.uid}');
+        }
+
         debugPrint('Firebase 로그인 성공 ${token.accessToken}');
       } catch (error) {
         if (error is KakaoException && error.isInvalidTokenError()) {
@@ -182,7 +232,6 @@ class LoginScreen extends StatelessWidget {
         } else {
           debugPrint('토큰 정보 조회 실패 $error');
         }
-        // 에러 발생 시 재로그인 처리
         try {
           OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
           var provider = OAuthProvider("oidc.hiddengems");
@@ -190,7 +239,15 @@ class LoginScreen extends StatelessWidget {
             idToken: token.idToken,
             accessToken: token.accessToken,
           );
-          await FirebaseAuth.instance.signInWithCredential(credential);
+          UserCredential userCredential =
+              await FirebaseAuth.instance.signInWithCredential(credential);
+
+          if (userCredential.user?.uid != null) {
+            await OneSignal.login(userCredential.user!.uid);
+            debugPrint(
+                'OneSignal login 성공 (retry): ${userCredential.user!.uid}');
+          }
+
           debugPrint('Firebase 로그인 성공 ${token.accessToken}');
         } catch (error) {
           debugPrint('로그인 실패 $error');
@@ -200,10 +257,36 @@ class LoginScreen extends StatelessWidget {
       debugPrint('발급된 토큰 없음');
       try {
         OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+        var provider = OAuthProvider("oidc.hiddengems");
+        var credential = provider.credential(
+          idToken: token.idToken,
+          accessToken: token.accessToken,
+        );
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (userCredential.user?.uid != null) {
+          await OneSignal.login(userCredential.user!.uid);
+          debugPrint(
+              'OneSignal login 성공 (new token): ${userCredential.user!.uid}');
+        }
+
         debugPrint('로그인 성공 ${token.accessToken}');
       } catch (error) {
         debugPrint('로그인 실패 $error');
       }
+    }
+  }
+
+  Future logoutWithKakao() async {
+    try {
+      await OneSignal.logout();
+      await UserApi.instance.logout();
+      await FirebaseAuth.instance.signOut();
+      debugPrint('카카오 로그아웃 성공');
+    } catch (e) {
+      debugPrint('카카오 로그아웃 실패: ${e.toString()}');
+      rethrow;
     }
   }
 }

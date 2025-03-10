@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
@@ -217,7 +221,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-
               ],
             ),
           ),
@@ -228,14 +231,14 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
               if (!updatedWork.doAuction) {
                 _startAuctionModal(context);
               } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          AuctionScreen(auctionWork: auctionWork),
-                    ),
-                  );
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AuctionScreen(auctionWork: auctionWork),
+                  ),
+                );
+              }
             } else {
               if (updatedWork.doAuction) {
                 if (auctionWork.auctionUserId.contains(userProvider.user?.id)) {
@@ -375,6 +378,9 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final auctionProvider =
                                 Provider.of<AuctionWorksProvider>(context,
                                     listen: false);
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
 
                             final auctionWork = AuctionWork(
                               workId: widget.work.id,
@@ -393,6 +399,13 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
 
                             Provider.of<WorkProvider>(context, listen: false)
                                 .updateWorkAuctionStatus(widget.work.id, true);
+
+                            final likedUserIds = widget.work.likedUsers;
+
+                            if (likedUserIds.isNotEmpty) {
+                              await sendNotification(likedUserIds, "경매 시작 알림",
+                                  "좋아요를 누른 작품의 경매가 시작되었습니다.");
+                            }
 
                             Navigator.pop(context);
 
@@ -512,7 +525,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             Provider.of<AuctionWorksProvider>(context,
                                 listen: false);
 
-                        // 해당 작품 ID를 경매의 workId로 가지고 있는 auctionWork 찾기
                         final auctionWork =
                             auctionProvider.allAuctionWorks.firstWhere(
                           (auction) => auction.workId == widget.work.id,
@@ -566,5 +578,43 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         );
       },
     );
+  }
+
+  Future sendNotification(List likedUsers, String title, String message) async {
+    final url = Uri.parse('https://api.onesignal.com/notifications?c=push');
+
+    final payload = {
+      'app_id': '8f8cdaab-a211-4b80-ae3d-d196988e6a78',
+      'contents': {'en': title},
+      'headings': {'en': message},
+      'include_aliases': {'external_id': likedUsers},
+      'target_channel': 'push'
+    };
+
+    var headers = {
+      'accept': "application/json",
+      'Authorization':
+          'Key os_v2_app_r6gnvk5ccffyblr52gljrdtkpdacftqxzvxu3v4g4s2zbvag5ffqoq3i2lcqn2nyhujwcsqd64bfqwthmi6oiefdhtjbrw2ezrl4jra',
+      'content-type': 'application/json',
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent successfully');
+        debugPrint(response.body);
+      } else {
+        debugPrint('Failed to send notification');
+        debugPrint('Status code: ${response.statusCode}');
+        debugPrint('Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error sending notification: $e');
+    }
   }
 }
