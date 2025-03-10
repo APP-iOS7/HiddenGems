@@ -32,7 +32,7 @@ class PopularWorks extends StatelessWidget {
           child: ListView.separated(
             padding: EdgeInsets.only(left: 20.0),
             separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(width: 10),
+                const SizedBox(width: 40),
             scrollDirection: Axis.horizontal,
             itemCount: works.length,
             itemBuilder: (context, index) {
@@ -45,90 +45,64 @@ class PopularWorks extends StatelessWidget {
                       MaterialPageRoute(
                           builder: (context) => WorkdetailScreen(work: work)));
                 },
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 225, 225, 225),
-                          spreadRadius: 2,
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
-                        )
-                      ],
-                    ),
-                    width: 200,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 120,
-                          child: Card(
-                            child: Container(
-                              decoration: BoxDecoration(boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withValues(alpha: 0.7),
-                                  spreadRadius: 8,
-                                  blurRadius: 10,
-                                  offset: Offset(
-                                      0, 5), // changes position of shadow
-                                )
-                              ]),
-                              child: Image.network(
-                                work.workPhotoURL,
-                                fit: BoxFit.cover,
-                              ),
+                child: SizedBox(
+                  width: 160,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 120,
+                        child: Card(
+                          child: Container(
+                            // width: 160,
+                            decoration: BoxDecoration(boxShadow: [
+                              BoxShadow(
+                                color: Colors.purple.withValues(alpha: 0.2),
+                                spreadRadius: 5,
+                                blurRadius: 12,
+                                offset:
+                                    Offset(0, 5), // changes position of shadow
+                              )
+                            ]),
+                            child: Image.network(
+                              work.workPhotoURL,
+                              fit: BoxFit.fill,
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: 70,
-                                child: Text(
-                                  work.title,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700),
-                                  overflow: TextOverflow.fade,
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 70,
+                              child: Text(
+                                work.title,
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w700),
+                                overflow: TextOverflow.fade,
+                              ),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  work.artistNickName,
+                                  style: TextStyle(fontSize: 13),
                                 ),
-                              ),
-                              SizedBox(width: 8),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                    width: 50,
-                                    child: Text(
-                                      work.artistNickName,
-                                      style: TextStyle(fontSize: 14),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 50,
-                                    child: Text(
-                                      '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
-                                      style: TextStyle(fontSize: 10),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                Text(
+                                  '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
+                                  style: TextStyle(fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               );

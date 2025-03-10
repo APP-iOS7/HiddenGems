@@ -78,7 +78,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                           color: const Color.fromARGB(
                                               255, 225, 225, 225),
                                           spreadRadius: 2,
-                                          blurRadius: 8,
+                                          blurRadius: 2,
                                           offset: Offset(0, 4),
                                         )
                                       ],
