@@ -308,6 +308,7 @@ class AddressFormScreenState extends State<AddressFormScreen> {
         'phone': phoneController.text,
         'address': fullAddress,
         'deliverRequest': requestText,
+        'deliverComplete': '배송준비중',
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
