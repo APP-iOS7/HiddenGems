@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
+import 'package:intl/intl.dart';
 
 class PopularWorks extends StatelessWidget {
   const PopularWorks({super.key});
@@ -73,7 +74,7 @@ class PopularWorks extends StatelessWidget {
                                   style: TextStyle(fontSize: 9),
                                 ),
                                 Text(
-                                  '${work.minPrice}원',
+                                  '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
                                   style: TextStyle(fontSize: 9),
                                 ),
                               ],
