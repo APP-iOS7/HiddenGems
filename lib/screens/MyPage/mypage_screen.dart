@@ -125,7 +125,7 @@ class MyPageScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.attach_money,
+                        Icons.gavel_rounded,
                         color: Color(0xFF9800CB),
                         size: 22,
                       ),

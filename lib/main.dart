@@ -156,7 +156,7 @@ class HomeScreenState extends State<HomeScreen> {
               _buildNavItem(Icons.home, 1),
               const SizedBox(width: 48),
               _buildNavItem(Icons.grid_view, 3),
-              _buildNavItem(Icons.attach_money, 4),
+              _buildNavItem(Icons.gavel_rounded, 4),
             ],
           ),
         ),
