@@ -7,6 +7,8 @@ import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 
 class AddWorkScreen extends StatefulWidget {
+  const AddWorkScreen({super.key});
+
   @override
   _AddWorkScreenState createState() => _AddWorkScreenState();
 }

@@ -78,8 +78,6 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                   child: Padding(
                                     padding: EdgeInsets.all(8),
                                     child: Container(
-                                      
-
                                       width: 150,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
@@ -110,7 +108,6 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                               ),
                                             ),
                                             Padding(
-
                                               padding: const EdgeInsets.symmetric(horizontal: 4.0),
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -150,7 +147,6 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                                       ),
                                                     ],
                                                   )
-
                                                 ],
                                               ),
                                             ),
@@ -168,6 +164,7 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                       )
                     ],
                   ),
+
                 ),
               ],
             );

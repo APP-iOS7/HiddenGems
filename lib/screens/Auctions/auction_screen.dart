@@ -143,7 +143,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(10),
                           image: work?.workPhotoURL != null &&
-                                  work!.workPhotoURL!.isNotEmpty
+                                  work!.workPhotoURL.isNotEmpty
                               ? DecorationImage(
                                   image: NetworkImage(work.workPhotoURL),
                                   fit: BoxFit.cover,
