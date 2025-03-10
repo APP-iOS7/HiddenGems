@@ -51,10 +51,9 @@ class _MyWorksScreenState extends State<MyWorksScreen> {
 
     final likedWorks = userProvider.user?.likedWorks ?? [];
 
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('내가 등록한 작품'),
+        title: const Text('등록한 작품'),
       ),
       body: FutureBuilder<List<String>>(
         future: _myWorksFuture,
@@ -115,57 +114,56 @@ class _MyWorksScreenState extends State<MyWorksScreen> {
                           _fetchMyWorks();
                         },
                         child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        work.workPhotoURL.isNotEmpty
-                                            ? work.workPhotoURL
-                                            : 'https://picsum.photos/200/300',
-                                      ),
-                                      fit: BoxFit.cover,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                      work.workPhotoURL.isNotEmpty
+                                          ? work.workPhotoURL
+                                          : 'https://picsum.photos/200/300',
                                     ),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-
-
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      isLiked ? Icons.favorite : Icons.favorite_border,
-                                      color: Colors.purple,
-                                    ),
-                                    onPressed: () {
-                                      _toggleLike(workProvider, userProvider,
-                                          work.id, work.artistID, isLiked);
-                                    },
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    isLiked
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: Colors.purple,
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      work.title,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
+                                  onPressed: () {
+                                    _toggleLike(workProvider, userProvider,
+                                        work.id, work.artistID, isLiked);
+                                  },
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    work.title,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
                                     ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       );
                     },
-                    
                   );
                 },
               ),
@@ -175,6 +173,7 @@ class _MyWorksScreenState extends State<MyWorksScreen> {
       ),
     );
   }
+
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
       String workId, String artistId, bool isLiked) {
     final currentUser = userProvider.user;

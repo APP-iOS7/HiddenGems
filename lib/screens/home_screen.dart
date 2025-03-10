@@ -48,7 +48,8 @@ class MainScreen extends StatelessWidget {
 
                 // 인기 작가 섹션
                 _buildSectionHeader(
-                    context, 'Famous Artists', Icons.person_rounded, '더보기', () {
+                    context, 'Famous Artists', Icons.person_rounded, 'More',
+                    () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -77,7 +78,7 @@ class MainScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -100,12 +101,13 @@ class MainScreen extends StatelessWidget {
             TextButton(
               onPressed: onPressed,
               style: TextButton.styleFrom(
-                backgroundColor: Colors.grey[100],
+                backgroundColor:
+                    Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
