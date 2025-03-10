@@ -70,7 +70,9 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("Error: $e");
     }
   }
-  Future<void> updateAuctionBidders(String workId, List<String> updatedBidders) async {
+
+  Future<void> updateAuctionBidders(
+      String workId, List<String> updatedBidders) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({
         'auctionUserId': updatedBidders,
@@ -97,6 +99,7 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("입찰자 업데이트 오류: $e");
     }
   }
+
   Future<void> endAuction(String workId) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({
@@ -124,6 +127,7 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("경매 종료 오류: $e");
     }
   }
+
   Future<void> updateNowprice(String workId, int newPrice) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({
@@ -151,6 +155,7 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("현재가 업로드 오류: $e");
     }
   }
+
   Future<void> updateLastBidder(String workId, String newBidder) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({

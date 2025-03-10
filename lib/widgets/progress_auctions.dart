@@ -23,65 +23,54 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<AuctionWork>>(
-        future: _fetchAuctionWorks(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('데이터를 불러오는 중 오류 발생'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('진행중인 경매가 없습니다.'));
-          }
-          final auctionWorks = snapshot.data!;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 160,
-                child: CustomScrollView(
-                  scrollDirection: Axis.horizontal,
-                  slivers: [
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int index) {
-                          if (index >= auctionWorks.length) {
-                            return SizedBox.shrink();
-                          }
-                          final auction = auctionWorks[index];
-                          return FutureBuilder<Work?>(
-                            future: Provider.of<WorkProvider>(context,
-                                    listen: false)
-                                .getWorkById(auction.workId),
-                            builder: (context, workSnapshot) {
-                              if (workSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return CircularProgressIndicator();
-                              }
-                              if (workSnapshot.hasError ||
-                                  !workSnapshot.hasData) {
-                                return Text(
-                                  '작품 없음',
-                                  style: TextStyle(fontSize: 9),
-                                );
-                              }
-                              final work = workSnapshot.data!;
-                              return Padding(
-                                padding: EdgeInsets.fromLTRB(20, 8, 8, 8),
-                                child: Container(
-                                    width: 150,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color.fromARGB(
-                                              255, 225, 225, 225),
-                                          spreadRadius: 2,
-                                          blurRadius: 2,
-                                          offset: Offset(0, 4),
-                                        )
-                                      ],
+    return Column(
+      children: [
+        SizedBox(
+          height: 160,
+          child: CustomScrollView(
+            scrollDirection: Axis.horizontal,
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        right: 12.0,
+                        left: index == 0 ? 0.0 : 0.0,
+                      ),
+                      child: SizedBox(
+                        width: 150,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 90,
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Center(child: Text('Item $index')),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 70,
+                                    child: Text(
+                                      '작품 제목',
+                                      style: TextStyle(fontSize: 18),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
