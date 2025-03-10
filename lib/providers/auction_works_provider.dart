@@ -128,6 +128,17 @@ class AuctionWorksProvider with ChangeNotifier {
     }
   }
 
+  Future<void> checkAndEndExpiredAuctions() async {
+    final now = DateTime.now();
+    final expiredAuctions = allAuctionWorks.where((auction) => auction.endDate.isBefore(now) && !auction.auctionComplete).toList();
+
+    for (final auction in expiredAuctions) {
+      await endAuction(auction.workId);
+    }
+
+    notifyListeners();
+  }
+  
   Future<void> updateNowprice(String workId, int newPrice) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({
