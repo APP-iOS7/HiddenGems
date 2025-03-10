@@ -5,6 +5,8 @@ import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:provider/provider.dart';
 
+import 'package:intl/intl.dart';
+
 class ProgressAuctions extends StatefulWidget {
   const ProgressAuctions({super.key});
 
@@ -149,9 +151,9 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                                               )
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                        ],
+                                      ),
+                                    )
                                   ),
                                 );
                               },
