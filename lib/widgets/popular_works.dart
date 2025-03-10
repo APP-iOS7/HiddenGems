@@ -37,27 +37,27 @@ class PopularWorks extends StatelessWidget {
               final work = works[index];
 
               return Padding(
-                padding: EdgeInsets.only(
-                  right: 12.0,
-                  left: index == 0 ? 0.0 : 0.0,
-                ),
-                child: SizedBox(
+                padding: EdgeInsets.all(8),
+                child: Container(
                   width: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(255, 225, 225, 225),
+                        spreadRadius: 2,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      )
+                    ],
+                  ),
                   child: Column(
                     children: [
                       SizedBox(
                         height: 90,
                         child: Card(
                           child: Container(
-                            decoration: BoxDecoration(boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withValues(alpha: 0.7),
-                                spreadRadius: 8,
-                                blurRadius: 10,
-                                offset:
-                                    Offset(0, 5), // changes position of shadow
-                              )
-                            ]),
                             child: Image.network(
                               work.workPhotoURL,
                               fit: BoxFit.cover,
@@ -81,16 +81,27 @@ class PopularWorks extends StatelessWidget {
                                 overflow: TextOverflow.fade,
                               ),
                             ),
+                            SizedBox(width: 8),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
-                                  work.artistNickName,
-                                  style: TextStyle(fontSize: 14),
+                                SizedBox(
+                                  width: 50,
+                                  child: Text(
+                                    work.artistNickName,
+                                    style: TextStyle(fontSize: 14),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),                
                                 ),
-                                Text(
-                                  '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
-                                  style: TextStyle(fontSize: 10),
+                                SizedBox(
+                                  width: 50,
+                                  child: Text(
+                                    '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
+                                    style: TextStyle(fontSize: 10),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),                
                                 ),
                               ],
                             ),
