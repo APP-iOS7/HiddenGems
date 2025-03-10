@@ -37,33 +37,43 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
       appBar: AppBar(
         actions: [
           if (userProvider.user!.id != widget.user.id)
-            TextButton(
-              onPressed: subscribing
-                  ? () {
-                      // 구독 취소 로직
-                      setState(() {
-                        subscribing = !subscribing;
-                        final updatedSubscribeUsers = List<String>.from(
-                            userProvider.user!.subscribeUsers);
-                        updatedSubscribeUsers.remove(widget.user.id);
-                        userProvider
-                            .updateUserSubscribeUsers(updatedSubscribeUsers);
-                      });
-                      debugPrint(subscribing.toString());
-                    }
-                  : () {
-                      // 구독 로직
-                      setState(() {
-                        subscribing = !subscribing;
-                        final updatedSubscribeUsers = List<String>.from(
-                            userProvider.user!.subscribeUsers);
-                        updatedSubscribeUsers.add(widget.user.id);
-                        userProvider
-                            .updateUserSubscribeUsers(updatedSubscribeUsers);
-                      });
-                      debugPrint(subscribing.toString());
-                    },
-              child: Text(subscribing ? '구독 중' : '구독하기'),
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.purple.shade100),
+                    backgroundColor:
+                        subscribing ? Colors.purple.shade50 : null),
+                onPressed: subscribing
+                    ? () {
+                        // 구독 취소 로직
+                        setState(() {
+                          subscribing = !subscribing;
+                          final updatedSubscribeUsers = List<String>.from(
+                              userProvider.user!.subscribeUsers);
+                          updatedSubscribeUsers.remove(widget.user.id);
+                          userProvider
+                              .updateUserSubscribeUsers(updatedSubscribeUsers);
+                        });
+                        debugPrint(subscribing.toString());
+                      }
+                    : () {
+                        // 구독 로직
+                        setState(() {
+                          subscribing = !subscribing;
+                          final updatedSubscribeUsers = List<String>.from(
+                              userProvider.user!.subscribeUsers);
+                          updatedSubscribeUsers.add(widget.user.id);
+                          userProvider
+                              .updateUserSubscribeUsers(updatedSubscribeUsers);
+                        });
+                        debugPrint(subscribing.toString());
+                      },
+                child: Text(
+                  subscribing ? '구독 중' : '구독하기',
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ),
             ),
         ],
         title: Text('${widget.user.nickName} 님의 작품'),
