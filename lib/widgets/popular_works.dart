@@ -28,7 +28,7 @@ class PopularWorks extends StatelessWidget {
         final works = snapshot.data!;
 
         return SizedBox(
-          height: 160,
+          height: 200,
           child: ListView.separated(
             separatorBuilder: (BuildContext context, int index) =>
                 const SizedBox(width: 10),
@@ -50,11 +50,11 @@ class PopularWorks extends StatelessWidget {
                     left: index == 0 ? 0.0 : 0.0,
                   ),
                   child: SizedBox(
-                    width: 150,
+                    width: 200,
                     child: Column(
                       children: [
                         SizedBox(
-                          height: 90,
+                          height: 120,
                           child: Card(
                             child: Container(
                               decoration: BoxDecoration(boxShadow: [

@@ -11,7 +11,7 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(24, 24, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -19,11 +19,13 @@ class MainScreen extends StatelessWidget {
               '실시간 진행 중인 경매',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
+            SizedBox(height: 10),
             ProgressAuctions(),
             Text(
               '인기 작품들',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
+            SizedBox(height: 10),
             PopularWorks(),
             Row(
               children: [
@@ -57,6 +59,7 @@ class MainScreen extends StatelessWidget {
                     ))
               ],
             ),
+            SizedBox(height: 10),
             PopularArtist()
           ],
         ),
