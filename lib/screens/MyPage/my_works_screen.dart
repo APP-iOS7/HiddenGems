@@ -5,8 +5,29 @@ import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
 import 'package:provider/provider.dart';
 
-class MyWorksScreen extends StatelessWidget {
+class MyWorksScreen extends StatefulWidget {
   const MyWorksScreen({super.key});
+
+  @override
+  _MyWorksScreenState createState() => _MyWorksScreenState();
+}
+
+class _MyWorksScreenState extends State<MyWorksScreen> {
+
+  late Future<List<String>> _myWorksFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMyWorks();
+  }
+
+  void _fetchMyWorks() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    setState(() {
+      _myWorksFuture = myWorksIds(userProvider.user!.id);
+    });
+  }
 
   Future<List<String>> myWorksIds(String userId) async {
     final firestore = FirebaseFirestore.instance;
@@ -31,7 +52,7 @@ class MyWorksScreen extends StatelessWidget {
         title: const Text('내가 등록한 작품'),
       ),
       body: FutureBuilder<List<String>>(
-        future: myWorksIds(userProvider.user!.id),
+        future: _myWorksFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -76,15 +97,17 @@ class MyWorksScreen extends StatelessWidget {
                       final work = Work.fromFirestore(workSnapshot.data!);
 
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  WorkdetailScreen(work: work),
+                              builder: (context) => WorkdetailScreen(work: work),
                             ),
                           );
+
+                          _fetchMyWorks();
                         },
+
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
