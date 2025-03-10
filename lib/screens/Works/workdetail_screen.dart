@@ -114,7 +114,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ),
                       onPressed: () {
                         _toggleLike(workProvider, userProvider, updatedWork.id,
-                            isLiked);
+                            updatedWork.artistID, isLiked);
                       },
                     ),
                     SizedBox(width: 5),
@@ -333,7 +333,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
   }
 
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
-      String workId, bool isLiked) {
+      String workId, String artistId, bool isLiked) {
     final currentUser = userProvider.user;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -355,8 +355,10 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     List<String> updatedLikedUsers = List.from(work.likedUsers);
     if (isLiked) {
       updatedLikedUsers.remove(userId);
+      userProvider.subMyLikeScore(artistId);
     } else {
       updatedLikedUsers.add(userId);
+      userProvider.addMyLikeScore(artistId);
     }
 
     workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
