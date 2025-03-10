@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
 import 'package:intl/intl.dart';
@@ -84,8 +85,21 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                           ),
                         );
                       } else if (result == 'delete') {
-                        _showDeleteConfirmationDialog(context, userProvider,
-                            workProvider, auctionProvider, updatedWork.id);
+                        await AddModal(
+                          context: context,
+                          title: '작품 삭제',
+                          description: '해당 작품의 경매 내역까지 삭제됩니다.\n삭제하시겠습니까?',
+                          whiteButtonText: '취소',
+                          purpleButtonText: '삭제',
+                          function: () async {
+                            await userProvider.deleteMyWorks(updatedWork.id);
+                            await workProvider.deleteWork(updatedWork.id);
+                            await auctionProvider
+                                .deleteAuctionWork(updatedWork.id);
+                            await workProvider.loadWorks();
+                            Navigator.pop(context);
+                          },
+                        );
                       }
                     },
                     itemBuilder: (BuildContext context) =>

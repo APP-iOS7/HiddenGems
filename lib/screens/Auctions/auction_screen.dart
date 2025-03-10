@@ -429,6 +429,14 @@ class AuctionScreenState extends State<AuctionScreen> {
                   SizedBox(
                     width: 120,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
                       onPressed: () async {
                         try {
                           // 입찰자가 없는 경우 경매 종료 불가
