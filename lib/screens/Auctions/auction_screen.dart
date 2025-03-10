@@ -8,6 +8,7 @@ import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 
 class AuctionScreen extends StatefulWidget {
   final AuctionWork auctionWork;
@@ -40,11 +41,13 @@ class AuctionScreenState extends State<AuctionScreen> {
   }
 
   List<AppUser> _allUsers = [];
+  Timer? _auctionTimer;
 
   @override
   void initState() {
     super.initState();
     _fetchUsers();
+    _startAuctionTimer();
   }
 
   Future<void> _fetchUsers() async {
@@ -60,6 +63,42 @@ class AuctionScreenState extends State<AuctionScreen> {
     } catch (e) {
       debugPrint('Error fetching users: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _auctionTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startAuctionTimer() {
+    _auctionTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+      final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+      final now = DateTime.now();
+
+      if (widget.auctionWork.endDate.isBefore(now) && !widget.auctionWork.auctionComplete) {
+        _endAuction();
+      }
+      auctionProvider.checkAndEndExpiredAuctions();
+    });
+  }
+
+  Future<void> _endAuction() async {
+    final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
+    
+    await auctionProvider.endAuction(widget.auctionWork.workId);
+    Provider.of<WorkProvider>(context, listen: false)
+        .updateWorkAuctionStatus(widget.auctionWork.workId, false);
+    Provider.of<WorkProvider>(context, listen: false)
+        .updateWorkSellingStatus(widget.auctionWork.workId, true);
+
+    setState(() {
+      widget.auctionWork.auctionComplete = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("경매가 자동 종료되었습니다.")),
+    );
   }
 
   @override
@@ -125,7 +164,16 @@ class AuctionScreenState extends State<AuctionScreen> {
                           ),
                           if (!updatedAuction.auctionComplete)
                             Text(
-                              "경매진행중",
+                              "경매 진행중",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          if (updatedAuction.auctionComplete)
+                            Text(
+                              "경매 종료됨",
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -322,6 +370,7 @@ class AuctionScreenState extends State<AuctionScreen> {
   }
 
   void _endAuctionModal(BuildContext context) {
+
     showModalBottomSheet(
       backgroundColor: Colors.white,
       context: context,
@@ -347,6 +396,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 20),
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
