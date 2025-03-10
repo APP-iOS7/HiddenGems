@@ -57,15 +57,18 @@ class WorkProvider with ChangeNotifier {
     for (var auctionDoc in auctionQuery.docs) {
       double nowPrice = auctionDoc['nowPrice']?.toDouble() ?? 0.0;
       double minPrice = updatedWork.minPrice;
+      bool resetBidder = false;
 
       if (nowPrice < minPrice) {
         nowPrice = minPrice;
+        resetBidder = true;
       }
 
       await auctionDoc.reference.update({
         'workTitle': updatedWork.title,
         'minPrice': minPrice,
         'nowPrice': nowPrice,
+        if (resetBidder) 'lastBidderId': null,
       });
     }
     notifyListeners();
