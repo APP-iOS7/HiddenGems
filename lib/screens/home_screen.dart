@@ -10,71 +10,119 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Text(
-                  '실시간 진행 중인 경매',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-              ),
-              ProgressAuctions(),
-              SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Text(
-                  '인기 작품들',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-              ),
-              SizedBox(height: 10),
-              PopularWorks(),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Row(
-                  children: [
-                    Text(
-                      '인기 작가들',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader(
+                    context, '실시간 진행 중인 경매', Icons.gavel_rounded, null, null),
+                const SizedBox(height: 15),
+                const ProgressAuctions(),
+
+                _buildDivider(),
+
+                _buildSectionHeader(
+                    context, '인기 작품들', Icons.star_rounded, null, null),
+                const SizedBox(height: 15),
+                const PopularWorks(),
+
+                // 섹션 구분선
+                _buildDivider(),
+
+                // 인기 작가 섹션
+                _buildSectionHeader(
+                    context, '인기 작가들', Icons.person_rounded, '더보기', () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ArtistScreen(),
                     ),
-                    Spacer(),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ArtistScreen(),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              '더보기',
-                              style: TextStyle(
-                                  color: Colors.grey[600], fontSize: 14),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              size: 20,
-                              color: Colors.grey[600],
-                            )
-                          ],
-                        ))
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              PopularArtist()
-            ],
+                  );
+                }),
+                const SizedBox(height: 15),
+                const PopularArtist(),
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  // 섹션 헤더 위젯
+  Widget _buildSectionHeader(BuildContext context, String title, IconData icon,
+      String? buttonText, VoidCallback? onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: Theme.of(context).primaryColor,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
+          ),
+          const Spacer(),
+          if (buttonText != null && onPressed != null)
+            TextButton(
+              onPressed: onPressed,
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.grey[100],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    buttonText,
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 12,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // 섹션 구분선 위젯
+  Widget _buildDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Container(
+        height: 8,
+        color: const Color(0xFFF3EDF7),
       ),
     );
   }

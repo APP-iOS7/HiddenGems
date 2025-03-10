@@ -1,129 +1,101 @@
+
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/modal.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 
-class AddWorkScreen extends StatefulWidget {
-  const AddWorkScreen({super.key});
+class EditWorkScreen extends StatefulWidget {
+  final Work work;
+
+  const EditWorkScreen({super.key, required this.work});
 
   @override
-  _AddWorkScreenState createState() => _AddWorkScreenState();
+  _EditWorkScreenState createState() => _EditWorkScreenState();
 }
 
-class _AddWorkScreenState extends State<AddWorkScreen> {
+class _EditWorkScreenState extends State<EditWorkScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _minPriceController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _minPriceController;
+  late TextEditingController _imageUrlController;
 
   File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
   String? _imageUrl;
 
-  // Future<void> _pickImage() async {
-  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-  //   if (pickedFile != null) {
-  //     setState(() {
-  //       _selectedImage = File(pickedFile.path);
-  //       _imageUrl = null; // 로컬 이미지를 선택하면 URL 초기화
-  //       _imageUrlController.clear();
-  //     });
-  //   }
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.work.title);
+    _descriptionController =
+        TextEditingController(text: widget.work.description);
+    _minPriceController =
+        TextEditingController(text: widget.work.minPrice.toString());
+    _imageUrlController =
+        TextEditingController(text: widget.work.workPhotoURL);
+    _imageUrl = widget.work.workPhotoURL;
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _minPriceController.dispose();
+    _imageUrlController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage() async {
-    try {
-      final XFile? pickedImage = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-      );
-
-      if (pickedImage == null) {
-        return;
-      }
-
-      // 파일 업로드
-      final File file = File(pickedImage.path);
-      final ref = FirebaseStorage.instance.ref(
-        'work_Image/work_Image${DateTime.now()}',
-      );
-      await ref.putFile(file);
-
-      // 다운로드 URL 업데이트
-      final String downloadUrl = await ref.getDownloadURL();
-
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
       setState(() {
-        _imageUrl = downloadUrl;
+        _selectedImage = File(pickedFile.path);
+        _imageUrl = null; // 로컬 이미지를 선택하면 URL 초기화
+        _imageUrlController.clear();
       });
-    } catch (e) {
-      debugPrint('이미지 선택 실패: $e');
     }
   }
 
-  void _addWork(WorkProvider workProvider, UserProvider userProvider) async {
-    if (userProvider.user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("로그인된 사용자 정보가 없습니다.")),
-      );
-      return;
-    }
+  void _updateWork(WorkProvider workProvider) async {
+    if (!_formKey.currentState!.validate()) return;
 
-    String title = _titleController.text.isNotEmpty
-        ? _titleController.text
-        : '랜덤 작품 #${DateTime.now().millisecondsSinceEpoch % 1000}';
-    String description = _descriptionController.text.isNotEmpty
-        ? _descriptionController.text
-        : '이것은 자동 생성된 더미 데이터입니다.';
-    double minPrice = _minPriceController.text.isNotEmpty
-        ? double.tryParse(_minPriceController.text) ?? 10.0
-        : (10 + (DateTime.now().millisecondsSinceEpoch % 100) * 5).toDouble();
+    String updatedTitle = _titleController.text;
+    String updatedDescription = _descriptionController.text;
+    double updatedMinPrice =
+        double.tryParse(_minPriceController.text) ?? widget.work.minPrice;
 
-    String finalImageUrl = _imageUrl ?? 'https://picsum.photos/200/300';
+    String finalImageUrl = _imageUrl ?? widget.work.workPhotoURL;
 
-    final newWork = Work(
-      artistID: userProvider.user!.id,
-      artistNickName: userProvider.user!.nickName,
-      selling: false,
-      title: title,
-      description: description,
-      createDate: DateTime.now(),
+    Work updatedWork = widget.work.copyWith(
+      title: updatedTitle,
+      description: updatedDescription,
+      minPrice: updatedMinPrice,
       workPhotoURL: finalImageUrl,
-      minPrice: minPrice,
-      likedUsers: [],
-      likedCount: 0,
-      doAuction: false,
     );
 
-    await workProvider.addWork(newWork);
+    await workProvider.updateWork(updatedWork);
 
-    // 사용자의 myWorks 리스트에 새 작품 id 추가
-    final updatedMyWorks = List<String>.from(userProvider.user!.myWorks);
-    updatedMyWorks.add(newWork.id);
-    await userProvider.updateUserMyWorks(updatedMyWorks);
-
-    // 비동기 작업 후 widget이 여전히 마운트된 경우에만 context 사용
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("작품이 성공적으로 등록되었습니다!")),
+      const SnackBar(content: Text("작품 수정 완료")),
     );
 
-    Navigator.pop(context); // 작품 등록 후 이전 화면으로 이동
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final workProvider = Provider.of<WorkProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("작품 추가"),
+          title: const Text("작품 수정"),
           backgroundColor: Colors.white,
         ),
         body: SingleChildScrollView(
@@ -210,20 +182,22 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                   SizedBox(height: 10),
 
                   // 갤러리에서 이미지 선택 버튼
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    //margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                  GestureDetector(
+                    onTap: () {
+                      _pickImage;
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 50,
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      //margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
 
-                    alignment: Alignment.center,
-                    child: InkWell(
-                      onTap: _pickImage,
+                      alignment: Alignment.center,
                       child: Text(
                         "갤러리에서 이미지 선택",
                         style: TextStyle(
@@ -287,17 +261,8 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
           ),
         ),
         bottomNavigationBar: GestureDetector(
-          onTap: () async {
-            AddModal(
-              context: context,
-              title: '작품 등록',
-              description: '작품을 등록하시겠습니까?',
-              whiteButtonText: '취소',
-              purpleButtonText: '확인',
-              function: () async {
-                _addWork(workProvider, userProvider);
-              },
-            );
+          onTap: () {
+            _updateWork(workProvider);
           },
           child: Container(
             width: double.infinity,
@@ -310,10 +275,8 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
             ),
             alignment: Alignment.center,
             child: Text(
-              "작품 등록하기",
+              "저장하기",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),

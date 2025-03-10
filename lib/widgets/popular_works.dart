@@ -28,7 +28,7 @@ class PopularWorks extends StatelessWidget {
         final works = snapshot.data!;
 
         return SizedBox(
-          height: 200,
+          height: 180,
           child: ListView.separated(
             padding: EdgeInsets.only(left: 20.0),
             separatorBuilder: (BuildContext context, int index) =>
@@ -95,7 +95,8 @@ class PopularWorks extends StatelessWidget {
                                 ),
                                 Text(
                                   '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
-                                  style: TextStyle(fontSize: 13),
+                                  style: TextStyle(fontSize: 10),
+                                  overflow: TextOverflow.visible,
                                 ),
                               ],
                             ),
