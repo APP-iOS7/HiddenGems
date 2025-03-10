@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
+import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
+import 'package:intl/intl.dart';
 
 class PopularWorks extends StatelessWidget {
   const PopularWorks({super.key});
@@ -26,43 +28,62 @@ class PopularWorks extends StatelessWidget {
         final works = snapshot.data!;
 
         return SizedBox(
-          height: 160,
-          child: ListView.builder(
+          height: 200,
+          child: ListView.separated(
+            padding: EdgeInsets.only(left: 20.0),
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(width: 40),
             scrollDirection: Axis.horizontal,
             itemCount: works.length,
             itemBuilder: (context, index) {
               final work = works[index];
 
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: 12.0,
-                  left: index == 0 ? 0.0 : 0.0,
-                ),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => WorkdetailScreen(work: work)));
+                },
                 child: SizedBox(
-                  width: 150,
+                  width: 160,
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 90,
+                        height: 120,
                         child: Card(
-                          child: Image.network(
-                            work.workPhotoURL,
-                            fit: BoxFit.cover,
+                          child: Container(
+                            // width: 160,
+                            decoration: BoxDecoration(boxShadow: [
+                              BoxShadow(
+                                color: Colors.purple.withValues(alpha: 0.2),
+                                spreadRadius: 5,
+                                blurRadius: 12,
+                                offset:
+                                    Offset(0, 5), // changes position of shadow
+                              )
+                            ]),
+                            child: Image.network(
+                              work.workPhotoURL,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
                       ),
+                      SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
                               width: 70,
                               child: Text(
                                 work.title,
-                                style: TextStyle(fontSize: 18),
-                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w700),
+                                overflow: TextOverflow.fade,
                               ),
                             ),
                             Column(
@@ -70,11 +91,11 @@ class PopularWorks extends StatelessWidget {
                               children: [
                                 Text(
                                   work.artistNickName,
-                                  style: TextStyle(fontSize: 9),
+                                  style: TextStyle(fontSize: 13),
                                 ),
                                 Text(
-                                  '${work.minPrice}원',
-                                  style: TextStyle(fontSize: 9),
+                                  '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
+                                  style: TextStyle(fontSize: 13),
                                 ),
                               ],
                             ),

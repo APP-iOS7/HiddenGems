@@ -198,54 +198,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                               fontSize: 16,
                             ),
                           ),
-SizedBox(height: 8),
-                            ...updatedAuction.auctionUserId.map((bidderId) {
-                              final bidder = _allUsers.firstWhere(
-                                (user) => user.id == bidderId,
-                                orElse: () => AppUser(
-                                  id: '',
-                                  signupDate: DateTime(2000, 1, 1),
-                                  profileURL: '',
-                                  nickName: '알 수 없는 사용자',
-                                  myLikeScore: 0,
-                                  myWorks: [],
-                                  myWorksCount: 0,
-                                  likedWorks: [],
-                                  biddingWorks: [],
-                                  beDeliveryWorks: [],
-                                  completeWorks: [],
-                                  subscribeUsers: [],
-                                ),
-                              );
-
-                              bool isLastBidder = bidder.id == updatedAuction.lastBidderId;
-
-                              return SingleChildScrollView(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 16, top: 4),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.person_outline,
-                                        size: 16,
-                                        color: isLastBidder
-                                                  ? Colors.blue
-                                                  : Colors.black,
-                                        ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        bidder.nickName,
-                                        style: TextStyle(
-                                          color: isLastBidder
-                                            ? Colors.blue
-                                            : Colors.black,
-                                        )
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                          SizedBox(height: 8),
                           ],
                         ),
                       ),
@@ -279,6 +232,7 @@ SizedBox(height: 8),
                                     subscribeUsers: [],
                                   ),
                                 );
+                                bool isLastBidder = bidder.id == updatedAuction.lastBidderId;
 
                                 return SingleChildScrollView(
                                   child: Padding(
@@ -286,15 +240,27 @@ SizedBox(height: 8),
                                         const EdgeInsets.only(left: 16, top: 4),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.person_outline,
-                                            size: 16),
+                                        Icon(
+                                          Icons.person_outline,
+                                          size: 16,
+                                          color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                        ),
                                         const SizedBox(width: 8),
-                                        Text(bidder.nickName),
+                                        Text(
+                                        bidder.nickName,
+                                        style: TextStyle(
+                                          color: isLastBidder
+                                            ? Colors.blue
+                                            : Colors.black,
+                                        )
+                                      ),
                                       ],
                                     ),
                                   ),
                                 );
-                              }).toList(), // 🔹 `map`을 사용한 후 `.toList()` 추가 필수
+                              }).toList(),
                             ],
                           ),
                         )
