@@ -19,9 +19,8 @@ class AuctionWorksProvider with ChangeNotifier {
 
   void _listenToAuctionUpdates() {
     _firestore.collection('auctionWorks').snapshots().listen((snapshot) {
-      _allAuctionWorks = snapshot.docs
-          .map((doc) => AuctionWork.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
+      _allAuctionWorks =
+          snapshot.docs.map((doc) => AuctionWork.fromMap(doc.data())).toList();
       notifyListeners(); // ✅ 변경 감지 즉시 UI 업데이트
     });
   }
@@ -83,7 +82,9 @@ class AuctionWorksProvider with ChangeNotifier {
       debugPrint("Error: $e");
     }
   }
-  Future<void> updateAuctionBidders(String workId, List<String> updatedBidders) async {
+
+  Future<void> updateAuctionBidders(
+      String workId, List<String> updatedBidders) async {
     try {
       await _firestore.collection('auctionWorks').doc(workId).update({
         'auctionUserId': updatedBidders,

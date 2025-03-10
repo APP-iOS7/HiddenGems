@@ -43,6 +43,7 @@ dependencies:
   provider: ^6.1.2
   intl: ^0.20.2
   image_picker: ^1.1.2
+  kpostal: ^1.1.0
 
 dev_dependencies:
   flutter_test:
