@@ -429,6 +429,14 @@ class AuctionScreenState extends State<AuctionScreen> {
                   SizedBox(
                     width: 120,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
                       onPressed: () async {
                         try {
                           // 입찰자가 없는 경우 경매 종료 불가
@@ -459,7 +467,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                             address: '', // null 허용 필드는 빈 값으로 초기화
                             name: '',
                             phone: '',
-                            deliverComplete: '배송지 입력',
+                            deliverComplete: '배송지입력대기',
                             deliverRequest: '직접 입력',
                           );
                           // Firestore에 저장

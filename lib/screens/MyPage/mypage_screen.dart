@@ -171,20 +171,6 @@ class MyPageScreen extends StatelessWidget {
                               ))),
                     ],
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      AddModal(
-                          context: context,
-                          title: 'test',
-                          description: 'test1',
-                          whiteButtonText: 'button1',
-                          purpleButtonText: 'button2',
-                          function: () {
-                            print('test');
-                          });
-                    },
-                    child: Text('test'),
-                  ),
                 ],
               ),
             ),

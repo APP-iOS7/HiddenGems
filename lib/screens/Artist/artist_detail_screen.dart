@@ -51,7 +51,6 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          
         ],
         title: Text('${widget.user.nickName}'),
       ),
