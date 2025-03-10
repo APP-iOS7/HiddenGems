@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
@@ -156,7 +157,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        "₩${updatedWork.minPrice.toString()}",
+                        "${NumberFormat('###,###,###,###').format(updatedWork.minPrice)} 원",
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),

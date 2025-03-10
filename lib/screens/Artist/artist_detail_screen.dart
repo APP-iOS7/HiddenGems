@@ -14,31 +14,66 @@ class ArtistDetailScreen extends StatefulWidget {
   State<ArtistDetailScreen> createState() => _ArtistDetailScreenState();
 }
 
-bool subscribing = false;
-
 class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
+  bool subscribing = false;
+
   @override
   void initState() {
     super.initState();
-    subscribing = false;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    if (userProvider.user != null) {
+      setState(() {
+        subscribing =
+            userProvider.user!.subscribeUsers.contains(widget.user.id);
+      });
+    }
+  }
+
+  Future<void> _toggleSubscription() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final currentUser = userProvider.user;
+    if (currentUser == null || currentUser.id == widget.user.id) return;
+
+    List<String> updatedSubscribeUsers =
+        List<String>.from(currentUser.subscribeUsers);
+
+    if (subscribing) {
+      updatedSubscribeUsers.remove(widget.user.id);
+    } else {
+      updatedSubscribeUsers.add(widget.user.id);
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({'subscribeUsers': updatedSubscribeUsers});
+
+      userProvider.updateUserSubscribeUsers(updatedSubscribeUsers);
+
+      setState(() {
+        subscribing = !subscribing;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('구독 업데이트 실패: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    if (userProvider.user!.subscribeUsers.contains(widget.user.id) ||
-        userProvider.user!.id == widget.user.id) {
-      setState(() {
-        subscribing = true;
-      });
-    }
+
     return Scaffold(
       appBar: AppBar(
         actions: [
-          TextButton(
+          if (userProvider.user!.id != widget.user.id)
+            TextButton(
               onPressed: subscribing
                   ? () {
-                      // 구독 빼기
+                      // 구독 취소 로직
                       setState(() {
                         subscribing = !subscribing;
                         final updatedSubscribeUsers = List<String>.from(
@@ -50,7 +85,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                       debugPrint(subscribing.toString());
                     }
                   : () {
-                      // 구독 더하기
+                      // 구독 로직
                       setState(() {
                         subscribing = !subscribing;
                         final updatedSubscribeUsers = List<String>.from(
@@ -61,11 +96,8 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                       });
                       debugPrint(subscribing.toString());
                     },
-              child: Text(userProvider.user!.id == widget.user.id
-                  ? ''
-                  : subscribing
-                      ? '구독 중'
-                      : '구독하기'))
+              child: Text(subscribing ? '구독 중' : '구독하기'),
+            ),
         ],
         title: Text('${widget.user.nickName} 님의 작품'),
       ),
@@ -96,7 +128,6 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                   return const Center(child: Text('오류가 발생했습니다.'));
                 }
 
-                // Firestore 문서를 Work 객체로 변환
                 final work = Work.fromFirestore(workSnapshot.data!);
 
                 return GestureDetector(
@@ -128,7 +159,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                           right: 8,
                           child: Text(
                             work.title,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 20,

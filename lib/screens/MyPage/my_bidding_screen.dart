@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auction_works_provider.dart';
@@ -37,10 +38,15 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
     final auctionProvider =
         Provider.of<AuctionWorksProvider>(context, listen: false);
     final workProvider = Provider.of<WorkProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     await auctionProvider.fetchAllAuctionWorks();
     await workProvider.loadWorks();
     setState(() {
-      _allAuctionWorks = auctionProvider.allAuctionWorks.cast<AuctionWork>();
+      _allAuctionWorks = auctionProvider.allAuctionWorks
+          .where((auction) =>
+              auction.auctionUserId.contains(userProvider.user!.id))
+          .toList()
+          .cast<AuctionWork>();
       _filteredWorks = _allAuctionWorks;
     });
   }

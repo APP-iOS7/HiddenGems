@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
+import 'package:intl/intl.dart';
 
 class PopularWorks extends StatelessWidget {
   const PopularWorks({super.key});
@@ -27,7 +28,9 @@ class PopularWorks extends StatelessWidget {
 
         return SizedBox(
           height: 160,
-          child: ListView.builder(
+          child: ListView.separated(
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(width: 10),
             scrollDirection: Axis.horizontal,
             itemCount: works.length,
             itemBuilder: (context, index) {
@@ -45,12 +48,24 @@ class PopularWorks extends StatelessWidget {
                       SizedBox(
                         height: 90,
                         child: Card(
-                          child: Image.network(
-                            work.workPhotoURL,
-                            fit: BoxFit.cover,
+                          child: Container(
+                            decoration: BoxDecoration(boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withValues(alpha: 0.7),
+                                spreadRadius: 8,
+                                blurRadius: 10,
+                                offset:
+                                    Offset(0, 5), // changes position of shadow
+                              )
+                            ]),
+                            child: Image.network(
+                              work.workPhotoURL,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
+                      SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: Row(
@@ -61,8 +76,9 @@ class PopularWorks extends StatelessWidget {
                               width: 70,
                               child: Text(
                                 work.title,
-                                style: TextStyle(fontSize: 18),
-                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w700),
+                                overflow: TextOverflow.fade,
                               ),
                             ),
                             Column(
@@ -70,11 +86,11 @@ class PopularWorks extends StatelessWidget {
                               children: [
                                 Text(
                                   work.artistNickName,
-                                  style: TextStyle(fontSize: 9),
+                                  style: TextStyle(fontSize: 14),
                                 ),
                                 Text(
-                                  '${work.minPrice}원',
-                                  style: TextStyle(fontSize: 9),
+                                  '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
+                                  style: TextStyle(fontSize: 10),
                                 ),
                               ],
                             ),
