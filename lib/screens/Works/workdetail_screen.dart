@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +8,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
+import 'package:hidden_gems/screens/Works/editwork_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -43,16 +45,15 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
       (auction) => auction.workId == widget.work.id,
       orElse: () => AuctionWork(
-        workId: '',
-        workTitle: '알 수 없는 경매',
-        artistId: '',
-        artistNickname: '',
-        auctionUserId: [],
-        minPrice: 0,
-        nowPrice: 0,
-        endDate: DateTime.now(),
-        auctionComplete: true,
-      ),
+          workId: '',
+          workTitle: '알 수 없는 경매',
+          artistId: '',
+          auctionUserId: [],
+          minPrice: 0,
+          nowPrice: 0,
+          endDate: DateTime.now(),
+          auctionComplete: true,
+          artistNickname: 'unknown'),
     );
 
     return Scaffold(
@@ -76,10 +77,29 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                   child: PopupMenuButton<String>(
                     onSelected: (String result) async {
                       if (result == 'edit') {
-                        // 수정 기능
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditWorkScreen(work: updatedWork),
+                          ),
+                        );
                       } else if (result == 'delete') {
-                        _showDeleteConfirmationDialog(context, userProvider,
-                            workProvider, auctionProvider, updatedWork.id);
+                        await AddModal(
+                          context: context,
+                          title: '작품 삭제',
+                          description: '해당 작품의 경매 내역까지 삭제됩니다.\n삭제하시겠습니까?',
+                          whiteButtonText: '취소',
+                          purpleButtonText: '삭제',
+                          function: () async {
+                            await userProvider.deleteMyWorks(updatedWork.id);
+                            await workProvider.deleteWork(updatedWork.id);
+                            await auctionProvider
+                                .deleteAuctionWork(updatedWork.id);
+                            await workProvider.loadWorks();
+                            Navigator.pop(context);
+                          },
+                        );
                       }
                     },
                     itemBuilder: (BuildContext context) =>
@@ -389,6 +409,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final auctionProvider =
                                 Provider.of<AuctionWorksProvider>(context,
                                     listen: false);
+
                             final auctionWork = AuctionWork(
                               workId: widget.work.id,
                               workTitle: widget.work.title,
@@ -533,12 +554,12 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             workId: '',
                             workTitle: '알 수 없는 경매',
                             artistId: '',
-                            artistNickname: '',
                             auctionUserId: [],
                             minPrice: 0,
                             nowPrice: 0,
                             endDate: DateTime.now(),
                             auctionComplete: true,
+                            artistNickname: 'unknown',
                           ),
                         );
 

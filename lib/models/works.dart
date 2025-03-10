@@ -66,4 +66,33 @@ class Work {
       'doAuction': doAuction,
     };
   }
+  Work copyWith({
+    String? id,
+    String? artistID,
+    String? artistNickName,
+    bool? selling,
+    String? title,
+    String? description,
+    DateTime? createDate,
+    String? workPhotoURL,
+    double? minPrice,
+    List<String>? likedUsers,
+    int? likedCount,
+    bool? doAuction,
+  }) {
+    return Work(
+      id: id ?? this.id,
+      artistID: artistID ?? this.artistID,
+      artistNickName: artistNickName ?? this.artistNickName,
+      selling: selling ?? this.selling,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      createDate: createDate ?? this.createDate,
+      workPhotoURL: workPhotoURL ?? this.workPhotoURL,
+      minPrice: minPrice ?? this.minPrice,
+      likedUsers: likedUsers ?? this.likedUsers,
+      likedCount: likedCount ?? this.likedCount,
+      doAuction: doAuction ?? this.doAuction,
+    );
+  }
 }

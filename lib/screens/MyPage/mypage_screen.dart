@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/main.dart';
 import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/MyPage/auctioned_works_list_screen.dart';
@@ -171,20 +170,6 @@ class MyPageScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                               ))),
                     ],
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      AddModal(
-                          context: context,
-                          title: 'test',
-                          description: 'test1',
-                          whiteButtonText: 'button1',
-                          purpleButtonText: 'button2',
-                          function: () {
-                            print('test');
-                          });
-                    },
-                    child: Text('test'),
                   ),
                 ],
               ),
