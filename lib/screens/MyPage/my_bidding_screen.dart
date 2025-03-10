@@ -274,7 +274,6 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
                                           subscribeUsers: [],
                                         ),
                                       );
-
                                       return Padding(
                                         padding: const EdgeInsets.only(
                                             left: 16, top: 4),

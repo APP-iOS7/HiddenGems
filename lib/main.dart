@@ -103,10 +103,10 @@ class HomeScreenState extends State<HomeScreen> {
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final workProvider =
-              Provider.of<WorkProvider>(context, listen: false);
-          final userProvider =
-              Provider.of<UserProvider>(context, listen: false);
+          // final workProvider =
+          //     Provider.of<WorkProvider>(context, listen: false);
+          // final userProvider =
+          //     Provider.of<UserProvider>(context, listen: false);
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => AddWorkScreen()),
           );

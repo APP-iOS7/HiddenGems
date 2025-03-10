@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
-import 'package:hidden_gems/screens/MyPage/be_delivery_work_screen.dart';
-import 'package:hidden_gems/screens/MyPage/complete_works_screen.dart';
+import 'package:hidden_gems/screens/MyPage/auctioned_works_list_screen.dart';
 import 'package:hidden_gems/screens/MyPage/my_works_screen.dart';
 import 'package:hidden_gems/screens/MyPage/subscribe_users_screen.dart';
 import 'package:provider/provider.dart';
@@ -150,31 +149,6 @@ class MyPageScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.local_shipping_outlined,
-                        color: Color(0xFF9800CB),
-                        size: 22,
-                      ),
-                      SizedBox(width: 18),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        BeDeliveryWorkScreen()));
-                          },
-                          child: Text('낙찰된 작품 배송지 입력 / 결제하기',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                              ))),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Icon(
                         Icons.receipt_long_outlined,
                         color: Color(0xFF9800CB),
                         size: 22,
@@ -186,7 +160,7 @@ class MyPageScreen extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        CompleteWorksScreen()));
+                                        AuctionedWorksListScreen()));
                           },
                           child: Text('낙찰내역 보기',
                               style: TextStyle(

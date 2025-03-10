@@ -47,7 +47,7 @@ class ProgressAuctions extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
+                                  SizedBox(
                                     width: 70,
                                     child: Text(
                                       '작품 제목',
