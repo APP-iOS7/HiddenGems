@@ -7,6 +7,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
+import 'package:hidden_gems/screens/Works/editwork_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -43,16 +44,15 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
       (auction) => auction.workId == widget.work.id,
       orElse: () => AuctionWork(
-        workId: '',
-        workTitle: '알 수 없는 경매',
-        artistId: '',
-        artistNickname: '',
-        auctionUserId: [],
-        minPrice: 0,
-        nowPrice: 0,
-        endDate: DateTime.now(),
-        auctionComplete: true,
-      ),
+          workId: '',
+          workTitle: '알 수 없는 경매',
+          artistId: '',
+          auctionUserId: [],
+          minPrice: 0,
+          nowPrice: 0,
+          endDate: DateTime.now(),
+          auctionComplete: true,
+          artistNickname: 'unknown'),
     );
 
     return Scaffold(
@@ -76,7 +76,13 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                   child: PopupMenuButton<String>(
                     onSelected: (String result) async {
                       if (result == 'edit') {
-                        // 수정 기능
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditWorkScreen(work: updatedWork),
+                          ),
+                        );
                       } else if (result == 'delete') {
                         _showDeleteConfirmationDialog(context, userProvider,
                             workProvider, auctionProvider, updatedWork.id);
@@ -389,17 +395,18 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final auctionProvider =
                                 Provider.of<AuctionWorksProvider>(context,
                                     listen: false);
+
                             final auctionWork = AuctionWork(
                               workId: widget.work.id,
                               workTitle: widget.work.title,
                               artistId: widget.work.artistID,
-                              artistNickname: widget.work.artistNickName,
                               auctionUserId: [],
                               minPrice: widget.work.minPrice.toInt(),
-                              endDate: DateTime.now().add(Duration(days: 7)),
+                              endDate: selectedDate,
                               nowPrice: widget.work.minPrice.toInt(),
                               auctionComplete: false,
                               lastBidderId: null,
+                              artistNickname: widget.work.artistID,
                             );
 
                             await auctionProvider.addAuctionWork(auctionWork);
@@ -533,12 +540,12 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             workId: '',
                             workTitle: '알 수 없는 경매',
                             artistId: '',
-                            artistNickname: '',
                             auctionUserId: [],
                             minPrice: 0,
                             nowPrice: 0,
                             endDate: DateTime.now(),
                             auctionComplete: true,
+                            artistNickname: 'unknown',
                           ),
                         );
 
