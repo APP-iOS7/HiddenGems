@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +7,6 @@ import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
-import 'package:hidden_gems/screens/Works/editwork_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -60,44 +58,20 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(
-            updatedWork.title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          actions: [
-            if (updatedWork.artistID == userProvider.user?.id)
-            Theme(
-              data: Theme.of(context).copyWith(
-                cardColor: Colors.white,
-              ),
-              child: PopupMenuButton<String>(
-                onSelected: (String result) async {
-                  if (result == 'edit') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditWorkScreen(work: updatedWork),
-                      ),
-                    );
-                  } else if (result == 'delete') {
-                    _showDeleteConfirmationDialog(context, userProvider, workProvider, auctionProvider, updatedWork.id);
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, color: Colors.black),
-                        SizedBox(width: 8),
-                        Text('수정'),
-                      ],
-                    ),
+            title: Text(
+              updatedWork.title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+            actions: [
+              if (updatedWork.artistID == userProvider.user?.id)
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    cardColor: Colors.white,
                   ),
                   child: PopupMenuButton<String>(
                     onSelected: (String result) async {
@@ -415,18 +389,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final auctionProvider =
                                 Provider.of<AuctionWorksProvider>(context,
                                     listen: false);
-
-                            final auctionWork = AuctionWork(
-                              workId: widget.work.id,
-                              workTitle: widget.work.title,
-                              artistId: widget.work.artistID,
-                              auctionUserId: [],
-                              minPrice: widget.work.minPrice.toInt(),
-                              endDate: selectedDate,
-                              nowPrice: widget.work.minPrice.toInt(),
-                              auctionComplete: false,
-                              lastBidderId: null,
-                            );
                             final auctionWork = AuctionWork(
                               workId: widget.work.id,
                               workTitle: widget.work.title,
