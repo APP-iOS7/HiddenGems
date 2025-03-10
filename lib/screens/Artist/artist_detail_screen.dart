@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/user.dart';
 import 'package:hidden_gems/models/works.dart';
+import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
 import 'package:provider/provider.dart';
@@ -47,6 +48,10 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final workProvider = Provider.of<WorkProvider>(context);
+
+    final likedWorks = userProvider.user?.likedWorks ?? [];
+
 
     return Scaffold(
       appBar: AppBar(
@@ -158,7 +163,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 1.2,
+                  childAspectRatio: 0.9,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
@@ -181,47 +186,67 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                       }
 
                       final work = Work.fromFirestore(workSnapshot.data!);
+                      bool isLiked = likedWorks.contains(work.id);
 
                       return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => WorkdetailScreen(work: work),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                work.workPhotoURL.isNotEmpty
-                                    ? work.workPhotoURL
-                                    : 'https://picsum.photos/200/300',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WorkdetailScreen(work: work),
                               ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Stack(
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Text(
-                                  work.title,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        work.workPhotoURL.isNotEmpty
+                                            ? work.workPhotoURL
+                                            : 'https://picsum.photos/200/300',
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               ),
+
+
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      isLiked ? Icons.favorite : Icons.favorite_border,
+                                      color: Colors.purple,
+                                    ),
+                                    onPressed: () {
+                                      _toggleLike(workProvider, userProvider,
+                                          work.id, work.artistID, isLiked);
+                                    },
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      work.title,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  )
+                                ],
+                              ),
                             ],
                           ),
-                        ),
-                      );
+                        );
                     },
                   );
                 },
@@ -231,5 +256,36 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
         ],
       )
     );
+  }
+  void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
+      String workId, String artistId, bool isLiked) {
+    final currentUser = userProvider.user;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("로그인된 사용자 정보가 없습니다.")),
+      );
+      return;
+    }
+    final userId = currentUser.id;
+    List<String> updatedLikedWorks = List.from(currentUser.likedWorks);
+    if (isLiked) {
+      updatedLikedWorks.remove(workId); // 이미 좋아요한 경우 제거
+      userProvider.subMyLikeScore(artistId);
+    } else {
+      updatedLikedWorks.add(workId); // 좋아요 추가
+      userProvider.addMyLikeScore(artistId);
+    }
+
+    userProvider.updateUserLikedWorks(updatedLikedWorks);
+
+    final work = workProvider.works.firstWhere((w) => w.id == workId);
+    List<String> updatedLikedUsers = List.from(work.likedUsers);
+    if (isLiked) {
+      updatedLikedUsers.remove(userId);
+    } else {
+      updatedLikedUsers.add(userId);
+    }
+
+    workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
   }
 }
