@@ -39,9 +39,10 @@ class WorkScreenState extends State<WorkScreen> {
     final likedWorks = userProvider.user?.likedWorks ?? [];
 
     final filteredWorks = works
-      .where((work) =>
-          work.title.toLowerCase().contains(_searchQuery.toLowerCase()) && (!_showSelling || work.selling == false))
-      .toList();
+        .where((work) =>
+            work.title.toLowerCase().contains(_searchQuery.toLowerCase()) &&
+            (!_showSelling || work.selling == false))
+        .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -61,7 +62,7 @@ class WorkScreenState extends State<WorkScreen> {
                 },
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search,
-                  color: const Color.fromARGB(255, 105, 105, 105)),
+                      color: const Color.fromARGB(255, 105, 105, 105)),
                   hintText: "작품 검색",
                   hintStyle: TextStyle(color: Colors.grey),
                   filled: true,
@@ -73,7 +74,6 @@ class WorkScreenState extends State<WorkScreen> {
                   ),
                 ),
               ),
-              
             ),
           ),
           Padding(
@@ -93,7 +93,6 @@ class WorkScreenState extends State<WorkScreen> {
               ],
             ),
           ),
-          
           Expanded(
             child: filteredWorks.isEmpty
                 ? Center(

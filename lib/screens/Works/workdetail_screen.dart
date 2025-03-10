@@ -23,7 +23,8 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     super.initState();
     Provider.of<WorkProvider>(context, listen: false).loadWorks();
     Provider.of<UserProvider>(context, listen: false).loadUser();
-    Provider.of<AuctionWorksProvider>(context, listen: false).fetchAllAuctionWorks();
+    Provider.of<AuctionWorksProvider>(context, listen: false)
+        .fetchAllAuctionWorks();
   }
 
   @override
@@ -36,20 +37,21 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
       (w) => w.id == widget.work.id,
       orElse: () => widget.work,
     );
-    final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
-                final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
-                  (auction) => auction.workId == widget.work.id,
-                  orElse: () => AuctionWork(
-                    workId: '',
-                    workTitle: '알 수 없는 경매',
-                    artistId: '',
-                    auctionUserId: [],
-                    minPrice: 0,
-                    nowPrice: 0,
-                    endDate: DateTime.now(),
-                    auctionComplete: true,
-                  ),
-                );
+    final auctionProvider =
+        Provider.of<AuctionWorksProvider>(context, listen: false);
+    final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
+      (auction) => auction.workId == widget.work.id,
+      orElse: () => AuctionWork(
+        workId: '',
+        workTitle: '알 수 없는 경매',
+        artistId: '',
+        auctionUserId: [],
+        minPrice: 0,
+        nowPrice: 0,
+        endDate: DateTime.now(),
+        auctionComplete: true,
+      ),
+    );
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -63,6 +65,15 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
           ),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await workProvider.deleteWork(updatedWork.id);
+                  await workProvider.loadWorks();
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.delete))
+          ],
           elevation: 0,
         ),
         body: SingleChildScrollView(
@@ -165,14 +176,14 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
               }
             } else {
               if (updatedWork.doAuction) {
-                
                 if (auctionWork.auctionUserId.contains(userProvider.user?.id)) {
                   _showAuctionModal(context);
                 } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AuctionScreen(auctionWork: auctionWork),
+                      builder: (context) =>
+                          AuctionScreen(auctionWork: auctionWork),
                     ),
                   );
                 }
@@ -201,7 +212,8 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ? "경매가 이미 시작되었습니다"
                       : "경매 시작하기"
                   : updatedWork.doAuction
-                      ? auctionWork.auctionUserId.contains(userProvider.user?.id)
+                      ? auctionWork.auctionUserId
+                              .contains(userProvider.user?.id)
                           ? "해당 경매 참여하기"
                           : "경매 페이지로 이동하기"
                       : "경매가 아직 시작되지 않았습니다",
@@ -270,7 +282,8 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                     child: ElevatedButton(
                       onPressed: () async {
                         final auctionProvider =
-                            Provider.of<AuctionWorksProvider>(context, listen: false);
+                            Provider.of<AuctionWorksProvider>(context,
+                                listen: false);
 
                         final auctionWork = AuctionWork(
                           workId: widget.work.id,
@@ -316,7 +329,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
       },
     );
   }
-
 
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
       String workId, bool isLiked) {
@@ -399,13 +411,13 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () {
-                        final auctionProvider = Provider.of<AuctionWorksProvider>(
-                          context, 
-                          listen: false
-                        );
+                        final auctionProvider =
+                            Provider.of<AuctionWorksProvider>(context,
+                                listen: false);
 
                         // 해당 작품 ID를 경매의 workId로 가지고 있는 auctionWork 찾기
-                        final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
+                        final auctionWork =
+                            auctionProvider.allAuctionWorks.firstWhere(
                           (auction) => auction.workId == widget.work.id,
                           orElse: () => AuctionWork(
                             workId: '',

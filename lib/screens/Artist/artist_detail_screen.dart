@@ -37,8 +37,20 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
         actions: [
           TextButton(
               onPressed: subscribing
-                  ? null
+                  ? () {
+                      // 구독 빼기
+                      setState(() {
+                        subscribing = !subscribing;
+                        final updatedSubscribeUsers = List<String>.from(
+                            userProvider.user!.subscribeUsers);
+                        updatedSubscribeUsers.remove(widget.user.id);
+                        userProvider
+                            .updateUserSubscribeUsers(updatedSubscribeUsers);
+                      });
+                      debugPrint(subscribing.toString());
+                    }
                   : () {
+                      // 구독 더하기
                       setState(() {
                         subscribing = !subscribing;
                         final updatedSubscribeUsers = List<String>.from(
@@ -47,6 +59,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                         userProvider
                             .updateUserSubscribeUsers(updatedSubscribeUsers);
                       });
+                      debugPrint(subscribing.toString());
                     },
               child: Text(userProvider.user!.id == widget.user.id
                   ? ''
