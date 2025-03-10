@@ -9,6 +9,8 @@ import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/auctioned_work.dart';
+
 class AuctionScreen extends StatefulWidget {
   final AuctionWork auctionWork;
 
@@ -112,93 +114,98 @@ class AuctionScreenState extends State<AuctionScreen> {
                               : null,
                         ),
                         alignment: Alignment.center,
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            artistNickname,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          if (!updatedAuction.auctionComplete)
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Text(
-                              "경매진행중",
+                              artistNickname,
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            if (!updatedAuction.auctionComplete)
+                              Text(
+                                "경매진행중",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: 20),
+
+                      //작품 설명
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          work?.description ?? "설명 없음",
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              "최저가",
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.black54),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              '${NumberFormat('#,###').format(updatedAuction.minPrice)}원',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              "현재가",
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.black54),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              '${NumberFormat('#,###').format(updatedAuction.nowPrice)}원',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              "마감일",
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.black54),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              DateFormat('yyyy-MM-dd HH:mm')
+                                  .format(updatedAuction.endDate),
+                              style: TextStyle(
+                                fontSize: 16,
                               ),
                             ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-
-                    //작품 설명
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        work?.description ?? "설명 없음",
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Text(
-                            "최저가",
-                            style: TextStyle(fontSize: 16, color: Colors.black54),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            '${NumberFormat('#,###').format(updatedAuction.minPrice)}원',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Text(
-                            "현재가",
-                            style: TextStyle(fontSize: 16, color: Colors.black54),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            '${NumberFormat('#,###').format(updatedAuction.nowPrice)}원',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Text(
-                            "마감일",
-                            style: TextStyle(fontSize: 16, color: Colors.black54),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            DateFormat('yyyy-MM-dd HH:mm').format(updatedAuction.endDate),
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          SizedBox(height: 8),
+                            SizedBox(height: 8),
                           ],
                         ),
                       ),
@@ -232,7 +239,8 @@ class AuctionScreenState extends State<AuctionScreen> {
                                     subscribeUsers: [],
                                   ),
                                 );
-                                bool isLastBidder = bidder.id == updatedAuction.lastBidderId;
+                                bool isLastBidder =
+                                    bidder.id == updatedAuction.lastBidderId;
 
                                 return SingleChildScrollView(
                                   child: Padding(
@@ -244,18 +252,16 @@ class AuctionScreenState extends State<AuctionScreen> {
                                           Icons.person_outline,
                                           size: 16,
                                           color: isLastBidder
-                                                  ? Colors.blue
-                                                  : Colors.black,
+                                              ? Colors.blue
+                                              : Colors.black,
                                         ),
                                         const SizedBox(width: 8),
-                                        Text(
-                                        bidder.nickName,
-                                        style: TextStyle(
-                                          color: isLastBidder
-                                            ? Colors.blue
-                                            : Colors.black,
-                                        )
-                                      ),
+                                        Text(bidder.nickName,
+                                            style: TextStyle(
+                                              color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                            )),
                                       ],
                                     ),
                                   ),
@@ -276,7 +282,8 @@ class AuctionScreenState extends State<AuctionScreen> {
           onTap: () {
             if (updatedAuction.artistId == userProvider.user?.id) {
               if (!updatedAuction.auctionComplete) {
-                _endAuctionModal(context); //경매 종료하기
+                _endAuctionModal(
+                    context, updatedAuction, userProvider.user!.id); //경매 종료하기
               }
             } else {
               bool isBidder =
@@ -321,7 +328,8 @@ class AuctionScreenState extends State<AuctionScreen> {
         ));
   }
 
-  void _endAuctionModal(BuildContext context) {
+  void _endAuctionModal(
+      BuildContext context, AuctionWork updatedAuction, String userId) {
     showModalBottomSheet(
       backgroundColor: Colors.white,
       context: context,
@@ -371,36 +379,66 @@ class AuctionScreenState extends State<AuctionScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () async {
+                        try {
+                          // 입찰자가 없는 경우 경매 종료 불가
+                          if (updatedAuction.lastBidderId == null ||
+                              updatedAuction.lastBidderId!.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text("입찰자가 없어 경매를 종료할 수 없습니다.")),
+                            );
+                            return;
+                          }
+                          // Firestore에 저장할 새로운 ID 생성
+                          String newId = FirebaseFirestore.instance
+                              .collection('auctionedWorks')
+                              .doc()
+                              .id;
 
-                        final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
-                        await auctionProvider.endAuction(widget.auctionWork.workId);
-                        Provider.of<WorkProvider>(context, listen: false)
-                            .updateWorkAuctionStatus(widget.auctionWork.workId, false);
-                        Provider.of<WorkProvider>(context, listen: false)
-                            .updateWorkSellingStatus(widget.auctionWork.workId, true);
+                          debugPrint('종료되는 경매 정보: $updatedAuction');
+                          AuctionedWork auctionedWork = AuctionedWork(
+                            id: newId,
+                            workId: updatedAuction.workId,
+                            workTitle: updatedAuction.workTitle,
+                            artistId: updatedAuction.artistId,
+                            artistNickname: updatedAuction.artistNickname,
+                            completeUserId:
+                                updatedAuction.lastBidderId!, // null 검사 통과 확인됨
+                            completePrice: updatedAuction.nowPrice, // int 변환 확인
+                            address: '', // null 허용 필드는 빈 값으로 초기화
+                            name: '',
+                            phone: '',
+                            deliverComplete: '배송지 입력',
+                            deliverRequest: '직접 입력',
+                          );
+                          // Firestore에 저장
+                          await FirebaseFirestore.instance
+                              .collection('auctionedWorks')
+                              .doc(newId)
+                              .set(auctionedWork.toMap(),
+                                  SetOptions(merge: true));
 
-                        Navigator.pop(context);
+                          await FirebaseFirestore.instance
+                              .collection('works')
+                              .doc(updatedAuction.workId)
+                              .update({
+                            'auctionComplete': true,
+                            'completedAt': DateTime.now(), // Firestore에서 자동 변환됨
+                          });
+                          Navigator.pop(context);
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("경매가 종료되었습니다.")),
-                        );
-
-                        setState(() {});
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("경매가 성공적으로 종료되었습니다.")),
+                          );
+                        } catch (e) {
+                          debugPrint("경매 종료 오류: $e");
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                      child: Text("종료하기"),
+                      child: Text("확인"),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 10),
             ],
           ),
         );
@@ -530,7 +568,8 @@ class AuctionScreenState extends State<AuctionScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 ),
               ),
               SizedBox(height: 20),
@@ -562,18 +601,23 @@ class AuctionScreenState extends State<AuctionScreen> {
                         if (enteredPrice.isNotEmpty) {
                           int newPrice = int.tryParse(enteredPrice) ?? 0;
                           if (newPrice > widget.auctionWork.nowPrice) {
-                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
                             String currentUserId = userProvider.user!.id;
-                            final auctionProvider = Provider.of<AuctionWorksProvider>(context, listen: false);
-                            await auctionProvider.updateNowprice(widget.auctionWork.workId, newPrice);
-                            await auctionProvider.updateLastBidder(widget.auctionWork.workId, currentUserId);
+                            final auctionProvider =
+                                Provider.of<AuctionWorksProvider>(context,
+                                    listen: false);
+                            await auctionProvider.updateNowprice(
+                                widget.auctionWork.workId, newPrice);
+                            await auctionProvider.updateLastBidder(
+                                widget.auctionWork.workId, currentUserId);
 
                             setState(() {
                               widget.auctionWork.nowPrice = newPrice;
                               widget.auctionWork.lastBidderId = currentUserId;
                             });
                             Navigator.pop(context);
-
                           }
                         }
                       },
@@ -598,4 +642,3 @@ class AuctionScreenState extends State<AuctionScreen> {
     );
   }
 }
-
