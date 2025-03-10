@@ -414,13 +414,13 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                               workId: widget.work.id,
                               workTitle: widget.work.title,
                               artistId: widget.work.artistID,
+                              artistNickname: widget.work.artistNickName,
                               auctionUserId: [],
                               minPrice: widget.work.minPrice.toInt(),
-                              endDate: selectedDate,
+                              endDate: DateTime.now().add(Duration(days: 7)),
                               nowPrice: widget.work.minPrice.toInt(),
                               auctionComplete: false,
                               lastBidderId: null,
-                              artistNickname: widget.work.artistID,
                             );
 
                             await auctionProvider.addAuctionWork(auctionWork);

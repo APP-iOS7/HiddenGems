@@ -467,7 +467,7 @@ class AuctionScreenState extends State<AuctionScreen> {
                             address: '', // null 허용 필드는 빈 값으로 초기화
                             name: '',
                             phone: '',
-                            deliverComplete: '배송지 입력',
+                            deliverComplete: '배송지입력대기',
                             deliverRequest: '직접 입력',
                           );
                           // Firestore에 저장
