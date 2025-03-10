@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/screens/Artist/artist_screen.dart';
-import 'package:hidden_gems/widgets/popular_auction.dart';
+import 'package:hidden_gems/widgets/popular_artist.dart';
 import 'package:hidden_gems/widgets/popular_works.dart';
 import 'package:hidden_gems/widgets/progress_auctions.dart';
 
@@ -57,7 +57,7 @@ class MainScreen extends StatelessWidget {
                     ))
               ],
             ),
-            PopularAuction()
+            PopularArtist()
           ],
         ),
       ),

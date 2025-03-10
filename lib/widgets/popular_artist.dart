@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/user.dart';
 
-class PopularAuction extends StatefulWidget {
-  const PopularAuction({super.key});
+class PopularArtist extends StatefulWidget {
+  const PopularArtist({super.key});
 
   @override
-  State<PopularAuction> createState() => _PopularAuctionState();
+  State<PopularArtist> createState() => _PopularArtistState();
 }
 
-class _PopularAuctionState extends State<PopularAuction> {
+class _PopularArtistState extends State<PopularArtist> {
   Future<List<AppUser>> getFamousSortedUser() async {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance
