@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/auctioned_work.dart';
 import 'package:kpostal/kpostal.dart';
@@ -77,19 +78,25 @@ class AddressFormScreenState extends State<AddressFormScreen> {
               // 배송 요청사항
               _buildDeliveryRequestSection(),
               const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  if (_validateInputs()) {
-                    _saveAddress();
-                  }
-                },
-                icon: const Icon(Icons.save),
-                label: const Text('저장하기'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: double.infinity, // 버튼이 화면 전체 너비를 차지하도록 설정
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      if (_validateInputs()) {
+                        _saveAddress();
+                      }
+                    },
+                    icon: const Icon(Icons.save),
+                    label: const Text('저장하기'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -287,18 +294,33 @@ class AddressFormScreenState extends State<AddressFormScreen> {
     return true;
   }
 
-  void _saveAddress() {
+  void _saveAddress() async {
     final fullAddress = '$address ${detailAddressController.text}';
     final requestText =
         selectedRequest == '직접 입력' ? requestController.text : selectedRequest;
 
-    debugPrint('저장된 정보:');
-    debugPrint('이름: ${nameController.text}');
-    debugPrint('연락처: ${phoneController.text}');
-    debugPrint('주소: $fullAddress');
-    debugPrint('요청사항: $requestText');
+    try {
+      await FirebaseFirestore.instance
+          .collection('auctionedWorks')
+          .doc(widget.auctionedWork.id)
+          .update({
+        'name': nameController.text,
+        'phone': phoneController.text,
+        'address': fullAddress,
+        'deliverRequest': requestText,
+      });
 
-    // TODO: 실제 저장 로직 구현
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("배송지가 저장되었습니다.")),
+      );
+
+      Navigator.pop(context); // 저장 후 화면 닫기
+    } catch (e) {
+      debugPrint("배송지 저장 오류: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("배송지 저장에 실패했습니다: $e")),
+      );
+    }
   }
 
   void _showErrorDialog(String message) {

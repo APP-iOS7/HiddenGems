@@ -389,18 +389,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final auctionProvider =
                                 Provider.of<AuctionWorksProvider>(context,
                                     listen: false);
-
-                            final auctionWork = AuctionWork(
-                              workId: widget.work.id,
-                              workTitle: widget.work.title,
-                              artistId: widget.work.artistID,
-                              auctionUserId: [],
-                              minPrice: widget.work.minPrice.toInt(),
-                              endDate: selectedDate,
-                              nowPrice: widget.work.minPrice.toInt(),
-                              auctionComplete: false,
-                              lastBidderId: null,
-                            );
                             final auctionWork = AuctionWork(
                               workId: widget.work.id,
                               workTitle: widget.work.title,

@@ -29,10 +29,9 @@ class AuctionedWorksListScreen extends StatelessWidget {
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('auctionedWorks')
-            .where(Filter.or(
-              Filter('artistId', isEqualTo: userId),
+            .where(
               Filter('completeUserId', isEqualTo: userId),
-            ))
+            )
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
