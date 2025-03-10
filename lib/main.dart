@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/screens/Login/auth_wrapper.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
@@ -31,6 +32,10 @@ void main() async {
 
 // The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
   OneSignal.Notifications.requestPermission(true);
+
+  Stripe.publishableKey =
+      'pk_test_51NDpRJJinXpHIPsErkhbbskGYZltQGnig4OTsxAuRcrWPXCNvyI6Dc8ApCNL4ciBQz1LhIT76fingitKdFTdjztU00zgfNNsgk';
+  await Stripe.instance.applySettings();
 
   runApp(MultiProvider(
     providers: [

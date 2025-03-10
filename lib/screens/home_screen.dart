@@ -18,23 +18,27 @@ class MainScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSectionHeader(
-                    context, '실시간 진행 중인 경매', Icons.gavel_rounded, null, null),
+                    context, 'Live Auctions', Icons.gavel_rounded, null, null),
                 const SizedBox(height: 15),
                 const ProgressAuctions(),
 
                 _buildDivider(),
 
                 _buildSectionHeader(
-                    context, '인기 작품들', Icons.star_rounded, null, null),
+                    context, 'Popular Works', Icons.star_rounded, null, null),
                 const SizedBox(height: 15),
-                const PopularWorks(),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                  child: const PopularWorks(),
+                ),
+                
 
                 // 섹션 구분선
                 _buildDivider(),
 
                 // 인기 작가 섹션
                 _buildSectionHeader(
-                    context, '인기 작가들', Icons.person_rounded, '더보기', () {
+                    context, 'Famous Artists', Icons.person_rounded, '더보기', () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -76,6 +80,7 @@ class MainScreen extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
+              color: Colors.purple,
               fontWeight: FontWeight.bold,
               fontSize: 22,
             ),

@@ -217,6 +217,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
+
               ],
             ),
           ),
@@ -226,7 +227,15 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             if (updatedWork.artistID == userProvider.user?.id) {
               if (!updatedWork.doAuction) {
                 _startAuctionModal(context);
-              }
+              } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AuctionScreen(auctionWork: auctionWork),
+                    ),
+                  );
+                }
             } else {
               if (updatedWork.doAuction) {
                 if (auctionWork.auctionUserId.contains(userProvider.user?.id)) {
@@ -250,9 +259,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
             decoration: BoxDecoration(
               color: updatedWork.artistID == userProvider.user?.id
-                  ? updatedWork.doAuction
-                      ? Colors.grey[300]
-                      : Colors.purple
+                  ? Colors.purple
                   : updatedWork.doAuction
                       ? Colors.purple
                       : Colors.grey[300],
@@ -262,7 +269,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             child: Text(
               updatedWork.artistID == userProvider.user?.id
                   ? updatedWork.doAuction
-                      ? "경매가 이미 시작되었습니다"
+                      ? "경매 페이지로 이동하기"
                       : "경매 시작하기"
                   : updatedWork.doAuction
                       ? auctionWork.auctionUserId
@@ -272,9 +279,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       : "경매가 아직 시작되지 않았습니다",
               style: TextStyle(
                 color: updatedWork.artistID == userProvider.user?.id
-                    ? updatedWork.doAuction
-                        ? Colors.black
-                        : Colors.white
+                    ? Colors.white
                     : updatedWork.doAuction
                         ? Colors.white
                         : Colors.black,
