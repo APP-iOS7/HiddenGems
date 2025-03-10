@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/models/works.dart';
@@ -21,17 +23,44 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
   final TextEditingController _imageUrlController = TextEditingController();
 
   File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
   String? _imageUrl;
 
+  // Future<void> _pickImage() async {
+  //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _selectedImage = File(pickedFile.path);
+  //       _imageUrl = null; // 로컬 이미지를 선택하면 URL 초기화
+  //       _imageUrlController.clear();
+  //     });
+  //   }
+  // }
+
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+    try {
+      final XFile? pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedImage == null) {
+        return;
+      }
+
+      // 파일 업로드
+      final File file = File(pickedImage.path);
+      final ref = FirebaseStorage.instance.ref(
+        'work_Image/work_Image${DateTime.now()}',
+      );
+      await ref.putFile(file);
+
+      // 다운로드 URL 업데이트
+      final String downloadUrl = await ref.getDownloadURL();
+
       setState(() {
-        _selectedImage = File(pickedFile.path);
-        _imageUrl = null; // 로컬 이미지를 선택하면 URL 초기화
-        _imageUrlController.clear();
+        _imageUrl = downloadUrl;
       });
+    } catch (e) {
+      debugPrint('이미지 선택 실패: $e');
     }
   }
 
@@ -181,22 +210,20 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
                   SizedBox(height: 10),
 
                   // 갤러리에서 이미지 선택 버튼
-                  GestureDetector(
-                    onTap: () {
-                      _pickImage;
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      height: 50,
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      //margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                  Container(
+                    width: double.infinity,
+                    height: 50,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    //margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
 
-                      alignment: Alignment.center,
+                    alignment: Alignment.center,
+                    child: InkWell(
+                      onTap: _pickImage,
                       child: Text(
                         "갤러리에서 이미지 선택",
                         style: TextStyle(
@@ -260,8 +287,17 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
           ),
         ),
         bottomNavigationBar: GestureDetector(
-          onTap: () {
-            _addWork(workProvider, userProvider);
+          onTap: () async {
+            AddModal(
+              context: context,
+              title: '작품 등록',
+              description: '작품을 등록하시겠습니까?',
+              whiteButtonText: '취소',
+              purpleButtonText: '확인',
+              function: () async {
+                _addWork(workProvider, userProvider);
+              },
+            );
           },
           child: Container(
             width: double.infinity,
@@ -274,8 +310,10 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
             ),
             alignment: Alignment.center,
             child: Text(
-              "물품 등록하기",
+              "작품 등록하기",
               style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),

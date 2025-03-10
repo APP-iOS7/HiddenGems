@@ -20,7 +20,7 @@ class SignUpScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Spacer(),
+              const Spacer(),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -29,13 +29,13 @@ class SignUpScreen extends StatelessWidget {
                       controller: _emailController,
                       decoration: const InputDecoration(labelText: '이메일'),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       obscureText: true,
                       controller: _passwordController,
                       decoration: const InputDecoration(labelText: '비밀번호'),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     TextField(
                       obscureText: true,
                       controller: _password2Controller,
@@ -44,46 +44,49 @@ class SignUpScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               InkWell(
-                  onTap: () {
-                    signUp();
+                onTap: () async {
+                  bool success = await signUp(context);
+                  if (success) {
                     Navigator.pop(context);
-                  },
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    width: 330,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF9800CB).withValues(alpha: 0.65),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.account_circle,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                        // 오른쪽 텍스트
-                        SizedBox(
-                          width: 280,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "이메일/비밀번호로 회원가입",
-                              style: TextStyle(
-                                fontSize: 17,
-                              ),
+                  }
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  width: 330,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF9800CB).withAlpha(166),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.account_circle,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      SizedBox(
+                        width: 280,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "이메일/비밀번호로 회원가입",
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  )),
-              Spacer(),
-              Spacer(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              const Spacer(),
             ],
           ),
         ),
@@ -91,18 +94,29 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-  Future<void> signUp() async {
+  Future<bool> signUp(BuildContext context) async {
+    // 비밀번호 확인 로직 추가
+    if (_passwordController.text != _password2Controller.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('비밀번호가 일치하지 않습니다.')),
+      );
+      return false;
+    }
+
     try {
-      if (_passwordController.text == _password2Controller.text) {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-        debugPrint('회원가입 성공 : ${userCredential.user}');
-      }
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      debugPrint('회원가입 성공 : ${userCredential.user}');
+      return true;
     } catch (e) {
       debugPrint('회원가입 실패 : ${e.toString()}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('회원가입 실패: ${e.toString()}')),
+      );
+      return false;
     }
   }
 }

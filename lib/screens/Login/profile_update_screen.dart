@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -110,12 +111,19 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
               Spacer(),
               InkWell(
                   onTap: () async {
-                    await userProvider.updateUserProfile(
-                      _nicknameController.text,
-                      _profileImageUrl ??
-                          'https://firebasestorage.googleapis.com/v0/b/hiddengems-8371c.firebasestorage.app/o/profile_images%2Fdefaultprofile.png?alt=media&token=0452972f-e06b-46e3-9f92-1c1d05a5caf6',
-                    );
-                    // 업데이트 후 다른 화면으로 이동하거나 메시지 출력 등 처리
+                    AddModal(
+                        context: context,
+                        title: '프로필 설정',
+                        description: '해당 정보로 프로필을 설정합니다.',
+                        whiteButtonText: '취소',
+                        purpleButtonText: '확인',
+                        function: () async {
+                          await userProvider.updateUserProfile(
+                            _nicknameController.text,
+                            _profileImageUrl ??
+                                'https://firebasestorage.googleapis.com/v0/b/hiddengems-8371c.firebasestorage.app/o/profile_images%2Fdefaultprofile.png?alt=media&token=0452972f-e06b-46e3-9f92-1c1d05a5caf6',
+                          );
+                        });
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
@@ -129,7 +137,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                       width: 280,
                       child: Center(
                         child: Text(
-                          "프로필 업데이트",
+                          "프로필 설정",
                           style: TextStyle(
                               fontSize: 17, fontWeight: FontWeight.w700),
                         ),
