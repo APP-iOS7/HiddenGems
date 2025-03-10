@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
 import 'package:intl/intl.dart';
@@ -174,87 +173,12 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
           onTap: () {
             if (updatedWork.artistID == userProvider.user?.id) {
               if (!updatedWork.doAuction) {
-                AddModal(
-                    context: context,
-                    title: '경매 시작',
-                    description: '이 작품의 경매를 시작하시겠습니까?',
-                    whiteButtonText: '취소',
-                    purpleButtonText: '시작하기',
-                    function: () async {
-                      final auctionProvider = Provider.of<AuctionWorksProvider>(
-                          context,
-                          listen: false);
-
-                      final auctionWork = AuctionWork(
-                        workId: widget.work.id,
-                        workTitle: widget.work.title,
-                        artistId: widget.work.artistID,
-                        auctionUserId: [],
-                        minPrice: widget.work.minPrice.toInt(),
-                        endDate: DateTime.now().add(Duration(days: 7)),
-                        nowPrice: widget.work.minPrice.toInt(),
-                        auctionComplete: false,
-                        lastBidderId: null,
-                      );
-
-                      await auctionProvider.addAuctionWork(auctionWork);
-
-                      Provider.of<WorkProvider>(context, listen: false)
-                          .updateWorkAuctionStatus(widget.work.id, true);
-
-                      Navigator.pop(context);
-
-                      setState(() {});
-                    });
+                _startAuctionModal(context);
               }
             } else {
               if (updatedWork.doAuction) {
                 if (auctionWork.auctionUserId.contains(userProvider.user?.id)) {
-                  AddModal(
-                      context: context,
-                      title: '경매 참여 권한을 얻으셨습니다',
-                      description: '해당 경매 페이지로 이동하시겠습니까?',
-                      whiteButtonText: '돌아가기',
-                      purpleButtonText: '확인',
-                      function: () {
-                        final auctionProvider =
-                            Provider.of<AuctionWorksProvider>(context,
-                                listen: false);
-
-                        // 해당 작품 ID를 경매의 workId로 가지고 있는 auctionWork 찾기
-                        final auctionWork =
-                            auctionProvider.allAuctionWorks.firstWhere(
-                          (auction) => auction.workId == widget.work.id,
-                          orElse: () => AuctionWork(
-                            workId: '',
-                            workTitle: '알 수 없는 경매',
-                            artistId: '',
-                            auctionUserId: [],
-                            minPrice: 0,
-                            nowPrice: 0,
-                            endDate: DateTime.now(),
-                            auctionComplete: true,
-                          ),
-                        );
-
-                        Navigator.pop(context);
-
-                        // AuctionWork가 유효한 경우에만 이동
-                        if (auctionWork.workId.isNotEmpty) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AuctionScreen(
-                                auctionWork: auctionWork,
-                              ),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("해당 작품의 경매 정보를 찾을 수 없습니다.")),
-                          );
-                        }
-                      });
+                  _showAuctionModal(context);
                 } else {
                   Navigator.push(
                     context,
@@ -308,6 +232,141 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         ));
   }
 
+  void _startAuctionModal(BuildContext context) {
+    DateTime selectedDate = DateTime.now().add(Duration(days: 7));
+    showModalBottomSheet(
+      backgroundColor: Colors.white,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 10),
+                  Text(
+                    "경매 시작",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "이 작품의 경매를 시작하시겠습니까?",
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "마감일: ${DateFormat('yyyy-MM-dd HH:mm').format(selectedDate)}",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(width: 10),
+                      IconButton(
+                        icon: Icon(Icons.calendar_today, color: Colors.purple),
+                        onPressed: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now()
+                                .add(Duration(days: 30)), // 최대 30일 후까지 선택 가능
+                          );
+                          if (pickedDate != null) {
+                            setModalState(() {
+                              selectedDate = pickedDate; // 선택한 날짜 반영
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.purple),
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: Text("취소",
+                              style: TextStyle(color: Colors.purple)),
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final auctionProvider =
+                                Provider.of<AuctionWorksProvider>(context,
+                                    listen: false);
+
+                            final auctionWork = AuctionWork(
+                              workId: widget.work.id,
+                              workTitle: widget.work.title,
+                              artistId: widget.work.artistID,
+                              auctionUserId: [],
+                              minPrice: widget.work.minPrice.toInt(),
+                              endDate: selectedDate,
+                              nowPrice: widget.work.minPrice.toInt(),
+                              auctionComplete: false,
+                              lastBidderId: null,
+                            );
+
+                            await auctionProvider.addAuctionWork(auctionWork);
+
+                            Provider.of<WorkProvider>(context, listen: false)
+                                .updateWorkAuctionStatus(widget.work.id, true);
+
+                            Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("경매가 시작되었습니다!")),
+                            );
+
+                            setState(() {});
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.purple,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: Text("시작하기"),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
       String workId, String artistId, bool isLiked) {
     final currentUser = userProvider.user;
@@ -338,5 +397,115 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     }
 
     workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
+  }
+
+  void _showAuctionModal(BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: Colors.white,
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10),
+              Text(
+                "경매 참여 권한을 얻으셨습니다.",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8),
+              Text(
+                "해당 경매 페이지로 이동하시겠습니까?",
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.purple),
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child:
+                          Text("돌아가기", style: TextStyle(color: Colors.purple)),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final auctionProvider =
+                            Provider.of<AuctionWorksProvider>(context,
+                                listen: false);
+
+                        // 해당 작품 ID를 경매의 workId로 가지고 있는 auctionWork 찾기
+                        final auctionWork =
+                            auctionProvider.allAuctionWorks.firstWhere(
+                          (auction) => auction.workId == widget.work.id,
+                          orElse: () => AuctionWork(
+                            workId: '',
+                            workTitle: '알 수 없는 경매',
+                            artistId: '',
+                            auctionUserId: [],
+                            minPrice: 0,
+                            nowPrice: 0,
+                            endDate: DateTime.now(),
+                            auctionComplete: true,
+                          ),
+                        );
+
+                        Navigator.pop(context);
+
+                        // AuctionWork가 유효한 경우에만 이동
+                        if (auctionWork.workId.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AuctionScreen(
+                                auctionWork: auctionWork,
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("해당 작품의 경매 정보를 찾을 수 없습니다.")),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                      child: Text("확인"),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
