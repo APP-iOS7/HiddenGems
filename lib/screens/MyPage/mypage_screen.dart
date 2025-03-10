@@ -137,7 +137,7 @@ class MyPageScreen extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => MyBiddingScreen()));
                           },
-                          child: Text('참여중인 경매 보기',
+                          child: Text('참여 중인 경매 보기',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
