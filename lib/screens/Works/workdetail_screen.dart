@@ -7,6 +7,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
+import 'package:hidden_gems/screens/Works/editwork_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -75,7 +76,12 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
               child: PopupMenuButton<String>(
                 onSelected: (String result) async {
                   if (result == 'edit') {
-                    // 수정 기능
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditWorkScreen(work: updatedWork),
+                      ),
+                    );
                   } else if (result == 'delete') {
                     _showDeleteConfirmationDialog(context, userProvider, workProvider, auctionProvider, updatedWork.id);
                   }
