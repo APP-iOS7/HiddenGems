@@ -30,6 +30,7 @@ class PopularWorks extends StatelessWidget {
         return SizedBox(
           height: 200,
           child: ListView.separated(
+            padding: EdgeInsets.only(left: 20.0),
             separatorBuilder: (BuildContext context, int index) =>
                 const SizedBox(width: 10),
             scrollDirection: Axis.horizontal,
@@ -95,11 +96,11 @@ class PopularWorks extends StatelessWidget {
                                 children: [
                                   Text(
                                     work.artistNickName,
-                                    style: TextStyle(fontSize: 14),
+                                    style: TextStyle(fontSize: 13),
                                   ),
                                   Text(
                                     '${NumberFormat('###,###,###,###').format(work.minPrice)} 원',
-                                    style: TextStyle(fontSize: 10),
+                                    style: TextStyle(fontSize: 13),
                                   ),
                                 ],
                               ),

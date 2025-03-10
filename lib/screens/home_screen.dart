@@ -11,53 +11,62 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '실시간 진행 중인 경매',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            Padding(
+              padding: EdgeInsets.only(left: 20.0),
+              child: Text(
+                '실시간 진행 중인 경매',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
             ),
             SizedBox(height: 10),
             ProgressAuctions(),
-            Text(
-              '인기 작품들',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            Padding(
+              padding: EdgeInsets.only(left: 20.0),
+              child: Text(
+                '인기 작품들',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
             ),
             SizedBox(height: 10),
             PopularWorks(),
-            Row(
-              children: [
-                Text(
-                  '인기 작가들',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                Spacer(),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ArtistScreen(),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        Text(
-                          '더보기',
-                          style:
-                              TextStyle(color: Colors.grey[600], fontSize: 14),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          size: 20,
-                          color: Colors.grey[600],
-                        )
-                      ],
-                    ))
-              ],
+            Padding(
+              padding: EdgeInsets.only(left: 20.0),
+              child: Row(
+                children: [
+                  Text(
+                    '인기 작가들',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  Spacer(),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ArtistScreen(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            '더보기',
+                            style: TextStyle(
+                                color: Colors.grey[600], fontSize: 14),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            size: 20,
+                            color: Colors.grey[600],
+                          )
+                        ],
+                      ))
+                ],
+              ),
             ),
             SizedBox(height: 10),
             PopularArtist()
