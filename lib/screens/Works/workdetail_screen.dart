@@ -294,6 +294,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                           endDate: DateTime.now().add(Duration(days: 7)),
                           nowPrice: widget.work.minPrice.toInt(),
                           auctionComplete: false,
+                          lastBidderId: null,
                         );
 
                         await auctionProvider.addAuctionWork(auctionWork);
