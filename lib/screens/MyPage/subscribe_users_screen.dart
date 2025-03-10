@@ -93,7 +93,7 @@ class SubscribeUsersScreen extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     _buildStatItem(Icons.palette,
-                                        '${data['myWorksCount']} 작품'),
+                                        '${data['myWorks'].length} 작품'),
                                     const SizedBox(width: 12),
                                     _buildStatItem(Icons.favorite,
                                         '${data['myLikeScore'].toInt()} 좋아요'),

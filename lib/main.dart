@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/screens/Login/auth_wrapper.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
@@ -22,6 +23,10 @@ void main() async {
     nativeAppKey: '2564930daedf36a88773ed02c9ada1e6',
     javaScriptAppKey: '9ce33d7e4d669f4997dbf86f82f607ec',
   );
+  Stripe.publishableKey =
+      'pk_test_51NDpRJJinXpHIPsErkhbbskGYZltQGnig4OTsxAuRcrWPXCNvyI6Dc8ApCNL4ciBQz1LhIT76fingitKdFTdjztU00zgfNNsgk';
+  await Stripe.instance.applySettings();
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
