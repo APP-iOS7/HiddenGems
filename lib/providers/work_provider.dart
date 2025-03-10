@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hidden_gems/models/works.dart';
+import 'package:hidden_gems/models/auction_work.dart';
 
 class WorkProvider with ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Work> _works = [];
 
   List<Work> get works => _works;
@@ -45,8 +47,31 @@ class WorkProvider with ChangeNotifier {
     final index = _works.indexWhere((work) => work.id == updatedWork.id);
     if (index != -1) {
       _works[index] = updatedWork;
-      notifyListeners();
+      
     }
+    final auctionQuery = await _firestore
+        .collection('auctionWorks')
+        .where('workId', isEqualTo: updatedWork.id)
+        .get();
+
+    for (var auctionDoc in auctionQuery.docs) {
+      double nowPrice = auctionDoc['nowPrice']?.toDouble() ?? 0.0;
+      double minPrice = updatedWork.minPrice;
+      bool resetBidder = false;
+
+      if (nowPrice < minPrice) {
+        nowPrice = minPrice;
+        resetBidder = true;
+      }
+
+      await auctionDoc.reference.update({
+        'workTitle': updatedWork.title,
+        'minPrice': minPrice,
+        'nowPrice': nowPrice,
+        if (resetBidder) 'lastBidderId': null,
+      });
+    }
+    notifyListeners();
   }
 
   // //작품 삭제

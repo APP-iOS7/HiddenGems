@@ -29,39 +29,6 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     }
   }
 
-  Future<void> toggleSubscription() async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final currentUser = userProvider.user;
-    if (currentUser == null || currentUser.id == widget.user.id) return;
-
-    List<String> updatedSubscribeUsers =
-        List<String>.from(currentUser.subscribeUsers);
-
-    if (subscribing) {
-      updatedSubscribeUsers.remove(widget.user.id);
-    } else {
-      updatedSubscribeUsers.add(widget.user.id);
-    }
-
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.id)
-          .update({'subscribeUsers': updatedSubscribeUsers});
-
-      userProvider.updateUserSubscribeUsers(updatedSubscribeUsers);
-
-      setState(() {
-        subscribing = !subscribing;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('구독 업데이트 실패: $e')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);

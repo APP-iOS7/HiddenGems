@@ -85,6 +85,7 @@ class AuctionWorksProvider with ChangeNotifier {
           workId: _allAuctionWorks[index].workId,
           workTitle: _allAuctionWorks[index].workTitle,
           artistId: _allAuctionWorks[index].artistId,
+          artistNickname: _allAuctionWorks[index].artistNickname,
           auctionUserId: updatedBidders,
           minPrice: _allAuctionWorks[index].minPrice,
           nowPrice: _allAuctionWorks[index].nowPrice,
@@ -112,6 +113,7 @@ class AuctionWorksProvider with ChangeNotifier {
           workId: _allAuctionWorks[index].workId,
           workTitle: _allAuctionWorks[index].workTitle,
           artistId: _allAuctionWorks[index].artistId,
+          artistNickname: _allAuctionWorks[index].artistNickname,
           auctionUserId: _allAuctionWorks[index].auctionUserId,
           minPrice: _allAuctionWorks[index].minPrice,
           nowPrice: _allAuctionWorks[index].nowPrice,
@@ -151,6 +153,7 @@ class AuctionWorksProvider with ChangeNotifier {
           workId: _allAuctionWorks[index].workId,
           workTitle: _allAuctionWorks[index].workTitle,
           artistId: _allAuctionWorks[index].artistId,
+          artistNickname: _allAuctionWorks[index].artistNickname,
           auctionUserId: _allAuctionWorks[index].auctionUserId,
           minPrice: _allAuctionWorks[index].minPrice,
           nowPrice: newPrice,
@@ -179,6 +182,7 @@ class AuctionWorksProvider with ChangeNotifier {
           workId: _allAuctionWorks[index].workId,
           workTitle: _allAuctionWorks[index].workTitle,
           artistId: _allAuctionWorks[index].artistId,
+          artistNickname: _allAuctionWorks[index].artistNickname,
           auctionUserId: _allAuctionWorks[index].auctionUserId,
           minPrice: _allAuctionWorks[index].minPrice,
           nowPrice: _allAuctionWorks[index].nowPrice,
@@ -192,5 +196,18 @@ class AuctionWorksProvider with ChangeNotifier {
     } catch (e) {
       debugPrint("오류: $e");
     }
+  }
+  Future<void> deleteAuctionWork(String workId) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('auctions')
+        .where('workId', isEqualTo: workId)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    _allAuctionWorks.removeWhere((auction) => auction.workId == workId);
+    notifyListeners();
   }
 }

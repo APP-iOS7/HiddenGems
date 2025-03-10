@@ -8,6 +8,7 @@ import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
 import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
+import 'package:hidden_gems/screens/Works/editwork_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -47,6 +48,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         workId: '',
         workTitle: '알 수 없는 경매',
         artistId: '',
+        artistNickname: '',
         auctionUserId: [],
         minPrice: 0,
         nowPrice: 0,
@@ -68,26 +70,71 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            IconButton(
-              onPressed: () async {
-                AddModal(
-                  context: context,
-                  title: '작품 삭제',
-                  description: '해당 작품을 삭제하시겠습니까?',
-                  whiteButtonText: '취소',
-                  purpleButtonText: '확인',
-                  function: () async {
-                    await workProvider.deleteWork(updatedWork.id);
-                    await workProvider.loadWorks();
-                    Navigator.pop(context);
-                  },
-                );
-              },
-              icon: Icon(Icons.delete),
-            )
-          ],
-          elevation: 0,
-        ),
+            if (updatedWork.artistID == userProvider.user?.id)
+            Theme(
+              data: Theme.of(context).copyWith(
+                cardColor: Colors.white,
+              ),
+              child: PopupMenuButton<String>(
+                onSelected: (String result) async {
+                  if (result == 'edit') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditWorkScreen(work: updatedWork),
+                      ),
+                    );
+                  } else if (result == 'delete') {
+                    _showDeleteConfirmationDialog(context, userProvider, workProvider, auctionProvider, updatedWork.id);
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, color: Colors.black),
+                        SizedBox(width: 8),
+                        Text('수정'),
+                      ],
+                    ),
+                  ),
+                  child: PopupMenuButton<String>(
+                    onSelected: (String result) async {
+                      if (result == 'edit') {
+                        // 수정 기능
+                      } else if (result == 'delete') {
+                        _showDeleteConfirmationDialog(context, userProvider,
+                            workProvider, auctionProvider, updatedWork.id);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: Colors.black),
+                            SizedBox(width: 8),
+                            Text('수정'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('삭제'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    icon: Icon(Icons.more_vert), // 드롭다운 버튼 아이콘
+                  ),
+                )
+            ]),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SingleChildScrollView(
@@ -243,6 +290,45 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         ));
   }
 
+  void _showDeleteConfirmationDialog(
+      BuildContext context2,
+      UserProvider userProvider,
+      WorkProvider workProvider,
+      AuctionWorksProvider auctionProvider,
+      String workId) {
+    showDialog(
+      context: context2,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("작품 삭제"),
+          content: Text("해당 작품의 경매 내역까지 삭제됩니다. 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("취소", style: TextStyle(color: Colors.black)),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+
+                await userProvider.deleteMyWorks(workId);
+                await workProvider.deleteWork(workId);
+                await auctionProvider.deleteAuctionWork(workId);
+                await workProvider.loadWorks();
+
+                Navigator.pop(context2);
+              },
+              child: Text("삭제", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _startAuctionModal(BuildContext context) {
     DateTime selectedDate = DateTime.now().add(Duration(days: 7));
     showModalBottomSheet(
@@ -337,6 +423,18 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                               auctionUserId: [],
                               minPrice: widget.work.minPrice.toInt(),
                               endDate: selectedDate,
+                              nowPrice: widget.work.minPrice.toInt(),
+                              auctionComplete: false,
+                              lastBidderId: null,
+                            );
+                            final auctionWork = AuctionWork(
+                              workId: widget.work.id,
+                              workTitle: widget.work.title,
+                              artistId: widget.work.artistID,
+                              artistNickname: widget.work.artistNickName,
+                              auctionUserId: [],
+                              minPrice: widget.work.minPrice.toInt(),
+                              endDate: DateTime.now().add(Duration(days: 7)),
                               nowPrice: widget.work.minPrice.toInt(),
                               auctionComplete: false,
                               lastBidderId: null,
@@ -473,6 +571,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             workId: '',
                             workTitle: '알 수 없는 경매',
                             artistId: '',
+                            artistNickname: '',
                             auctionUserId: [],
                             minPrice: 0,
                             nowPrice: 0,
