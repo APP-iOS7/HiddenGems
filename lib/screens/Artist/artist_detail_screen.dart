@@ -29,7 +29,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
     }
   }
 
-  Future<void> _toggleSubscription() async {
+  Future<void> toggleSubscription() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final currentUser = userProvider.user;
     if (currentUser == null || currentUser.id == widget.user.id) return;

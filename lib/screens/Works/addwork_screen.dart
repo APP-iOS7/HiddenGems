@@ -23,7 +23,6 @@ class _AddWorkScreenState extends State<AddWorkScreen> {
   final TextEditingController _imageUrlController = TextEditingController();
 
   File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
   String? _imageUrl;
 
   // Future<void> _pickImage() async {
