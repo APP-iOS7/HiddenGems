@@ -8,6 +8,7 @@ import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'screens/MyPage/mypage_screen.dart';
 import '../screens/Works/works_screen.dart';
@@ -22,6 +23,15 @@ void main() async {
     nativeAppKey: '2564930daedf36a88773ed02c9ada1e6',
     javaScriptAppKey: '9ce33d7e4d669f4997dbf86f82f607ec',
   );
+
+//Remove this method to stop OneSignal Debugging
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+  OneSignal.initialize("8f8cdaab-a211-4b80-ae3d-d196988e6a78");
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.Notifications.requestPermission(true);
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
