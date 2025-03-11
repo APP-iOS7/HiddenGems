@@ -28,7 +28,7 @@ class AuctionWorksScreenState extends State<AuctionWorksScreen> {
   List<AuctionWork> _allAuctionWorks = [];
   List<AuctionWork> _filteredWorks = [];
   List<AppUser> _allUsers = [];
-  bool _showDone = false;
+  bool _showDone = true;
 
   @override
   void initState() {

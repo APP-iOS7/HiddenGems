@@ -16,7 +16,7 @@ class WorkScreen extends StatefulWidget {
 class WorkScreenState extends State<WorkScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
-  bool _showSelling = true;
+  bool _showSelling = false;
 
   @override
   void dispose() {
