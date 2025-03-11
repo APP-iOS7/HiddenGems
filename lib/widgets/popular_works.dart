@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
-import 'package:intl/intl.dart';
 
 class PopularWorks extends StatelessWidget {
   const PopularWorks({super.key});

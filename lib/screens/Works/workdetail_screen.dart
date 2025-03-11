@@ -403,8 +403,10 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final likedUserIds = widget.work.likedUsers;
 
                             if (likedUserIds.isNotEmpty) {
-                              await sendNotification(likedUserIds, "경매 시작 알림",
-                                  "좋아요를 누른 작품의 경매가 시작되었습니다.");
+                              await sendNotification(
+                                  likedUserIds,
+                                  "좋아요를 누른 작품의 경매가 시작되었습니다.",
+                                  "${auctionWork.artistNickname}의 ${auctionWork.workTitle}");
                             }
 
                             Navigator.pop(context);
@@ -588,7 +590,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
       'contents': {'en': title},
       'headings': {'en': message},
       'include_aliases': {'external_id': likedUsers},
-      'target_channel': 'push'
+      'target_channel': 'push',
     };
 
     var headers = {

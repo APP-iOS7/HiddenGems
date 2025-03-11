@@ -23,11 +23,6 @@ class MainScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                    onPressed: () {
-                      // context.read<NotificationProvider>().sendNotification();
-                    },
-                    child: Text('notificationTest')),
                 _buildSectionHeader(
                     context, 'Live Auctions', Icons.gavel_rounded, null, null),
                 const SizedBox(height: 15),
