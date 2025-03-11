@@ -57,7 +57,8 @@ class ProgressAuctionsState extends State<ProgressAuctions> {
                             builder: (context, workSnapshot) {
                               if (workSnapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                                return Center(
+                                    child: CircularProgressIndicator());
                               }
                               if (workSnapshot.hasError ||
                                   !workSnapshot.hasData) {
