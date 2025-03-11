@@ -138,7 +138,7 @@ class _ArtistDetailScreenState extends State<ArtistDetailScreen> {
                                 },
                                 style: TextButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 10), // 높이 조절
-                                  backgroundColor: subscribing ? Colors.grey[300] : Colors.blue, // 배경색 변경
+                                  backgroundColor: subscribing ? Colors.grey[300] : Colors.purple, // 배경색 변경
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10), // 모서리 둥글게
                                   ),
