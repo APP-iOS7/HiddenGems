@@ -413,6 +413,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("경매가 시작되었습니다!")),
                             );
+                            await auctionProvider.fetchAllAuctionWorks();
 
                             setState(() {});
                           },
@@ -524,7 +525,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       onPressed: () {
                         final auctionProvider =
                             Provider.of<AuctionWorksProvider>(context,
-                                listen: false);
+                                listen: true);
 
                         final auctionWork =
                             auctionProvider.allAuctionWorks.firstWhere(
@@ -552,7 +553,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                               builder: (context) => AuctionScreen(
                                 auctionWork: auctionWork,
                               ),
-                            ),
+                            )
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
