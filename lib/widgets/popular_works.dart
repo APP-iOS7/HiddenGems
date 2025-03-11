@@ -3,8 +3,14 @@ import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/screens/Works/workdetail_screen.dart';
 
-class PopularWorks extends StatelessWidget {
+class PopularWorks extends StatefulWidget {
   const PopularWorks({super.key});
+  @override
+  _PopularWorksState createState() => _PopularWorksState();
+}
+
+class _PopularWorksState extends State<PopularWorks> {
+  
 
   Future<List<Work>> fetchPopularWorks() async {
     final workProvider = WorkProvider();
@@ -49,7 +55,12 @@ class PopularWorks extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => WorkdetailScreen(work: work)));
+                          builder: (context) => WorkdetailScreen(work: work),
+                        ),
+                      ).then((_) {
+                    fetchPopularWorks();
+                    setState(() {});
+                  });
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 4.0),
