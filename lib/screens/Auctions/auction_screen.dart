@@ -77,7 +77,7 @@ class AuctionScreenState extends State<AuctionScreen> {
   }
 
   void _startAuctionTimer() {
-    _auctionTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+    _auctionTimer = Timer.periodic(Duration(seconds: 3), (timer) {
       final auctionProvider =
           Provider.of<AuctionWorksProvider>(context, listen: false);
       final now = DateTime.now();
@@ -122,7 +122,8 @@ class AuctionScreenState extends State<AuctionScreen> {
         appBar: AppBar(
             backgroundColor: Colors.white,
             title: Text(updatedAuction.workTitle)),
-        body: Padding(
+        body: SingleChildScrollView(
+          child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: FutureBuilder<Work?>(
             future: _fetchWork(),
@@ -386,6 +387,7 @@ class AuctionScreenState extends State<AuctionScreen> {
               );
             },
           ),
+        ),
         ),
         bottomNavigationBar: GestureDetector(
           onTap: () {
