@@ -791,7 +791,9 @@ class AuctionScreenState extends State<AuctionScreen> {
       'app_id': '8f8cdaab-a211-4b80-ae3d-d196988e6a78',
       'contents': {'en': title},
       'headings': {'en': message},
-      'include_aliases': {'external_id': bidder},
+      'include_aliases': {
+        'external_id': [bidder]
+      },
       'target_channel': 'push',
     };
 
