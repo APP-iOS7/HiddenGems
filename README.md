@@ -57,58 +57,58 @@
 ## Model
 
 **AppUser**  
-\- id
-\- signupDate
-\- profileURL
-\- nickName
-\- myLikeScore
-\- [myWorks] //사용자가 등록한 작품들
-\- myWorksCount
-\- [likedWorks] //사용자가 좋아요한 작품들
-\- [biddingWorks] //사용자가 입찰중인 경매들
-\- [beDeliveryWorks] //배송지 입력 예정 작품들
-\- [completeWorks] //낙찰 내역
-\- [subscribeUsers] //사용자가 구독중인 작품들
-
-**Work**
-\- id
-\- artistID //작품을 생성한 작가의 아이디
-\- artistNickName
-\- selling //작품 판매 여부
-\- title
-\- description
-\- createDate
-\- workPhotoURL
-\- minPrice
-\- [likedUsers] //작품의 좋아요를 누른 사용자들
-\- likedCount
-\- doAuction //경매 진행 여부
-
-**AuctionWork**
-\- workId //경매의 해당 작품의 아이디
-\- workTitle
-\- artistId //경매의 해당 작품의 해당 작가의 아이디
-\- artistNickname
-\- [auctionUserId] //경매에 참여중인 사용자들의 아이디
-\- minPrice
-\- endDate
-\- nowPrice //현재가
-\- auctionComplete //경매 종료 여부
-\- lastBidderId //현재가를 제시한 사용자의 아이디
-
-**AuctionedWork**
-\- id
-\- workId
-\- workTitle
-\- artistId
-\- artistNickname
-\- completeUserId //낙찰자의 아이디
-\- completePrice //낙찰 금액
-\- address
-\- name
-\- phone
-\- deliverComplete //배송 완료 여부
-\- deliverRequest
+\- id  
+\- signupDate  
+\- profileURL  
+\- nickName  
+\- myLikeScore  
+\- [myWorks] //사용자가 등록한 작품들  
+\- myWorksCount  
+\- [likedWorks] //사용자가 좋아요한 작품들  
+\- [biddingWorks] //사용자가 입찰중인 경매들  
+\- [beDeliveryWorks] //배송지 입력 예정 작품들  
+\- [completeWorks] //낙찰 내역  
+\- [subscribeUsers] //사용자가 구독중인 작품들  
+  
+**Work**  
+\- id  
+\- artistID //작품을 생성한 작가의 아이디  
+\- artistNickName  
+\- selling //작품 판매 여부  
+\- title  
+\- description  
+\- createDate  
+\- workPhotoURL  
+\- minPrice  
+\- [likedUsers] //작품의 좋아요를 누른 사용자들  
+\- likedCount  
+\- doAuction //경매 진행 여부  
+  
+**AuctionWork**  
+\- workId //경매의 해당 작품의 아이디  
+\- workTitle  
+\- artistId //경매의 해당 작품의 해당 작가의 아이디  
+\- artistNickname  
+\- [auctionUserId] //경매에 참여중인 사용자들의 아이디  
+\- minPrice  
+\- endDate  
+\- nowPrice //현재가  
+\- auctionComplete //경매 종료 여부  
+\- lastBidderId //현재가를 제시한 사용자의 아이디  
+  
+**AuctionedWork**  
+\- id  
+\- workId  
+\- workTitle  
+\- artistId  
+\- artistNickname  
+\- completeUserId //낙찰자의 아이디  
+\- completePrice //낙찰 금액  
+\- address  
+\- name  
+\- phone  
+\- deliverComplete //배송 완료 여부  
+\- deliverRequest  
 
 ## Entity 관계 설명
 * User ↔ Auction (Many-to-Many, 한 사용자가 여러 경매에 참여, 하나의 경매에 여러 사용자가 참여)
