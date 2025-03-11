@@ -45,7 +45,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
       orElse: () => widget.work,
     );
     final auctionProvider =
-        Provider.of<AuctionWorksProvider>(context, listen: false);
+        Provider.of<AuctionWorksProvider>(context, listen: true);
     final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
       (auction) => auction.workId == widget.work.id,
       orElse: () => AuctionWork(
@@ -378,9 +378,6 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                             final auctionProvider =
                                 Provider.of<AuctionWorksProvider>(context,
                                     listen: false);
-                            final userProvider = Provider.of<UserProvider>(
-                                context,
-                                listen: false);
 
                             final auctionWork = AuctionWork(
                               workId: widget.work.id,

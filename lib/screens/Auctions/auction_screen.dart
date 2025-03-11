@@ -560,6 +560,11 @@ class AuctionScreenState extends State<AuctionScreen> {
                                     listen: false)
                                 .updateAuctionStatus(updatedAuction.workId);
 
+                            await Provider.of<WorkProvider>(context,
+                                    listen: false)
+                                .updateWorkSellingStatus(
+                                    updatedAuction.workId, false);
+
                             Navigator.pop(context);
 
                             ScaffoldMessenger.of(context).showSnackBar(
