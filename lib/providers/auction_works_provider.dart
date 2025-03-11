@@ -15,8 +15,10 @@ class AuctionWorksProvider with ChangeNotifier {
 
   Future<void> fetchAllAuctionWorks() async {
     try {
-      final QuerySnapshot snapshot =
-          await _firestore.collection('auctionWorks').get();
+      final QuerySnapshot snapshot = await _firestore
+          .collection('auctionWorks')
+          .where('auctionComplete', isEqualTo: false)
+          .get();
 
       _allAuctionWorks = snapshot.docs
           .map((doc) => AuctionWork.fromMap(doc.data() as Map<String, dynamic>))

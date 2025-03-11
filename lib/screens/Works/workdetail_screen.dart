@@ -279,7 +279,9 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                               .contains(userProvider.user?.id)
                           ? "해당 경매 참여하기"
                           : "경매 페이지로 이동하기"
-                      : "경매가 아직 시작되지 않았습니다",
+                      : updatedWork.selling
+                          ? "경매가 아직 시작되지 않았습니다"
+                          : "판매가 종료되었습니다",
               style: TextStyle(
                 color: updatedWork.artistID == userProvider.user?.id
                     ? Colors.white
