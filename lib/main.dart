@@ -35,7 +35,7 @@ void main() async {
   OneSignal.Notifications.requestPermission(true);
   Stripe.publishableKey =
       'pk_test_51NDpRJJinXpHIPsErkhbbskGYZltQGnig4OTsxAuRcrWPXCNvyI6Dc8ApCNL4ciBQz1LhIT76fingitKdFTdjztU00zgfNNsgk';
-  await Stripe.instance.applySettings();
+  // await Stripe.instance.applySettings();
 
   runApp(MultiProvider(
     providers: [
