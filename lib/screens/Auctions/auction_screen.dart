@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/models/auction_work.dart';
@@ -6,6 +8,7 @@ import 'package:hidden_gems/models/user.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
@@ -493,6 +496,11 @@ class AuctionScreenState extends State<AuctionScreen> {
                               'completedAt': DateTime.now(),
                             });
 
+                            await sendNotification(
+                                auctionedWork.completeUserId,
+                                '축하합니다! 경매에 낙찰되었습니다. 배송지를 입력해주세요',
+                                '${updatedAuction.artistNickname}님의 ${updatedAuction.workTitle}');
+
                             Provider.of<AuctionWorksProvider>(context,
                                     listen: false)
                                 .updateAuctionStatus(updatedAuction.workId);
@@ -719,5 +727,43 @@ class AuctionScreenState extends State<AuctionScreen> {
         );
       },
     );
+  }
+
+  Future sendNotification(String bidder, String title, String message) async {
+    final url = Uri.parse('https://api.onesignal.com/notifications?c=push');
+
+    final payload = {
+      'app_id': '8f8cdaab-a211-4b80-ae3d-d196988e6a78',
+      'contents': {'en': title},
+      'headings': {'en': message},
+      'include_aliases': {'external_id': bidder},
+      'target_channel': 'push',
+    };
+
+    var headers = {
+      'accept': "application/json",
+      'Authorization':
+          'Key os_v2_app_r6gnvk5ccffyblr52gljrdtkpdacftqxzvxu3v4g4s2zbvag5ffqoq3i2lcqn2nyhujwcsqd64bfqwthmi6oiefdhtjbrw2ezrl4jra',
+      'content-type': 'application/json',
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent successfully');
+        debugPrint(response.body);
+      } else {
+        debugPrint('Failed to send notification');
+        debugPrint('Status code: ${response.statusCode}');
+        debugPrint('Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error sending notification: $e');
+    }
   }
 }
