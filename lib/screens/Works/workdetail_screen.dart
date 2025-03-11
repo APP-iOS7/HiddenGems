@@ -1,10 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/modal.dart';
 import 'package:hidden_gems/models/works.dart';
 import 'package:hidden_gems/models/auction_work.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
 import 'package:hidden_gems/providers/auction_works_provider.dart';
+import 'package:hidden_gems/screens/Auctions/auction_screen.dart';
+import 'package:hidden_gems/screens/Works/editwork_screen.dart';
 //import 'package:flutter/widgets.dart';
 
 class WorkdetailScreen extends StatefulWidget {
@@ -22,7 +30,8 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     super.initState();
     Provider.of<WorkProvider>(context, listen: false).loadWorks();
     Provider.of<UserProvider>(context, listen: false).loadUser();
-    Provider.of<AuctionWorksProvider>(context, listen: false).fetchAllAuctionWorks();
+    Provider.of<AuctionWorksProvider>(context, listen: false)
+        .fetchAllAuctionWorks();
   }
 
   @override
@@ -35,21 +44,95 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
       (w) => w.id == widget.work.id,
       orElse: () => widget.work,
     );
+    final auctionProvider =
+        Provider.of<AuctionWorksProvider>(context, listen: true);
+    final auctionWork = auctionProvider.allAuctionWorks.firstWhere(
+      (auction) => auction.workId == widget.work.id,
+      orElse: () => AuctionWork(
+          workId: '',
+          workTitle: '알 수 없는 경매',
+          artistId: '',
+          auctionUserId: [],
+          minPrice: 0,
+          nowPrice: 0,
+          endDate: DateTime.now(),
+          auctionComplete: true,
+          artistNickname: 'unknown'),
+    );
 
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(
-            updatedWork.title,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          elevation: 0,
-        ),
+            title: Text(
+              updatedWork.title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+            actions: [
+              if (updatedWork.artistID == userProvider.user?.id)
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    cardColor: Colors.white,
+                  ),
+                  child: PopupMenuButton<String>(
+                    onSelected: (String result) async {
+                      if (result == 'edit') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditWorkScreen(work: updatedWork),
+                          ),
+                        );
+                      } else if (result == 'delete') {
+                        await AddModal(
+                          context: context,
+                          title: '작품 삭제',
+                          description: '해당 작품의 경매 내역까지 삭제됩니다.\n삭제하시겠습니까?',
+                          whiteButtonText: '취소',
+                          purpleButtonText: '삭제',
+                          function: () async {
+                            await userProvider.deleteMyWorks(updatedWork.id);
+                            await workProvider.deleteWork(updatedWork.id);
+                            await auctionProvider
+                                .deleteAuctionWork(updatedWork.id);
+                            await workProvider.loadWorks();
+                            Navigator.pop(context);
+                          },
+                        );
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: Colors.black),
+                            SizedBox(width: 8),
+                            Text('수정'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('삭제'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    icon: Icon(Icons.more_vert), // 드롭다운 버튼 아이콘
+                  ),
+                )
+            ]),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SingleChildScrollView(
@@ -87,7 +170,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ),
                       onPressed: () {
                         _toggleLike(workProvider, userProvider, updatedWork.id,
-                            isLiked);
+                            updatedWork.artistID, isLiked);
                       },
                     ),
                     SizedBox(width: 5),
@@ -130,7 +213,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       ),
                       SizedBox(width: 10),
                       Text(
-                        "₩${updatedWork.minPrice.toString()}",
+                        "${NumberFormat('###,###,###,###').format(updatedWork.minPrice)} 원",
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
@@ -147,10 +230,28 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             if (updatedWork.artistID == userProvider.user?.id) {
               if (!updatedWork.doAuction) {
                 _startAuctionModal(context);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AuctionScreen(auctionWork: auctionWork),
+                  ),
+                );
               }
             } else {
               if (updatedWork.doAuction) {
-                _showAuctionModal(context);
+                if (auctionWork.auctionUserId.contains(userProvider.user?.id)) {
+                  _showAuctionModal(context);
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AuctionScreen(auctionWork: auctionWork),
+                    ),
+                  );
+                }
               }
             }
           },
@@ -161,9 +262,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             margin: EdgeInsets.only(bottom: 50, left: 16, right: 16),
             decoration: BoxDecoration(
               color: updatedWork.artistID == userProvider.user?.id
-                  ? updatedWork.doAuction
-                      ? Colors.grey[300]
-                      : Colors.purple
+                  ? Colors.purple
                   : updatedWork.doAuction
                       ? Colors.purple
                       : Colors.grey[300],
@@ -173,16 +272,19 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
             child: Text(
               updatedWork.artistID == userProvider.user?.id
                   ? updatedWork.doAuction
-                      ? "경매가 이미 시작되었습니다"
+                      ? "경매 페이지로 이동하기"
                       : "경매 시작하기"
                   : updatedWork.doAuction
-                      ? "해당 경매 참여하기"
-                      : "경매가 아직 시작되지 않았습니다",
+                      ? auctionWork.auctionUserId
+                              .contains(userProvider.user?.id)
+                          ? "해당 경매 참여하기"
+                          : "경매 페이지로 이동하기"
+                      : updatedWork.selling
+                          ? "경매가 아직 시작되지 않았습니다"
+                          : "판매가 종료되었습니다",
               style: TextStyle(
                 color: updatedWork.artistID == userProvider.user?.id
-                    ? updatedWork.doAuction
-                        ? Colors.black
-                        : Colors.white
+                    ? Colors.white
                     : updatedWork.doAuction
                         ? Colors.white
                         : Colors.black,
@@ -193,104 +295,153 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
   }
 
   void _startAuctionModal(BuildContext context) {
+    DateTime selectedDate = DateTime.now().add(Duration(days: 7));
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 10),
-              Text(
-                "경매 시작",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 8),
-              Text(
-                "이 작품의 경매를 시작하시겠습니까?",
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    width: 120,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.purple),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                  SizedBox(height: 10),
+                  Text(
+                    "경매 시작",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "이 작품의 경매를 시작하시겠습니까?",
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "마감일: ${DateFormat('yyyy-MM-dd HH:mm').format(selectedDate)}",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                      SizedBox(width: 10),
+                      IconButton(
+                        icon: Icon(Icons.calendar_today, color: Colors.purple),
+                        onPressed: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now()
+                                .add(Duration(days: 30)), // 최대 30일 후까지 선택 가능
+                          );
+                          if (pickedDate != null) {
+                            setModalState(() {
+                              selectedDate = pickedDate; // 선택한 날짜 반영
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.purple),
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: Text("취소",
+                              style: TextStyle(color: Colors.purple)),
                         ),
                       ),
-                      child: Text("취소", style: TextStyle(color: Colors.purple)),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  SizedBox(
-                    width: 120,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final auctionProvider =
-                            Provider.of<AuctionWorksProvider>(context, listen: false);
+                      SizedBox(width: 16),
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final auctionProvider =
+                                Provider.of<AuctionWorksProvider>(context,
+                                    listen: false);
 
-                        final auctionWork = AuctionWork(
-                          workId: widget.work.id,
-                          workTitle: widget.work.title,
-                          artistId: widget.work.artistID,
-                          auctionUserId: [],
-                          minPrice: widget.work.minPrice.toInt(),
-                          endDate: DateTime.now().add(Duration(days: 7)),
-                          auctionComplete: false,
-                        );
+                            final auctionWork = AuctionWork(
+                              workId: widget.work.id,
+                              workTitle: widget.work.title,
+                              artistId: widget.work.artistID,
+                              artistNickname: widget.work.artistNickName,
+                              auctionUserId: [],
+                              minPrice: widget.work.minPrice.toInt(),
+                              endDate: DateTime.now().add(Duration(days: 7)),
+                              nowPrice: widget.work.minPrice.toInt(),
+                              auctionComplete: false,
+                              lastBidderId: null,
+                            );
 
-                        await auctionProvider.addAuctionWork(auctionWork);
+                            await auctionProvider.addAuctionWork(auctionWork);
 
-                        Provider.of<WorkProvider>(context, listen: false)
-                            .updateWorkAuctionStatus(widget.work.id, true);
+                            Provider.of<WorkProvider>(context, listen: false)
+                                .updateWorkAuctionStatus(widget.work.id, true);
 
-                        Navigator.pop(context);
+                            final likedUserIds = widget.work.likedUsers;
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("경매가 시작되었습니다!")),
-                        );
+                            if (likedUserIds.isNotEmpty) {
+                              await sendNotification(
+                                  likedUserIds,
+                                  "좋아요를 누른 작품의 경매가 시작되었습니다.",
+                                  "${auctionWork.artistNickname}의 ${auctionWork.workTitle}");
+                            }
 
-                        setState(() {});
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                            Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("경매가 시작되었습니다!")),
+                            );
+                            await auctionProvider.fetchAllAuctionWorks();
+
+                            setState(() {});
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.purple,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: Text("시작하기"),
                         ),
                       ),
-                      child: Text("시작하기"),
-                    ),
+                    ],
                   ),
+                  SizedBox(height: 10),
                 ],
               ),
-              SizedBox(height: 10),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 
-
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
-      String workId, bool isLiked) {
+      String workId, String artistId, bool isLiked) {
     final currentUser = userProvider.user;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -312,8 +463,10 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
     List<String> updatedLikedUsers = List.from(work.likedUsers);
     if (isLiked) {
       updatedLikedUsers.remove(userId);
+      userProvider.subMyLikeScore(artistId);
     } else {
       updatedLikedUsers.add(userId);
+      userProvider.addMyLikeScore(artistId);
     }
 
     workProvider.updateWorkLikedUsers(workId, updatedLikedUsers);
@@ -321,6 +474,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
 
   void _showAuctionModal(BuildContext context) {
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -369,8 +523,43 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                     width: 120,
                     child: ElevatedButton(
                       onPressed: () {
+                        final auctionProvider =
+                            Provider.of<AuctionWorksProvider>(context,
+                                listen: false);
+
+                        final auctionWork =
+                            auctionProvider.allAuctionWorks.firstWhere(
+                          (auction) => auction.workId == widget.work.id,
+                          orElse: () => AuctionWork(
+                            workId: '',
+                            workTitle: '알 수 없는 경매',
+                            artistId: '',
+                            auctionUserId: [],
+                            minPrice: 0,
+                            nowPrice: 0,
+                            endDate: DateTime.now(),
+                            auctionComplete: true,
+                            artistNickname: 'unknown',
+                          ),
+                        );
+
                         Navigator.pop(context);
-                        // 여기에 경매 페이지 이동 로직 추가
+
+                        // AuctionWork가 유효한 경우에만 이동
+                        if (auctionWork.workId.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AuctionScreen(
+                                auctionWork: auctionWork,
+                              ),
+                            )
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("해당 작품의 경매 정보를 찾을 수 없습니다.")),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple,
@@ -391,5 +580,43 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
         );
       },
     );
+  }
+
+  Future sendNotification(List likedUsers, String title, String message) async {
+    final url = Uri.parse('https://api.onesignal.com/notifications?c=push');
+
+    final payload = {
+      'app_id': '8f8cdaab-a211-4b80-ae3d-d196988e6a78',
+      'contents': {'en': title},
+      'headings': {'en': message},
+      'include_aliases': {'external_id': likedUsers},
+      'target_channel': 'push',
+    };
+
+    var headers = {
+      'accept': "application/json",
+      'Authorization':
+          'Key os_v2_app_r6gnvk5ccffyblr52gljrdtkpdacftqxzvxu3v4g4s2zbvag5ffqoq3i2lcqn2nyhujwcsqd64bfqwthmi6oiefdhtjbrw2ezrl4jra',
+      'content-type': 'application/json',
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent successfully');
+        debugPrint(response.body);
+      } else {
+        debugPrint('Failed to send notification');
+        debugPrint('Status code: ${response.statusCode}');
+        debugPrint('Response: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error sending notification: $e');
+    }
   }
 }

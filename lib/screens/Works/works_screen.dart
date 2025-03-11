@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/models/works.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
@@ -15,6 +16,8 @@ class WorkScreen extends StatefulWidget {
 class WorkScreenState extends State<WorkScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+  bool _showSelling = false;
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -35,11 +38,23 @@ class WorkScreenState extends State<WorkScreen> {
     final works = workProvider.works;
 
     final likedWorks = userProvider.user?.likedWorks ?? [];
-    
-    final filteredWorks = works
-      .where((work) =>
-          work.title.toLowerCase().contains(_searchQuery.toLowerCase()))
-      .toList();
+
+    List<Work> filteredWorks = works
+        .where((work) =>
+            work.title.toLowerCase().contains(_searchQuery.toLowerCase()) &&
+            (!_showSelling || work.selling == true))
+        .toList();
+
+    void filterAuctionWorks(String query) {
+      setState(() {
+        _searchQuery = query.toLowerCase();
+        filteredWorks = works
+            .where((work) =>
+                work.title.toLowerCase().contains(_searchQuery.toLowerCase()) &&
+                (!_showSelling || work.selling))
+            .toList();
+      });
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,6 +70,7 @@ class WorkScreenState extends State<WorkScreen> {
                 onChanged: (value) {
                   setState(() {
                     _searchQuery = value;
+                    filterAuctionWorks(_searchQuery);
                   });
                 },
                 decoration: InputDecoration(
@@ -73,6 +89,23 @@ class WorkScreenState extends State<WorkScreen> {
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("판매 중인 작품만 보기", style: TextStyle(fontSize: 16)),
+                Switch(
+                  value: _showSelling,
+                  onChanged: (value) {
+                    setState(() {
+                      _showSelling = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: filteredWorks.isEmpty
                 ? Center(
@@ -84,7 +117,7 @@ class WorkScreenState extends State<WorkScreen> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 1.2,
+                        childAspectRatio: 0.9,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -95,45 +128,36 @@ class WorkScreenState extends State<WorkScreen> {
 
                         return GestureDetector(
                           onTap: () {
-                            //debugPrint("Navigating to WorkdetailScreen with work: ${work.title}");
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      WorkdetailScreen(work: work),
-                                ));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  work.workPhotoURL.isNotEmpty
-                                      ? work.workPhotoURL
-                                      : 'https://picsum.photos/200/300', // 기본 이미지 대체
-                                ),
-                                fit: BoxFit.cover, // 이미지를 꽉 차게 표시
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    WorkdetailScreen(work: work),
                               ),
-                            ),
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Text(
-                                    work.title,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        work.workPhotoURL.isNotEmpty
+                                            ? work.workPhotoURL
+                                            : 'https://picsum.photos/200/300',
+                                      ),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  bottom: 8,
-                                  left: 8,
-                                  child: IconButton(
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
                                     icon: Icon(
                                       isLiked
                                           ? Icons.favorite
@@ -142,12 +166,24 @@ class WorkScreenState extends State<WorkScreen> {
                                     ),
                                     onPressed: () {
                                       _toggleLike(workProvider, userProvider,
-                                          work.id, isLiked);
+                                          work.id, work.artistID, isLiked);
                                     },
                                   ),
-                                ),
-                              ],
-                            ),
+                                  Expanded(
+                                    child: Text(
+                                      work.title,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -160,7 +196,7 @@ class WorkScreenState extends State<WorkScreen> {
   }
 
   void _toggleLike(WorkProvider workProvider, UserProvider userProvider,
-      String workId, bool isLiked) {
+      String workId, String artistId, bool isLiked) {
     final currentUser = userProvider.user;
     if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,8 +208,10 @@ class WorkScreenState extends State<WorkScreen> {
     List<String> updatedLikedWorks = List.from(currentUser.likedWorks);
     if (isLiked) {
       updatedLikedWorks.remove(workId); // 이미 좋아요한 경우 제거
+      userProvider.subMyLikeScore(artistId);
     } else {
       updatedLikedWorks.add(workId); // 좋아요 추가
+      userProvider.addMyLikeScore(artistId);
     }
 
     userProvider.updateUserLikedWorks(updatedLikedWorks);

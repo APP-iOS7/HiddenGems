@@ -62,7 +62,7 @@ class ArtistScreenState extends State<ArtistScreen> {
         ),
       ),
       body: FutureBuilder<List<AppUser>>(
-        future: _futureUsers, // Firestore에서 직접 데이터 가져오기
+        future: _futureUsers,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -97,7 +97,7 @@ class ArtistScreenState extends State<ArtistScreen> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search,
                           color: const Color.fromARGB(255, 105, 105, 105)),
-                      hintText: "작품 검색",
+                      hintText: "작가 검색",
                       hintStyle: TextStyle(color: Colors.grey),
                       filled: true,
                       fillColor: Color.fromRGBO(223, 223, 229, 1),
@@ -125,16 +125,21 @@ class ArtistScreenState extends State<ArtistScreen> {
                     itemBuilder: (BuildContext context, int index) {
                       final user = filteredUsers[index];
                       final worksCount = user.myWorks.length;
-                      final likesCount = user.likedWorks.length;
+                      final likesCount = user.myLikeScore;
 
                       return GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${user.nickName}의 프로필'),
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ArtistDetailScreen(user: user)));
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(
+                          //     content: Text('${user.nickName}의 프로필'),
+                          //     duration: const Duration(seconds: 1),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           decoration: BoxDecoration(

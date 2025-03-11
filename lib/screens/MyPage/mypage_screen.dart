@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
-import 'package:hidden_gems/screens/MyPage/be_delivery_work_screen.dart';
-import 'package:hidden_gems/screens/MyPage/complete_works_screen.dart';
-import 'package:hidden_gems/screens/MyPage/my_bidding_screen.dart';
+import 'package:hidden_gems/screens/MyPage/auctioned_works_list_screen.dart';
 import 'package:hidden_gems/screens/MyPage/my_works_screen.dart';
+import 'package:hidden_gems/screens/MyPage/profile_edit_screen.dart';
+import 'package:hidden_gems/screens/MyPage/subscribe_users_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'liked_work_list_screen.dart';
+import 'my_bidding_screen.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
@@ -15,7 +16,7 @@ class MyPageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     String? profileImageUrl;
     String? nickName;
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: true);
     if (userProvider.user != null) {
       profileImageUrl = userProvider.user!.profileURL;
       nickName = userProvider.user!.nickName;
@@ -41,7 +42,7 @@ class MyPageScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Divider(),
             SizedBox(height: 20),
             Padding(
@@ -65,6 +66,31 @@ class MyPageScreen extends StatelessWidget {
                                         LikedWorkListScreen()));
                           },
                           child: Text('좋아요한 작품 보기',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.notifications_active,
+                        color: Color(0xFF9800CB),
+                        size: 22,
+                      ),
+                      SizedBox(width: 18),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        SubscribeUsersScreen()));
+                          },
+                          child: Text('구독한 작가 보기',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
@@ -100,7 +126,7 @@ class MyPageScreen extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.attach_money,
+                        Icons.gavel_rounded,
                         color: Color(0xFF9800CB),
                         size: 22,
                       ),
@@ -112,32 +138,7 @@ class MyPageScreen extends StatelessWidget {
                                 MaterialPageRoute(
                                     builder: (context) => MyBiddingScreen()));
                           },
-                          child: Text('참여중인 경매 보기',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                              ))),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.local_shipping_outlined,
-                        color: Color(0xFF9800CB),
-                        size: 22,
-                      ),
-                      SizedBox(width: 18),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        BeDeliveryWorkScreen()));
-                          },
-                          child: Text('낙찰된 작품 배송지 입력 / 결제하기',
+                          child: Text('참여 중인 경매 보기',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
@@ -160,12 +161,31 @@ class MyPageScreen extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        CompleteWorksScreen()));
+                                        AuctionedWorksListScreen()));
                           },
                           child: Text('낙찰내역 보기',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ))),
+                    ],
+                  ),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfileEditScreen()));
+                          },
+                          child: Text('프로필 수정하기',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
                                 fontWeight: FontWeight.w700,
                               ))),
                     ],

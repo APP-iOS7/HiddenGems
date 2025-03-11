@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:hidden_gems/providers/user_provider.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auction_works_provider.dart';
@@ -11,21 +13,22 @@ import 'package:hidden_gems/providers/work_provider.dart';
 
 import 'package:hidden_gems/models/user.dart';
 
-import '../Auctions/auction_screen.dart';
+import 'auction_screen.dart';
 
-class MyBiddingScreen extends StatefulWidget {
-  const MyBiddingScreen({super.key});
+class AuctionWorksScreen extends StatefulWidget {
+  const AuctionWorksScreen({super.key});
 
   @override
-  MyBiddingScreenState createState() => MyBiddingScreenState();
+  AuctionWorksScreenState createState() => AuctionWorksScreenState();
 }
 
-class MyBiddingScreenState extends State<MyBiddingScreen> {
+class AuctionWorksScreenState extends State<AuctionWorksScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
   List<AuctionWork> _allAuctionWorks = [];
   List<AuctionWork> _filteredWorks = [];
   List<AppUser> _allUsers = [];
+  bool _showDone = true;
 
   @override
   void initState() {
@@ -38,15 +41,10 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
     final auctionProvider =
         Provider.of<AuctionWorksProvider>(context, listen: false);
     final workProvider = Provider.of<WorkProvider>(context, listen: false);
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
     await auctionProvider.fetchAllAuctionWorks();
     await workProvider.loadWorks();
     setState(() {
-      _allAuctionWorks = auctionProvider.allAuctionWorks
-          .where((auction) =>
-              auction.auctionUserId.contains(userProvider.user!.id))
-          .toList()
-          .cast<AuctionWork>();
+      _allAuctionWorks = auctionProvider.allAuctionWorks.cast<AuctionWork>();
       _filteredWorks = _allAuctionWorks;
     });
   }
@@ -56,7 +54,8 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
       _searchQuery = query.toLowerCase();
       _filteredWorks = _allAuctionWorks
           .where((auctionWork) =>
-              auctionWork.workTitle.toLowerCase().contains(_searchQuery))
+              auctionWork.workTitle.toLowerCase().contains(_searchQuery) &&
+              (!_showDone || !auctionWork.auctionComplete))
           .toList();
     });
   }
@@ -87,9 +86,6 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
     final auctionProvider = Provider.of<AuctionWorksProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('참여 중인 경매'),
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -114,6 +110,24 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("진행 중인 경매만 보기", style: TextStyle(fontSize: 16)),
+                Switch(
+                  value: _showDone,
+                  onChanged: (value) {
+                    setState(() {
+                      _showDone = value;
+                      _filterAuctionWorks(_searchQuery);
+                    });
+                  },
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -280,15 +294,29 @@ class MyBiddingScreenState extends State<MyBiddingScreen> {
                                           subscribeUsers: [],
                                         ),
                                       );
+
+                                      bool isLastBidder = bidder.id ==
+                                          updatedAuction.lastBidderId;
+
                                       return Padding(
                                         padding: const EdgeInsets.only(
                                             left: 16, top: 4),
                                         child: Row(
                                           children: [
-                                            const Icon(Icons.person_outline,
-                                                size: 16),
+                                            Icon(
+                                              Icons.person_outline,
+                                              size: 16,
+                                              color: isLastBidder
+                                                  ? Colors.blue
+                                                  : Colors.black,
+                                            ),
                                             const SizedBox(width: 8),
-                                            Text(bidder.nickName),
+                                            Text(bidder.nickName,
+                                                style: TextStyle(
+                                                  color: isLastBidder
+                                                      ? Colors.blue
+                                                      : Colors.black,
+                                                )),
                                           ],
                                         ),
                                       );

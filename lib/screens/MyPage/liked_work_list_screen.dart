@@ -29,7 +29,7 @@ class LikedWorkListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('내가 좋아요한 작품'),
+        title: const Text('좋아요한 작품'),
       ),
       body: FutureBuilder<List<String>>(
         future: fetchLikedWorkIds(userProvider.user!.id),
