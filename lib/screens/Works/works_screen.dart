@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/models/works.dart';
 import 'package:provider/provider.dart';
 import 'package:hidden_gems/providers/work_provider.dart';
 import 'package:hidden_gems/providers/user_provider.dart';
@@ -15,7 +16,7 @@ class WorkScreen extends StatefulWidget {
 class WorkScreenState extends State<WorkScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
-  bool _showSelling = false;
+  bool _showSelling = true;
 
   @override
   void dispose() {
@@ -38,11 +39,22 @@ class WorkScreenState extends State<WorkScreen> {
 
     final likedWorks = userProvider.user?.likedWorks ?? [];
 
-    final filteredWorks = works
+    List<Work> filteredWorks = works
         .where((work) =>
             work.title.toLowerCase().contains(_searchQuery.toLowerCase()) &&
-            (!_showSelling || work.selling == false))
+            (!_showSelling || work.selling == true))
         .toList();
+
+    void filterAuctionWorks(String query) {
+      setState(() {
+        _searchQuery = query.toLowerCase();
+        filteredWorks = works
+            .where((work) =>
+                work.title.toLowerCase().contains(_searchQuery.toLowerCase()) &&
+                (!_showSelling || work.selling))
+            .toList();
+      });
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -58,6 +70,7 @@ class WorkScreenState extends State<WorkScreen> {
                 onChanged: (value) {
                   setState(() {
                     _searchQuery = value;
+                    filterAuctionWorks(_searchQuery);
                   });
                 },
                 decoration: InputDecoration(
@@ -101,7 +114,8 @@ class WorkScreenState extends State<WorkScreen> {
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 0.9,
                         crossAxisSpacing: 12,
@@ -117,7 +131,8 @@ class WorkScreenState extends State<WorkScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => WorkdetailScreen(work: work),
+                                builder: (context) =>
+                                    WorkdetailScreen(work: work),
                               ),
                             );
                           },
@@ -140,13 +155,13 @@ class WorkScreenState extends State<WorkScreen> {
                                   ),
                                 ),
                               ),
-
-
                               Row(
                                 children: [
                                   IconButton(
                                     icon: Icon(
-                                      isLiked ? Icons.favorite : Icons.favorite_border,
+                                      isLiked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
                                       color: Colors.purple,
                                     ),
                                     onPressed: () {
@@ -173,7 +188,6 @@ class WorkScreenState extends State<WorkScreen> {
                         );
                       },
                     ),
-
                   ),
           ),
         ],
