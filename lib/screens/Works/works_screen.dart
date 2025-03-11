@@ -101,78 +101,78 @@ class WorkScreenState extends State<WorkScreen> {
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: GridView.builder(
-  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-    crossAxisCount: 2,
-    childAspectRatio: 0.9, // ✅ 세로 길이를 조금 더 길게 조정
-    crossAxisSpacing: 12,
-    mainAxisSpacing: 12,
-  ),
-  itemCount: filteredWorks.length,
-  itemBuilder: (context, index) {
-    final work = filteredWorks[index];
-    bool isLiked = likedWorks.contains(work.id);
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.9,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemCount: filteredWorks.length,
+                      itemBuilder: (context, index) {
+                        final work = filteredWorks[index];
+                        bool isLiked = likedWorks.contains(work.id);
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WorkdetailScreen(work: work),
-          ),
-        );
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(
-                    work.workPhotoURL.isNotEmpty
-                        ? work.workPhotoURL
-                        : 'https://picsum.photos/200/300',
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WorkdetailScreen(work: work),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        work.workPhotoURL.isNotEmpty
+                                            ? work.workPhotoURL
+                                            : 'https://picsum.photos/200/300',
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
 
 
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(
-                  isLiked ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.purple,
-                ),
-                onPressed: () {
-                  _toggleLike(workProvider, userProvider,
-                      work.id, work.artistID, isLiked);
-                },
-              ),
-              Expanded(
-                child: Text(
-                  work.title,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-  },
-),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      isLiked ? Icons.favorite : Icons.favorite_border,
+                                      color: Colors.purple,
+                                    ),
+                                    onPressed: () {
+                                      _toggleLike(workProvider, userProvider,
+                                          work.id, work.artistID, isLiked);
+                                    },
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      work.title,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
 
                   ),
           ),
