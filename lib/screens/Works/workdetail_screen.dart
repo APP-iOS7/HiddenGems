@@ -525,7 +525,7 @@ class WorkdetailScreenState extends State<WorkdetailScreen> {
                       onPressed: () {
                         final auctionProvider =
                             Provider.of<AuctionWorksProvider>(context,
-                                listen: true);
+                                listen: false);
 
                         final auctionWork =
                             auctionProvider.allAuctionWorks.firstWhere(
