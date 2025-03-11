@@ -56,7 +56,7 @@
 ---
 ## Model
 
-**AppUser**
+**AppUser**  
 \- id
 \- signupDate
 \- profileURL
